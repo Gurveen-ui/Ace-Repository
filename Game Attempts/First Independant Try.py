@@ -25,7 +25,6 @@ while True:
             pygame.quit()
             exit()
     print("Hi")
-    Screen.fill("white")
     Screen.blit(test_surface, (0,0))
     Screen.blit(Test_Background, (200,100))
 

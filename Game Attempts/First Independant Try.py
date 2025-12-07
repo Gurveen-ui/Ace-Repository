@@ -23,7 +23,7 @@ while True:
         if event.type == pygame.QUIT:
             pygame.quit()
             exit()
-    print("Hi")
+    Screen.fill("black")
     Screen.blit(Test_Background, (0,0))
 
     pygame.display.update()

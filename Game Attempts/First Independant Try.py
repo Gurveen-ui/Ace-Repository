@@ -13,7 +13,7 @@ pygame.init()
 Screen = pygame.display.set_mode((1800,1000))
 pygame.display.set_caption("Game")
 
-Test_Background = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\Game Attempts\\Test Images\\Test Background.png").convert_alpha()
+Test_Background = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Test Images\\Test Background.png").convert_alpha()
 
 
 clock = pygame.time.Clock()

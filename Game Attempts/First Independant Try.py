@@ -24,7 +24,6 @@ while True:
             pygame.quit()
             exit()
     Screen.blit(Test_Background, (0,0))
-    print("hi")
     pygame.display.update()
     clock.tick(60)
 

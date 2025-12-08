@@ -1,4 +1,6 @@
 import pygame
+import threading
+import time
 from sys import exit
 
 pygame.init()
@@ -11,24 +13,89 @@ class Player(pygame.sprite.Sprite):
         self.image = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Test Images\\Test Player Resized.png").convert_alpha()
         self.rect = self.image.get_rect(midbottom = (100,592))
 
+        self.gravity = 0
+        self.jump_count = 0
+        self.dash_cooldown = False
+
+    def Movement(self):
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_d] == True and keys[pygame.K_LCTRL] == False:
+            self.rect.x += 6
+        elif keys[pygame.K_d] == True and keys[pygame.K_LCTRL] == True and self.dash_cooldown == False:
+            self.rect.x += 300
+            self.dash_cooldown = True
+            front_dash_countdown = threading.Thread(target= self.Dash_Countdown)
+            front_dash_countdown.start()
+        if keys[pygame.K_a] == True and keys[pygame.K_LCTRL] == False:
+            self.rect.x -= 5
+        elif keys[pygame.K_a] == True and keys[pygame.K_LCTRL] == True and self.dash_cooldown == False:
+            self.rect.x -= 300
+            self.dash_cooldown = True
+            back_dash_countdown = threading.Thread(target= self.Dash_Countdown)
+            back_dash_countdown.start()
+
+
+    def Dash_Countdown(self):
+        time.sleep(5)
+        self.dash_cooldown = False
+
+    
+    def Apply_Gravity(self):
+        self.rect.y += self.gravity
+        self.gravity += 1
+        if self.rect.bottom >= 592:
+            self.rect.bottom = 592
+            self.jump_count = 0
+
+
+
+    def update(self):
+        self.Movement()
+        self.Apply_Gravity()
+
+
+
+
 player = pygame.sprite.GroupSingle()
 player.add(Player())
 
+class Corridor_Background(pygame.sprite.Sprite):
+    def __init__(self, left_x_pos):
+        super().__init__()
+        self.left_x_pos = left_x_pos #-1280, 0, 1280
+        self.image = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Test Images\\Test Background Resized.png").convert_alpha()
+        self.rect = self.image.get_rect(topleft = (left_x_pos,0))
+corridor_background = pygame.sprite.Group()
+corridor_background.add(Corridor_Background(-1280), Corridor_Background(0), Corridor_Background(1280))
 
 
-Test_Background = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Test Images\\Test Background Resized.png").convert_alpha()
-Test_Floor = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Test Images\\Test Floor.png").convert_alpha()
+class Corridor_Floor(pygame.sprite.Sprite):
+    def __init__(self, left_x_pos):
+        super().__init__()
+        self.left_x_pos = left_x_pos #-1280, 0, 1280
+        self.image = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Test Images\\Test Floor.png").convert_alpha()
+        self.rect = self.image.get_rect(bottomleft = (left_x_pos,720))
+corridor_floor = pygame.sprite.Group()
+corridor_floor.add(Corridor_Floor(0),Corridor_Floor(1280),Corridor_Floor(-1280))
+
 
 clock = pygame.time.Clock()
 
 while True:
     for event in pygame.event.get():
+        if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE and player.sprite.jump_count == 0:
+                    player.sprite.gravity = -20
+                    player.sprite.jump_count = 1
+                elif event.key == pygame.K_SPACE and player.sprite.jump_count == 1:
+                    player.sprite.gravity = -15
+                    player.sprite.jump_count = 2
         if event.type == pygame.QUIT:
             pygame.quit()
             exit()
-    Screen.blit(Test_Background, (0,0))
-    Screen.blit(Test_Floor, (0,592))
+    corridor_background.draw(Screen)
+    corridor_floor.draw(Screen)
     player.draw(Screen)
+    player.update()
     pygame.display.update()
     clock.tick(60)
-

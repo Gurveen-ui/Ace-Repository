@@ -72,11 +72,11 @@ class Corridor_Background(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(topleft = (left_x_pos,0))
 
     def destroy(self):
-        if self.rect.right >= 1280:
-            corridor_background.add(Corridor_Background(-1280))
-            self.kill()
-        elif self.rect.left <= 0:
+        if self.rect.right <= -1280:
             corridor_background.add(Corridor_Background(1280))
+            self.kill()
+        elif self.rect.left >= 2560:
+            corridor_background.add(Corridor_Background(-1280))
             self.kill()
 
     def update(self):
@@ -97,12 +97,11 @@ class Corridor_Floor(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(bottomleft = (left_x_pos,720))
 
     def destroy(self):
-        if self.rect.right >= 1280:
-            corridor_floor.add(Corridor_Floor(-1280))
-            self.kill()
-        elif self.rect.left <= 0:
+        if self.rect.right <= -1280:
             corridor_floor.add(Corridor_Floor(1280))
-            print(corridor_floor)
+            self.kill()
+        elif self.rect.left >= 2560:
+            corridor_floor.add(Corridor_Floor(-1280))
             self.kill()
 
     def update(self):

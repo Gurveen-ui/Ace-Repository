@@ -27,7 +27,7 @@ class Player(pygame.sprite.Sprite):
         keys = pygame.key.get_pressed()
         current_time = pygame.time.get_ticks()
         if keys[pygame.K_d] and keys[pygame.K_LCTRL]:
-            if current_time - self.last_dash_time > self.dash_cooldown_duration:
+            if current_time - self.last_dash_time > self.dash_cooldown:
                 self.rect.x += 300
                 self.last_dash_time = current_time
             else:
@@ -35,7 +35,7 @@ class Player(pygame.sprite.Sprite):
         elif keys[pygame.K_d]:
             self.rect.x += 6
         if keys[pygame.K_a] and keys[pygame.K_LCTRL]:
-            if current_time - self.last_dash_time > self.dash_cooldown_duration:
+            if current_time - self.last_dash_time > self.dash_cooldown:
                 self.rect.x -= 300
                 self.last_dash_time = current_time
             else:

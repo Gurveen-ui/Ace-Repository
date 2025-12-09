@@ -34,14 +34,12 @@ class Player(pygame.sprite.Sprite):
             back_dash_countdown = threading.Thread(target= self.Dash_Countdown)
             back_dash_countdown.start()
         if self.rect.right > 1200:
-            depth = self.rect.right - 1200
-            #print (depth)
             corridor_background_movement(corridor_background, -4)
-            corridor_floor_movement(corridor_floor, -depth)
+            corridor_floor_movement(corridor_floor, -6)
             self.rect.right = 1200
         elif self.rect.left < 80:
             corridor_background_movement(corridor_background, 4)
-            corridor_floor_movement(corridor_floor, 5)
+            corridor_floor_movement(corridor_floor, 6)
             self.rect.left = 80
 
     def Dash_Countdown(self):
@@ -74,18 +72,18 @@ class Corridor_Background(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(topleft = (left_x_pos,0))
 
     def destroy(self):
-        if self.rect.right <= -1280:
-            corridor_background.add(Corridor_Background(1280))
-            self.kill()
-        elif self.rect.left >= 2560:
+        if self.rect.right >= 1280:
             corridor_background.add(Corridor_Background(-1280))
+            self.kill()
+        elif self.rect.left <= 0:
+            corridor_background.add(Corridor_Background(1280))
             self.kill()
 
     def update(self):
         self.destroy()
 
 corridor_background = pygame.sprite.Group()
-corridor_background.add(Corridor_Background(-1280), Corridor_Background(0), Corridor_Background(1280))
+corridor_background.add(Corridor_Background(0))
 
 def corridor_background_movement(background_list, movement_direction):
     for background in background_list:
@@ -99,11 +97,12 @@ class Corridor_Floor(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(bottomleft = (left_x_pos,720))
 
     def destroy(self):
-        if self.rect.right <= -1280:
-            corridor_floor.add(Corridor_Floor(1280))
-            self.kill()
-        elif self.rect.left >= 2560:
+        if self.rect.right >= 1280:
             corridor_floor.add(Corridor_Floor(-1280))
+            self.kill()
+        elif self.rect.left <= 0:
+            corridor_floor.add(Corridor_Floor(1280))
+            #print(corridor_floor)
             self.kill()
 
     def update(self):

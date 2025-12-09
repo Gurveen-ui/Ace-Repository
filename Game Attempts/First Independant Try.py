@@ -7,16 +7,16 @@ pygame.init()
 Screen = pygame.display.set_mode((1280,720))
 pygame.display.set_caption("Game")
 
-GROUND_LEVEL = 592
-LEFT_BOUND = 80
-RIGHT_BOUND = 1200
+GROUND_LEVEL = 592 # point at which gravity cant pull player below
+LEFT_BOUND = 80 # x value player cant go past
+RIGHT_BOUND = 1200 # x value player cant go past
 DASH_DISTANCE = 300
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         self.image = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Test Images\\Test Player Resized.png").convert_alpha()
-        self.rect = self.image.get_rect(bottomleft = (80,592))
+        self.rect = self.image.get_rect(bottomleft = (LEFT_BOUND,GROUND_LEVEL))
 
         self.gravity = 0
         self.jump_count = 0
@@ -28,49 +28,45 @@ class Player(pygame.sprite.Sprite):
         current_time = pygame.time.get_ticks()
         if keys[pygame.K_d] and keys[pygame.K_LCTRL]:
             if current_time - self.last_dash_time > self.dash_cooldown:
-                self.rect.x += 300
+                self.rect.x += DASH_DISTANCE
                 self.last_dash_time = current_time
             else:
                 self.rect.x += 6
-                corridor_background_movement(corridor_background, -1)
-                corridor_floor_movement(corridor_floor, -2)
+                corridor_background_movement(corridor_background, -2)
+                corridor_floor_movement(corridor_floor, -4)
         elif keys[pygame.K_d]:
             self.rect.x += 6
-            corridor_background_movement(corridor_background, -1)
-            corridor_floor_movement(corridor_floor, -2)
+            corridor_background_movement(corridor_background, -2)
+            corridor_floor_movement(corridor_floor, -4)
         if keys[pygame.K_a] and keys[pygame.K_LCTRL]:
             if current_time - self.last_dash_time > self.dash_cooldown:
-                self.rect.x -= 300
+                self.rect.x -= DASH_DISTANCE
                 self.last_dash_time = current_time
             else:
                 self.rect.x -= 5
-                corridor_background_movement(corridor_background, 1)
-                corridor_floor_movement(corridor_floor, 2)
+                corridor_background_movement(corridor_background, 2)
+                corridor_floor_movement(corridor_floor, 4)
         elif keys[pygame.K_a]:
             self.rect.x -= 5
-            corridor_background_movement(corridor_background, 1)
-            corridor_floor_movement(corridor_floor, 2)
-        if self.rect.right > 1200:
-            depth = self.rect.right - 1200
-            corridor_background_movement(corridor_background, ((-depth / 3) * 2) + 1)
-            corridor_floor_movement(corridor_floor, -depth + 2)
-            self.rect.right = 1200
-        elif self.rect.left < 80:
-            depth = 80 - self.rect.left
-            corridor_background_movement(corridor_background, ((depth / 3) * 2) - 1)
-            corridor_floor_movement(corridor_floor, depth - 2)
-            self.rect.left = 80
-
-    def Dash_Countdown(self):
-        time.sleep(5)
-        self.dash_cooldown = False
+            corridor_background_movement(corridor_background, 2)
+            corridor_floor_movement(corridor_floor, 4)
+        if self.rect.right > RIGHT_BOUND:
+            depth = self.rect.right - RIGHT_BOUND
+            corridor_background_movement(corridor_background, ((-depth / 3) * 2) + 2)
+            corridor_floor_movement(corridor_floor, -depth + 4)
+            self.rect.right = RIGHT_BOUND
+        elif self.rect.left < LEFT_BOUND:
+            depth = LEFT_BOUND - self.rect.left
+            corridor_background_movement(corridor_background, ((depth / 3) * 2) - 2)
+            corridor_floor_movement(corridor_floor, depth - 4)
+            self.rect.left = LEFT_BOUND
 
     
     def Apply_Gravity(self):
         self.rect.y += self.gravity
         self.gravity += 1
-        if self.rect.bottom >= 592:
-            self.rect.bottom = 592
+        if self.rect.bottom >= GROUND_LEVEL:
+            self.rect.bottom = GROUND_LEVEL
             self.jump_count = 0
 
 

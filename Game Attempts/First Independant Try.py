@@ -7,6 +7,11 @@ pygame.init()
 Screen = pygame.display.set_mode((1280,720))
 pygame.display.set_caption("Game")
 
+GROUND_LEVEL = 592
+LEFT_BOUND = 80
+RIGHT_BOUND = 1200
+DASH_DISTANCE = 300
+
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
@@ -15,24 +20,28 @@ class Player(pygame.sprite.Sprite):
 
         self.gravity = 0
         self.jump_count = 0
-        self.dash_cooldown = False
+        self.last_dash_time = 0
+        self.dash_cooldown = 5000
 
     def Movement(self):
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_d] == True and keys[pygame.K_LCTRL] == False:
+        current_time = pygame.time.get_ticks()
+        if keys[pygame.K_d] and keys[pygame.K_LCTRL]:
+            if current_time - self.last_dash_time > self.dash_cooldown_duration:
+                self.rect.x += 300
+                self.last_dash_time = current_time
+            else:
+                self.rect.x += 6
+        elif keys[pygame.K_d]:
             self.rect.x += 6
-        elif keys[pygame.K_d] == True and keys[pygame.K_LCTRL] == True and self.dash_cooldown == False:
-            self.rect.x += 300
-            self.dash_cooldown = True
-            front_dash_countdown = threading.Thread(target= self.Dash_Countdown)
-            front_dash_countdown.start()
-        if keys[pygame.K_a] == True and keys[pygame.K_LCTRL] == False:
+        if keys[pygame.K_a] and keys[pygame.K_LCTRL]:
+            if current_time - self.last_dash_time > self.dash_cooldown_duration:
+                self.rect.x -= 300
+                self.last_dash_time = current_time
+            else:
+                self.rect.x -= 5
+        elif keys[pygame.K_a]:
             self.rect.x -= 5
-        elif keys[pygame.K_a] == True and keys[pygame.K_LCTRL] == True and self.dash_cooldown == False:
-            self.rect.x -= 300
-            self.dash_cooldown = True
-            back_dash_countdown = threading.Thread(target= self.Dash_Countdown)
-            back_dash_countdown.start()
         if self.rect.right > 1200:
             corridor_background_movement(corridor_background, -4)
             corridor_floor_movement(corridor_floor, -6)

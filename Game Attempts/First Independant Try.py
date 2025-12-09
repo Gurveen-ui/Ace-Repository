@@ -11,7 +11,7 @@ class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         self.image = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Test Images\\Test Player Resized.png").convert_alpha()
-        self.rect = self.image.get_rect(midbottom = (100,592))
+        self.rect = self.image.get_rect(bottomleft = (80,592))
 
         self.gravity = 0
         self.jump_count = 0
@@ -33,7 +33,14 @@ class Player(pygame.sprite.Sprite):
             self.dash_cooldown = True
             back_dash_countdown = threading.Thread(target= self.Dash_Countdown)
             back_dash_countdown.start()
-
+        if self.rect.right > 1200:
+            corridor_background_movement(corridor_background, -4)
+            corridor_background_movement(corridor_floor, -5)
+            self.rect.right = 1200
+        elif self.rect.left < 80:
+            corridor_background_movement(corridor_background, 4)
+            corridor_floor_movement(corridor_floor, 5)
+            self.rect.left = 80
 
     def Dash_Countdown(self):
         time.sleep(5)
@@ -54,8 +61,6 @@ class Player(pygame.sprite.Sprite):
         self.Apply_Gravity()
 
 
-
-
 player = pygame.sprite.GroupSingle()
 player.add(Player())
 
@@ -65,9 +70,24 @@ class Corridor_Background(pygame.sprite.Sprite):
         self.left_x_pos = left_x_pos #-1280, 0, 1280
         self.image = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Test Images\\Test Background Resized.png").convert_alpha()
         self.rect = self.image.get_rect(topleft = (left_x_pos,0))
+
+    def destroy(self):
+        if self.rect.right <= -1280:
+            corridor_background.add(Corridor_Background(1280))
+            self.kill()
+        elif self.rect.left >= 2560:
+            corridor_background.add(Corridor_Background(-1280))
+            self.kill()
+
+    def update(self):
+        self.destroy()
+
 corridor_background = pygame.sprite.Group()
 corridor_background.add(Corridor_Background(-1280), Corridor_Background(0), Corridor_Background(1280))
 
+def corridor_background_movement(background_list, movement_direction):
+    for background in background_list:
+        background.rect.x = background.rect.x + movement_direction
 
 class Corridor_Floor(pygame.sprite.Sprite):
     def __init__(self, left_x_pos):
@@ -75,9 +95,25 @@ class Corridor_Floor(pygame.sprite.Sprite):
         self.left_x_pos = left_x_pos #-1280, 0, 1280
         self.image = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Test Images\\Test Floor.png").convert_alpha()
         self.rect = self.image.get_rect(bottomleft = (left_x_pos,720))
+
+    def destroy(self):
+        if self.rect.right <= -1280:
+            corridor_floor.add(Corridor_Floor(1280))
+            self.kill()
+        elif self.rect.left >= 2560:
+            corridor_floor.add(Corridor_Floor(-1280))
+            self.kill()
+
+    def update(self):
+        self.destroy()
+
+
 corridor_floor = pygame.sprite.Group()
 corridor_floor.add(Corridor_Floor(0),Corridor_Floor(1280),Corridor_Floor(-1280))
 
+def corridor_floor_movement(floor_list, movement_direction):
+    for floor in floor_list:
+        floor.rect.x = floor.rect.x + movement_direction
 
 clock = pygame.time.Clock()
 
@@ -97,5 +133,7 @@ while True:
     corridor_floor.draw(Screen)
     player.draw(Screen)
     player.update()
+    corridor_background.update()
+    corridor_floor.update()    
     pygame.display.update()
     clock.tick(60)

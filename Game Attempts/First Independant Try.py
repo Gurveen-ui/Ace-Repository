@@ -34,8 +34,10 @@ class Player(pygame.sprite.Sprite):
             back_dash_countdown = threading.Thread(target= self.Dash_Countdown)
             back_dash_countdown.start()
         if self.rect.right > 1200:
+            depth = self.rect.right - 1200
+            #print (depth)
             corridor_background_movement(corridor_background, -4)
-            corridor_background_movement(corridor_floor, -5)
+            corridor_floor_movement(corridor_floor, -depth)
             self.rect.right = 1200
         elif self.rect.left < 80:
             corridor_background_movement(corridor_background, 4)

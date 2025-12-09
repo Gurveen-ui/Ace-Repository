@@ -99,11 +99,11 @@ class Corridor_Floor(pygame.sprite.Sprite):
     def destroy(self):
         if self.rect.right >= 1280:
             corridor_floor.add(Corridor_Floor(-1280))
-            self.kill()
+            #self.kill()
         elif self.rect.left <= 0:
             corridor_floor.add(Corridor_Floor(1280))
-            #print(corridor_floor)
-            self.kill()
+            print(corridor_floor)
+            #self.kill()
 
     def update(self):
         self.destroy()

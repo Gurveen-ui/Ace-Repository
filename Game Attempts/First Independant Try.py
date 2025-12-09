@@ -20,7 +20,7 @@ class Player(pygame.sprite.Sprite):
 
         self.gravity = 0
         self.jump_count = 0
-        self.last_dash_time = 0
+        self.last_dash_time = -5000
         self.dash_cooldown = 5000
 
     def Movement(self):
@@ -32,23 +32,33 @@ class Player(pygame.sprite.Sprite):
                 self.last_dash_time = current_time
             else:
                 self.rect.x += 6
+                corridor_background_movement(corridor_background, -1)
+                corridor_floor_movement(corridor_floor, -2)
         elif keys[pygame.K_d]:
             self.rect.x += 6
+            corridor_background_movement(corridor_background, -1)
+            corridor_floor_movement(corridor_floor, -2)
         if keys[pygame.K_a] and keys[pygame.K_LCTRL]:
             if current_time - self.last_dash_time > self.dash_cooldown:
                 self.rect.x -= 300
                 self.last_dash_time = current_time
             else:
                 self.rect.x -= 5
+                corridor_background_movement(corridor_background, 1)
+                corridor_floor_movement(corridor_floor, 2)
         elif keys[pygame.K_a]:
             self.rect.x -= 5
+            corridor_background_movement(corridor_background, 1)
+            corridor_floor_movement(corridor_floor, 2)
         if self.rect.right > 1200:
-            corridor_background_movement(corridor_background, -4)
-            corridor_floor_movement(corridor_floor, -6)
+            depth = self.rect.right - 1200
+            corridor_background_movement(corridor_background, ((-depth / 3) * 2) + 1)
+            corridor_floor_movement(corridor_floor, -depth + 2)
             self.rect.right = 1200
         elif self.rect.left < 80:
-            corridor_background_movement(corridor_background, 4)
-            corridor_floor_movement(corridor_floor, 6)
+            depth = 80 - self.rect.left
+            corridor_background_movement(corridor_background, ((depth / 3) * 2) - 1)
+            corridor_floor_movement(corridor_floor, depth - 2)
             self.rect.left = 80
 
     def Dash_Countdown(self):
@@ -81,18 +91,20 @@ class Corridor_Background(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(topleft = (left_x_pos,0))
 
     def destroy(self):
-        if self.rect.right <= -1280:
-            corridor_background.add(Corridor_Background(1280))
+        if self.rect.right <= 0:
+            rightmost = max([bg.rect.right for bg in corridor_background])
+            corridor_background.add(Corridor_Background(rightmost))
             self.kill()
-        elif self.rect.left >= 2560:
-            corridor_background.add(Corridor_Background(-1280))
+        elif self.rect.left >= 1280:
+            leftmost = min([bg.rect.left for bg in corridor_background])
+            corridor_background.add(Corridor_Background(leftmost - self.rect.width))
             self.kill()
 
     def update(self):
         self.destroy()
 
 corridor_background = pygame.sprite.Group()
-corridor_background.add(Corridor_Background(0))
+corridor_background.add(Corridor_Background(-1280), Corridor_Background(0), Corridor_Background(1280))
 
 def corridor_background_movement(background_list, movement_direction):
     for background in background_list:
@@ -106,11 +118,13 @@ class Corridor_Floor(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(bottomleft = (left_x_pos,720))
 
     def destroy(self):
-        if self.rect.right <= -1280:
-            corridor_floor.add(Corridor_Floor(1280))
+        if self.rect.right <= 0:
+            rightmost = max([flr.rect.right for flr in corridor_floor])
+            corridor_floor.add(Corridor_Floor(rightmost))
             self.kill()
-        elif self.rect.left >= 2560:
-            corridor_floor.add(Corridor_Floor(-1280))
+        elif self.rect.left >= 1280:
+            leftmost = min([flr.rect.left for flr in corridor_floor])
+            corridor_floor.add(Corridor_Floor(leftmost - self.rect.width))
             self.kill()
 
     def update(self):
@@ -138,6 +152,7 @@ while True:
         if event.type == pygame.QUIT:
             pygame.quit()
             exit()
+    Screen.fill((0,0,0))
     corridor_background.draw(Screen)
     corridor_floor.draw(Screen)
     player.draw(Screen)

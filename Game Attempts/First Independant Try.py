@@ -1,6 +1,4 @@
 import pygame
-import threading
-import time
 from sys import exit
 
 pygame.init()

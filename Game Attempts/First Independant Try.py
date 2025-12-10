@@ -5,6 +5,8 @@ pygame.init()
 Screen = pygame.display.set_mode((1280,720))
 pygame.display.set_caption("Game")
 
+FLOOR_HEIGHT = 38
+
 GROUND_LEVEL = 592 # point at which gravity cant pull player below
 LEFT_BOUND = 80 # x value player cant go past
 RIGHT_BOUND = 1200 # x value player cant go past

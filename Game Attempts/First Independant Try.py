@@ -9,6 +9,7 @@ GROUND_LEVEL = 592 # point at which gravity cant pull player below
 LEFT_BOUND = 80 # x value player cant go past
 RIGHT_BOUND = 1200 # x value player cant go past
 DASH_DISTANCE = 300
+SCREEN_WIDTH = Screen.get_width()
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
@@ -30,33 +31,33 @@ class Player(pygame.sprite.Sprite):
                 self.last_dash_time = current_time
             else:
                 self.rect.x += 6
-                corridor_background_movement(corridor_background, -2)
-                corridor_floor_movement(corridor_floor, -4)
+                corridor_background_movement(corridor_background, -1)
+                corridor_floor_movement(corridor_floor, -3)
         elif keys[pygame.K_d]:
             self.rect.x += 6
-            corridor_background_movement(corridor_background, -2)
-            corridor_floor_movement(corridor_floor, -4)
+            corridor_background_movement(corridor_background, -1)
+            corridor_floor_movement(corridor_floor, -3)
         if keys[pygame.K_a] and keys[pygame.K_LCTRL]:
             if current_time - self.last_dash_time > self.dash_cooldown:
                 self.rect.x -= DASH_DISTANCE
                 self.last_dash_time = current_time
             else:
                 self.rect.x -= 5
-                corridor_background_movement(corridor_background, 2)
-                corridor_floor_movement(corridor_floor, 4)
+                corridor_background_movement(corridor_background, 1)
+                corridor_floor_movement(corridor_floor, 3)
         elif keys[pygame.K_a]:
             self.rect.x -= 5
-            corridor_background_movement(corridor_background, 2)
-            corridor_floor_movement(corridor_floor, 4)
+            corridor_background_movement(corridor_background, 1)
+            corridor_floor_movement(corridor_floor, 3)
         if self.rect.right > RIGHT_BOUND:
             depth = self.rect.right - RIGHT_BOUND
-            corridor_background_movement(corridor_background, ((-depth / 3) * 2) + 2)
-            corridor_floor_movement(corridor_floor, -depth + 4)
+            corridor_background_movement(corridor_background, int(((-depth / 3) * 2) + 1))
+            corridor_floor_movement(corridor_floor, -depth + 3)
             self.rect.right = RIGHT_BOUND
         elif self.rect.left < LEFT_BOUND:
             depth = LEFT_BOUND - self.rect.left
-            corridor_background_movement(corridor_background, ((depth / 3) * 2) - 2)
-            corridor_floor_movement(corridor_floor, depth - 4)
+            corridor_background_movement(corridor_background, int(((depth / 3) * 2) + 1))
+            corridor_floor_movement(corridor_floor, depth - 3)
             self.rect.left = LEFT_BOUND
 
     
@@ -65,6 +66,7 @@ class Player(pygame.sprite.Sprite):
         self.gravity += 1
         if self.rect.bottom >= GROUND_LEVEL:
             self.rect.bottom = GROUND_LEVEL
+            self.gravity = 0
             self.jump_count = 0
 
 
@@ -89,7 +91,7 @@ class Corridor_Background(pygame.sprite.Sprite):
             rightmost = max([bg.rect.right for bg in corridor_background])
             corridor_background.add(Corridor_Background(rightmost))
             self.kill()
-        elif self.rect.left >= 1280:
+        elif self.rect.left >= SCREEN_WIDTH:
             leftmost = min([bg.rect.left for bg in corridor_background])
             corridor_background.add(Corridor_Background(leftmost - self.rect.width))
             self.kill()
@@ -98,7 +100,7 @@ class Corridor_Background(pygame.sprite.Sprite):
         self.destroy()
 
 corridor_background = pygame.sprite.Group()
-corridor_background.add(Corridor_Background(-1280), Corridor_Background(0), Corridor_Background(1280))
+corridor_background.add(Corridor_Background(-SCREEN_WIDTH), Corridor_Background(0), Corridor_Background(SCREEN_WIDTH))
 
 def corridor_background_movement(background_list, movement_direction):
     for background in background_list:
@@ -116,7 +118,7 @@ class Corridor_Floor(pygame.sprite.Sprite):
             rightmost = max([flr.rect.right for flr in corridor_floor])
             corridor_floor.add(Corridor_Floor(rightmost))
             self.kill()
-        elif self.rect.left >= 1280:
+        elif self.rect.left >= SCREEN_WIDTH:
             leftmost = min([flr.rect.left for flr in corridor_floor])
             corridor_floor.add(Corridor_Floor(leftmost - self.rect.width))
             self.kill()
@@ -126,7 +128,7 @@ class Corridor_Floor(pygame.sprite.Sprite):
 
 
 corridor_floor = pygame.sprite.Group()
-corridor_floor.add(Corridor_Floor(0),Corridor_Floor(1280),Corridor_Floor(-1280))
+corridor_floor.add(Corridor_Floor(0),Corridor_Floor(SCREEN_WIDTH),Corridor_Floor(-SCREEN_WIDTH))
 
 def corridor_floor_movement(floor_list, movement_direction):
     for floor in floor_list:
@@ -150,8 +152,8 @@ while True:
     corridor_background.draw(Screen)
     corridor_floor.draw(Screen)
     player.draw(Screen)
-    player.update()
     corridor_background.update()
-    corridor_floor.update()    
+    corridor_floor.update() 
+    player.update()  
     pygame.display.update()
     clock.tick(60)

@@ -31,33 +31,33 @@ class Player(pygame.sprite.Sprite):
                 self.last_dash_time = current_time
             else:
                 self.rect.x += 6
-                corridor_background_movement(corridor_background, -1)
-                corridor_floor_movement(corridor_floor, -3)
+                sprite_group_movement(corridor_background, -1)
+                sprite_group_movement(corridor_floor, -3)
         elif keys[pygame.K_d]:
             self.rect.x += 6
-            corridor_background_movement(corridor_background, -1)
-            corridor_floor_movement(corridor_floor, -3)
+            sprite_group_movement(corridor_background, -1)
+            sprite_group_movement(corridor_floor, -3)
         if keys[pygame.K_a] and keys[pygame.K_LCTRL]:
             if current_time - self.last_dash_time > self.dash_cooldown:
                 self.rect.x -= DASH_DISTANCE
                 self.last_dash_time = current_time
             else:
                 self.rect.x -= 5
-                corridor_background_movement(corridor_background, 1)
-                corridor_floor_movement(corridor_floor, 3)
+                sprite_group_movement(corridor_background, 1)
+                sprite_group_movement(corridor_floor, 3)
         elif keys[pygame.K_a]:
             self.rect.x -= 5
-            corridor_background_movement(corridor_background, 1)
-            corridor_floor_movement(corridor_floor, 3)
+            sprite_group_movement(corridor_background, 1)
+            sprite_group_movement(corridor_floor, 3)
         if self.rect.right > RIGHT_BOUND:
             depth = self.rect.right - RIGHT_BOUND
-            corridor_background_movement(corridor_background, int(((-depth / 3) * 2) + 1))
-            corridor_floor_movement(corridor_floor, -depth + 3)
+            sprite_group_movement(corridor_background, int(((-depth / 3) * 2) + 1))
+            sprite_group_movement(corridor_floor, -depth + 3)
             self.rect.right = RIGHT_BOUND
         elif self.rect.left < LEFT_BOUND:
             depth = LEFT_BOUND - self.rect.left
-            corridor_background_movement(corridor_background, int(((depth / 3) * 2) + 1))
-            corridor_floor_movement(corridor_floor, depth - 3)
+            sprite_group_movement(corridor_background, int(((depth / 3) * 2) + 1))
+            sprite_group_movement(corridor_floor, depth - 3)
             self.rect.left = LEFT_BOUND
 
     
@@ -102,9 +102,6 @@ class Corridor_Background(pygame.sprite.Sprite):
 corridor_background = pygame.sprite.Group()
 corridor_background.add(Corridor_Background(-SCREEN_WIDTH), Corridor_Background(0), Corridor_Background(SCREEN_WIDTH))
 
-def corridor_background_movement(background_list, movement_direction):
-    for background in background_list:
-        background.rect.x = background.rect.x + movement_direction
 
 class Corridor_Floor(pygame.sprite.Sprite):
     def __init__(self, left_x_pos):
@@ -130,9 +127,9 @@ class Corridor_Floor(pygame.sprite.Sprite):
 corridor_floor = pygame.sprite.Group()
 corridor_floor.add(Corridor_Floor(0),Corridor_Floor(SCREEN_WIDTH),Corridor_Floor(-SCREEN_WIDTH))
 
-def corridor_floor_movement(floor_list, movement_direction):
-    for floor in floor_list:
-        floor.rect.x = floor.rect.x + movement_direction
+def sprite_group_movement(sprite_list, x_value):
+    for sprite in sprite_list:
+        sprite.rect.x = sprite.rect.x + x_value
 
 clock = pygame.time.Clock()
 

@@ -140,10 +140,10 @@ while True:
         if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE and player.sprite.jump_count == 0:
                     player.sprite.gravity = -20
-                    player.sprite.jump_count = 1
-                elif event.key == pygame.K_SPACE and player.sprite.jump_count == 1:
+                    player.sprite.jump_count += 1
+                elif event.key == pygame.K_SPACE and player.sprite.jump_count > 0 and player.sprite.jump_count < 2:
                     player.sprite.gravity = -15
-                    player.sprite.jump_count = 2
+                    player.sprite.jump_count += 1
         if event.type == pygame.QUIT:
             pygame.quit()
             exit()

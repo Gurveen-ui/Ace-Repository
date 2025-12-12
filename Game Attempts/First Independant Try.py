@@ -5,12 +5,15 @@ pygame.init()
 Screen = pygame.display.set_mode((1280,720))
 pygame.display.set_caption("Game")
 
+vector = pygame.math.Vector2
+
 FLOOR_HEIGHT = 38
 
 GROUND_LEVEL = 592 # point at which gravity cant pull player below
 LEFT_BOUND = 80 # x value player cant go past
 RIGHT_BOUND = 1200 # x value player cant go past
 DASH_DISTANCE = 300
+LOWEST_PLATFORM = 450
 SCREEN_WIDTH = Screen.get_width()
 
 class Player(pygame.sprite.Sprite):
@@ -23,8 +26,12 @@ class Player(pygame.sprite.Sprite):
         self.jump_count = 0
         self.last_dash_time = -5000
         self.dash_cooldown = 5000
+        self.previous_frame_rect = self.rect
+
+
 
     def Movement(self):
+        self.previous_frame_rect = self.rect
         keys = pygame.key.get_pressed()
         current_time = pygame.time.get_ticks()
         if keys[pygame.K_d] and keys[pygame.K_LCTRL]:
@@ -35,10 +42,12 @@ class Player(pygame.sprite.Sprite):
                 self.rect.x += 6
                 sprite_group_movement(corridor_background, -1)
                 sprite_group_movement(corridor_floor, -3)
+                sprite_group_movement(corridor_platforms, -3)
         elif keys[pygame.K_d]:
             self.rect.x += 6
             sprite_group_movement(corridor_background, -1)
             sprite_group_movement(corridor_floor, -3)
+            sprite_group_movement(corridor_platforms, -3)
         if keys[pygame.K_a] and keys[pygame.K_LCTRL]:
             if current_time - self.last_dash_time > self.dash_cooldown:
                 self.rect.x -= DASH_DISTANCE
@@ -47,19 +56,23 @@ class Player(pygame.sprite.Sprite):
                 self.rect.x -= 5
                 sprite_group_movement(corridor_background, 1)
                 sprite_group_movement(corridor_floor, 3)
+                sprite_group_movement(corridor_platforms, 3)
         elif keys[pygame.K_a]:
             self.rect.x -= 5
             sprite_group_movement(corridor_background, 1)
             sprite_group_movement(corridor_floor, 3)
+            sprite_group_movement(corridor_platforms, 3)
         if self.rect.right > RIGHT_BOUND:
             depth = self.rect.right - RIGHT_BOUND
             sprite_group_movement(corridor_background, int(((-depth / 3) * 2) + 1))
             sprite_group_movement(corridor_floor, -depth + 3)
+            sprite_group_movement(corridor_platforms, -depth + 3)
             self.rect.right = RIGHT_BOUND
         elif self.rect.left < LEFT_BOUND:
             depth = LEFT_BOUND - self.rect.left
             sprite_group_movement(corridor_background, int(((depth / 3) * 2) + 1))
             sprite_group_movement(corridor_floor, depth - 3)
+            sprite_group_movement(corridor_platforms, depth - 3)
             self.rect.left = LEFT_BOUND
 
     
@@ -71,11 +84,19 @@ class Player(pygame.sprite.Sprite):
             self.gravity = 0
             self.jump_count = 0
 
+    def Platform_Collisions(self, platforms):
+        pass
 
+
+
+
+                
 
     def update(self):
         self.Movement()
         self.Apply_Gravity()
+        self.Platform_Collisions(corridor_platforms)
+
 
 
 player = pygame.sprite.GroupSingle()
@@ -129,6 +150,15 @@ class Corridor_Floor(pygame.sprite.Sprite):
 corridor_floor = pygame.sprite.Group()
 corridor_floor.add(Corridor_Floor(0),Corridor_Floor(SCREEN_WIDTH),Corridor_Floor(-SCREEN_WIDTH))
 
+class Corridor_Platform(pygame.sprite.Sprite):
+    def __init__(self, bottomleft_x, bottomleft_y):
+        super().__init__()
+        self.image = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Test Images\\Test Platform.png").convert_alpha()
+        self.rect = self.image.get_rect(bottomleft = (bottomleft_x, bottomleft_y))
+
+corridor_platforms = pygame.sprite.Group()
+corridor_platforms.add(Corridor_Platform(400,450))
+
 def sprite_group_movement(sprite_list, x_value):
     for sprite in sprite_list:
         sprite.rect.x = sprite.rect.x + x_value
@@ -150,6 +180,7 @@ while True:
     Screen.fill((0,0,0))
     corridor_background.draw(Screen)
     corridor_floor.draw(Screen)
+    corridor_platforms.draw(Screen)
     player.draw(Screen)
     corridor_background.update()
     corridor_floor.update() 

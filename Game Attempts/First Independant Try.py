@@ -104,7 +104,6 @@ class Player(pygame.sprite.Sprite):
                 left_forcefield += depth - 3
                 right_forcefield += depth - 3
                 self.rect.left = LEFT_BOUND
-
     
     def Normal_Movement(self, type):
         global left_forcefield, right_forcefield

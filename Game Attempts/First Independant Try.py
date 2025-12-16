@@ -12,11 +12,12 @@ FLOOR_HEIGHT = 38
 GROUND_LEVEL = 592 # point at which gravity cant pull player below
 LEFT_BOUND = 80 # x value player cant go past
 RIGHT_BOUND = 1200 # x value player cant go past
-LEFT_FORCEFIELD = -1000
-RIGHT_FORCEFIELD = 5000
 DASH_DISTANCE = 300
 LOWEST_PLATFORM = 450
 SCREEN_WIDTH = Screen.get_width()
+
+left_forcefield = -1000
+right_forcefield = 5000
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
@@ -51,9 +52,9 @@ class Player(pygame.sprite.Sprite):
                 self.Normal_Movement("Backward")
         elif keys[pygame.K_a]:
             self.Normal_Movement("Backward")
-        if keys[pygame.K_i] and self.rect.left > LEFT_BOUND:
+        if keys[pygame.K_i] and self.rect.left > LEFT_BOUND and self.rect.right < right_forcefield:
             self.Normal_Movement("Forward Background")
-        elif keys[pygame.K_u] and self.rect.right < RIGHT_BOUND:
+        elif keys[pygame.K_u] and self.rect.right < RIGHT_BOUND and self.rect.left > left_forcefield:
             self.Normal_Movement("Backward Background")
         self.Check_Boundaries()
 
@@ -78,42 +79,51 @@ class Player(pygame.sprite.Sprite):
                         self.rect.bottom += 1
                 
     def Check_Boundaries(self):
-        if self.rect.left <= LEFT_FORCEFIELD:
-            self.rect.left = LEFT_FORCEFIELD
+        global left_forcefield, right_forcefield
+        if self.rect.left <= left_forcefield:
+            self.rect.left = left_forcefield
             self.at_forcefield = True
-            print("at left")
-        elif self.rect.right >= RIGHT_FORCEFIELD:
-            self.rect.right = RIGHT_FORCEFIELD
+        elif self.rect.right >= right_forcefield:
+            self.rect.right = right_forcefield
             self.at_forcefield = True
         else:
+            self.at_forcefield = False
             if self.rect.right > RIGHT_BOUND:
-                self.at_forcefield = False
                 depth = self.rect.right - RIGHT_BOUND
                 sprite_group_movement(corridor_background, int(((-depth / 3) * 2) + 1))
                 sprite_group_movement(corridor_floor, -depth + 3)
                 sprite_group_movement(corridor_platforms, -depth + 3)
+                left_forcefield += -depth + 3
+                right_forcefield += -depth + 3
                 self.rect.right = RIGHT_BOUND
             elif self.rect.left < LEFT_BOUND:
                 depth = LEFT_BOUND - self.rect.left
                 sprite_group_movement(corridor_background, int(((depth / 3) * 2) - 1))
                 sprite_group_movement(corridor_floor, depth - 3)
                 sprite_group_movement(corridor_platforms, depth - 3)
+                left_forcefield += depth - 3
+                right_forcefield += depth - 3
                 self.rect.left = LEFT_BOUND
 
     
     def Normal_Movement(self, type):
+        global left_forcefield, right_forcefield
         if type == "Forward":
             self.rect.x += 6
             if self.at_forcefield == False:
                 sprite_group_movement(corridor_background, -1)
                 sprite_group_movement(corridor_floor, -3)
                 sprite_group_movement(corridor_platforms, -3)
+                left_forcefield -= 3
+                right_forcefield -= 3
         elif type == "Backward":
             self.rect.x -= 5
             if self.at_forcefield == False:
                 sprite_group_movement(corridor_background, 1)
                 sprite_group_movement(corridor_floor, 3)
                 sprite_group_movement(corridor_platforms, 3)
+                left_forcefield += 3
+                right_forcefield += 3
         elif type == "Forward Dash":
             for dash_sixth in range(6):
                 self.rect.x += (DASH_DISTANCE / 6)
@@ -129,11 +139,15 @@ class Player(pygame.sprite.Sprite):
             sprite_group_movement(corridor_background, -3)
             sprite_group_movement(corridor_floor, -5)
             sprite_group_movement(corridor_platforms, -5)
+            left_forcefield -= 5
+            right_forcefield -= 5
         elif type == "Backward Background":
             self.rect.x += 5 
             sprite_group_movement(corridor_background, 3)
             sprite_group_movement(corridor_floor, 5)
             sprite_group_movement(corridor_platforms, 5)
+            left_forcefield += 5
+            right_forcefield += 5
 
     def update(self):
         self.Movement()

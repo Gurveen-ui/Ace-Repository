@@ -26,42 +26,50 @@ class Player(pygame.sprite.Sprite):
         self.jump_count = 0
         self.last_dash_time = -5000
         self.dash_cooldown = 5000
-        self.previous_frame_rect = self.rect
+        self.previous_frame_bottom = self.rect.bottom
 
 
 
     def Movement(self):
-        self.previous_frame_rect = self.rect
+        self.previous_frame_bottom = self.rect.bottom
         keys = pygame.key.get_pressed()
-        current_time = pygame.time.get_ticks()
+        self.current_time = pygame.time.get_ticks()
         if keys[pygame.K_d] and keys[pygame.K_LCTRL]:
-            if current_time - self.last_dash_time > self.dash_cooldown:
-                self.rect.x += DASH_DISTANCE
-                self.last_dash_time = current_time
+            if self.current_time - self.last_dash_time > self.dash_cooldown:
+                self.Normal_Movement("Forward Dash")
             else:
-                self.rect.x += 6
-                sprite_group_movement(corridor_background, -1)
-                sprite_group_movement(corridor_floor, -3)
-                sprite_group_movement(corridor_platforms, -3)
+                self.Normal_Movement("Forward")
         elif keys[pygame.K_d]:
-            self.rect.x += 6
-            sprite_group_movement(corridor_background, -1)
-            sprite_group_movement(corridor_floor, -3)
-            sprite_group_movement(corridor_platforms, -3)
+            self.Normal_Movement("Forward")
         if keys[pygame.K_a] and keys[pygame.K_LCTRL]:
-            if current_time - self.last_dash_time > self.dash_cooldown:
-                self.rect.x -= DASH_DISTANCE
-                self.last_dash_time = current_time
+            if self.current_time - self.last_dash_time > self.dash_cooldown:
+                self.Normal_Movement("Backward Dash")
             else:
-                self.rect.x -= 5
-                sprite_group_movement(corridor_background, 1)
-                sprite_group_movement(corridor_floor, 3)
-                sprite_group_movement(corridor_platforms, 3)
+                self.Normal_Movement("Backward")
         elif keys[pygame.K_a]:
-            self.rect.x -= 5
-            sprite_group_movement(corridor_background, 1)
-            sprite_group_movement(corridor_floor, 3)
-            sprite_group_movement(corridor_platforms, 3)
+            self.Normal_Movement("Backward")
+
+    
+    def Apply_Gravity(self):
+        self.rect.y += self.gravity
+        self.gravity += 1
+        if self.rect.bottom >= GROUND_LEVEL:
+            self.rect.bottom = GROUND_LEVEL
+            self.gravity = 0
+            self.jump_count = 0
+
+    def Platform_Collisions(self, platforms):
+        keys = pygame.key.get_pressed()
+        for sprite in platforms:
+            if self.rect.colliderect(sprite.rect):
+                if self.previous_frame_bottom <= sprite.rect.top:
+                    self.rect.bottom = sprite.rect.top
+                    self.gravity = 0
+                    self.jump_count = 0
+                    if keys[pygame.K_c]:
+                        self.rect.bottom += 1
+                
+    def Check_Boundaries(self):
         if self.rect.right > RIGHT_BOUND:
             depth = self.rect.right - RIGHT_BOUND
             sprite_group_movement(corridor_background, int(((-depth / 3) * 2) + 1))
@@ -76,21 +84,28 @@ class Player(pygame.sprite.Sprite):
             self.rect.left = LEFT_BOUND
 
     
-    def Apply_Gravity(self):
-        self.rect.y += self.gravity
-        self.gravity += 1
-        if self.rect.bottom >= GROUND_LEVEL:
-            self.rect.bottom = GROUND_LEVEL
-            self.gravity = 0
-            self.jump_count = 0
-
-    def Platform_Collisions(self, platforms):
-        pass
-
-
-
-
-                
+    def Normal_Movement(self, type):
+        if type == "Forward":
+            self.rect.x += 6
+            sprite_group_movement(corridor_background, -1)
+            sprite_group_movement(corridor_floor, -3)
+            sprite_group_movement(corridor_platforms, -3)
+        elif type == "Backward":
+            self.rect.x -= 5 
+            sprite_group_movement(corridor_background, 1)
+            sprite_group_movement(corridor_floor, 3)
+            sprite_group_movement(corridor_platforms, 3)
+        elif type == "Forward Dash":
+            for dash_sixth in range(6):
+                self.rect.x += (DASH_DISTANCE / 6)
+                self.Check_Boundaries()
+            self.last_dash_time = self.current_time
+        elif type == "Backward Dash":
+            for dash_sixth in range(6):
+                self.rect.x -= (DASH_DISTANCE / 6)
+                self.Check_Boundaries()
+                self.last_dash_time = self.current_time
+        self.Check_Boundaries()
 
     def update(self):
         self.Movement()

@@ -10,14 +10,18 @@ vector = pygame.math.Vector2
 FLOOR_HEIGHT = 38
 
 GROUND_LEVEL = 592 # point at which gravity cant pull player below
-LEFT_BOUND = 160 # x value player cant go past
-RIGHT_BOUND = 1120 # x value player cant go past
+LEFT_BOUND = 80 # x value player cant go past
+RIGHT_BOUND = 1200 # x value player cant go past
+CENTER_LEFT_BOUND = 576
+CENTER_RIGHT_BOUND = 704
 DASH_DISTANCE = 300
 LOWEST_PLATFORM = 450
+NORMAL_MOVEMENT_SPEED = 9
+BACKGROUND_MOVEMENT_SPEED = 7
 SCREEN_WIDTH = Screen.get_width()
 
 left_forcefield = 0
-right_forcefield = 9000
+right_forcefield = 8960 #that is 7 floors
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
@@ -52,7 +56,7 @@ class Player(pygame.sprite.Sprite):
                 self.Normal_Movement("Backward")
         elif keys[pygame.K_a]:
             self.Normal_Movement("Backward")
-        self.Check_Boundaries()
+        self.Check_Boundaries(None)
 
     
     def Apply_Gravity(self):
@@ -74,7 +78,7 @@ class Player(pygame.sprite.Sprite):
                     if keys[pygame.K_c]:
                         self.rect.bottom += 1
                 
-    def Check_Boundaries(self):
+    def Check_Boundaries(self, type):
         global left_forcefield, right_forcefield
         if self.rect.left <= left_forcefield:
             self.rect.left = left_forcefield
@@ -84,51 +88,108 @@ class Player(pygame.sprite.Sprite):
             self.at_forcefield = True
         else:
             self.at_forcefield = False
-            if self.rect.right > RIGHT_BOUND:
-                depth = self.rect.right - RIGHT_BOUND
-                sprite_group_movement(corridor_background, int(-depth / 3))
-                sprite_group_movement(corridor_floor, -depth)
-                sprite_group_movement(corridor_platforms, -depth)
-                left_forcefield += -depth
-                right_forcefield += -depth
-                self.rect.right = RIGHT_BOUND
-            elif self.rect.left < LEFT_BOUND:
-                depth = LEFT_BOUND - self.rect.left
-                sprite_group_movement(corridor_background, int(depth / 3))
-                sprite_group_movement(corridor_floor, depth)
-                sprite_group_movement(corridor_platforms, depth)
-                left_forcefield += depth
-                right_forcefield += depth
-                self.rect.left = LEFT_BOUND
+            if type == "Right":
+                if self.rect.right > CENTER_RIGHT_BOUND:
+                    depth = self.rect.right - CENTER_RIGHT_BOUND
+                    sprite_group_movement(corridor_background, int(-depth / 3))
+                    sprite_group_movement(corridor_floor, -depth)
+                    sprite_group_movement(corridor_platforms, -depth)
+                    left_forcefield += -depth
+                    right_forcefield += -depth
+                    self.rect.right = CENTER_RIGHT_BOUND
+            elif type == "Left":
+                if self.rect.left < CENTER_LEFT_BOUND:
+                    depth = CENTER_LEFT_BOUND - self.rect.left
+                    sprite_group_movement(corridor_background, int(depth / 3))
+                    sprite_group_movement(corridor_floor, depth)
+                    sprite_group_movement(corridor_platforms, depth)
+                    left_forcefield += depth
+                    right_forcefield += depth
+                    self.rect.left = CENTER_LEFT_BOUND
+            else:
+                if self.rect.right > RIGHT_BOUND:
+                    depth = self.rect.right - RIGHT_BOUND
+                    sprite_group_movement(corridor_background, int(-depth / 3))
+                    sprite_group_movement(corridor_floor, -depth)
+                    sprite_group_movement(corridor_platforms, -depth)
+                    left_forcefield += -depth
+                    right_forcefield += -depth
+                    self.rect.right = RIGHT_BOUND
+                elif self.rect.left < LEFT_BOUND:
+                    depth = LEFT_BOUND - self.rect.left
+                    sprite_group_movement(corridor_background, int(depth / 3))
+                    sprite_group_movement(corridor_floor, depth)
+                    sprite_group_movement(corridor_platforms, depth)
+                    left_forcefield += depth
+                    right_forcefield += depth
+                    self.rect.left = LEFT_BOUND
     
     def Normal_Movement(self, type):
         global left_forcefield, right_forcefield
-        if type == "Forward":
-            self.rect.x += 6
-            if self.at_forcefield == False:
-                sprite_group_movement(corridor_background, -1)
-                sprite_group_movement(corridor_floor, -3)
-                sprite_group_movement(corridor_platforms, -3)
-                left_forcefield -= 3
-                right_forcefield -= 3
-        elif type == "Backward":
-            self.rect.x -= 6
-            if self.at_forcefield == False:
-                sprite_group_movement(corridor_background, 1)
-                sprite_group_movement(corridor_floor, 3)
-                sprite_group_movement(corridor_platforms, 3)
-                left_forcefield += 3
-                right_forcefield += 3
-        elif type == "Forward Dash":
-            for dash_sixth in range(6):
-                self.rect.x += (DASH_DISTANCE / 6)
-                self.Check_Boundaries()
-            self.last_dash_time = self.current_time
-        elif type == "Backward Dash":
-            for dash_sixth in range(6):
-                self.rect.x -= (DASH_DISTANCE / 6)
-                self.Check_Boundaries()
+        if left_forcefield < 0 and right_forcefield > 1280:
+            if type == "Forward":
+                if self.at_forcefield == False:
+                    sprite_group_movement(corridor_background, -BACKGROUND_MOVEMENT_SPEED)
+                    sprite_group_movement(corridor_floor, -NORMAL_MOVEMENT_SPEED)
+                    sprite_group_movement(corridor_platforms, -NORMAL_MOVEMENT_SPEED)
+                    left_forcefield -= NORMAL_MOVEMENT_SPEED
+                    right_forcefield -= NORMAL_MOVEMENT_SPEED
+            elif type == "Backward":
+                if self.at_forcefield == False:
+                    sprite_group_movement(corridor_background, BACKGROUND_MOVEMENT_SPEED)
+                    sprite_group_movement(corridor_floor, NORMAL_MOVEMENT_SPEED)
+                    sprite_group_movement(corridor_platforms, NORMAL_MOVEMENT_SPEED)
+                    left_forcefield += NORMAL_MOVEMENT_SPEED
+                    right_forcefield += NORMAL_MOVEMENT_SPEED
+            elif type == "Forward Dash":
+                for dash_sixth in range(6):
+                    sprite_group_movement(corridor_background, -(DASH_DISTANCE / 18))
+                    sprite_group_movement(corridor_floor, -(DASH_DISTANCE / 6))
+                    sprite_group_movement(corridor_platforms, -(DASH_DISTANCE / 6))
+                    left_forcefield -= (DASH_DISTANCE / 6)
+                    right_forcefield -= (DASH_DISTANCE / 6)
                 self.last_dash_time = self.current_time
+            elif type == "Backward Dash":
+                for dash_sixth in range(6):
+                    sprite_group_movement(corridor_background, (DASH_DISTANCE / 18))
+                    sprite_group_movement(corridor_floor, (DASH_DISTANCE / 6))
+                    sprite_group_movement(corridor_platforms, (DASH_DISTANCE / 6))
+                    left_forcefield += (DASH_DISTANCE / 6)
+                    right_forcefield += (DASH_DISTANCE / 6)
+                    self.last_dash_time = self.current_time
+        elif left_forcefield >= 0:
+            if type == "Forward":
+                self.rect.x += NORMAL_MOVEMENT_SPEED
+                self.Check_Boundaries("Right")
+            elif type == "Backward":
+                self.rect.x -= NORMAL_MOVEMENT_SPEED
+            elif type == "Forward Dash":
+                for dash_sixth in range(6):
+                    self.rect.x += (DASH_DISTANCE / 6)
+                    self.Check_Boundaries("Right")
+                self.last_dash_time = self.current_time
+            elif type == "Backward Dash":
+                for dash_sixth in range(6):
+                    self.rect.x -= (DASH_DISTANCE / 6)
+                    self.Check_Boundaries(None)
+                self.last_dash_time = self.current_time
+        elif right_forcefield <= 1280:
+            if type == "Forward":
+                self.rect.x += NORMAL_MOVEMENT_SPEED
+            elif type == "Backward":
+                self.rect.x -= NORMAL_MOVEMENT_SPEED
+                self.Check_Boundaries("Left")
+            elif type == "Forward Dash":
+                for dash_sixth in range(6):
+                    self.rect.x += (DASH_DISTANCE / 6)
+                    self.Check_Boundaries(None)
+                self.last_dash_time = self.current_time
+            elif type == "Backward Dash":
+                for dash_sixth in range(6):
+                    self.rect.x -= (DASH_DISTANCE / 6)
+                    self.Check_Boundaries("Left")
+                self.last_dash_time = self.current_time
+
 
     def update(self):
         self.Movement()
@@ -224,5 +285,6 @@ while True:
     corridor_background.update()
     corridor_floor.update() 
     player.update()  
+    #pygame.draw.line(Screen, "red", (640, 0), (640, 720), 5) # center line
     pygame.display.update()
     clock.tick(60)

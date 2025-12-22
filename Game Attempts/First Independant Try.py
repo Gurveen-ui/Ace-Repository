@@ -10,14 +10,14 @@ vector = pygame.math.Vector2
 FLOOR_HEIGHT = 38
 
 GROUND_LEVEL = 592 # point at which gravity cant pull player below
-LEFT_BOUND = 80 # x value player cant go past
-RIGHT_BOUND = 1200 # x value player cant go past
+LEFT_BOUND = 160 # x value player cant go past
+RIGHT_BOUND = 1120 # x value player cant go past
 DASH_DISTANCE = 300
 LOWEST_PLATFORM = 450
 SCREEN_WIDTH = Screen.get_width()
 
-left_forcefield = -1000
-right_forcefield = 5000
+left_forcefield = 0
+right_forcefield = 9000
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
@@ -52,10 +52,6 @@ class Player(pygame.sprite.Sprite):
                 self.Normal_Movement("Backward")
         elif keys[pygame.K_a]:
             self.Normal_Movement("Backward")
-        if keys[pygame.K_i] and self.rect.left > LEFT_BOUND and self.rect.right < right_forcefield:
-            self.Normal_Movement("Forward Background")
-        elif keys[pygame.K_u] and self.rect.right < RIGHT_BOUND and self.rect.left > left_forcefield:
-            self.Normal_Movement("Backward Background")
         self.Check_Boundaries()
 
     
@@ -90,19 +86,19 @@ class Player(pygame.sprite.Sprite):
             self.at_forcefield = False
             if self.rect.right > RIGHT_BOUND:
                 depth = self.rect.right - RIGHT_BOUND
-                sprite_group_movement(corridor_background, int(((-depth / 3) * 2) + 1))
-                sprite_group_movement(corridor_floor, -depth + 3)
-                sprite_group_movement(corridor_platforms, -depth + 3)
-                left_forcefield += -depth + 3
-                right_forcefield += -depth + 3
+                sprite_group_movement(corridor_background, int(-depth / 3))
+                sprite_group_movement(corridor_floor, -depth)
+                sprite_group_movement(corridor_platforms, -depth)
+                left_forcefield += -depth
+                right_forcefield += -depth
                 self.rect.right = RIGHT_BOUND
             elif self.rect.left < LEFT_BOUND:
                 depth = LEFT_BOUND - self.rect.left
-                sprite_group_movement(corridor_background, int(((depth / 3) * 2) - 1))
-                sprite_group_movement(corridor_floor, depth - 3)
-                sprite_group_movement(corridor_platforms, depth - 3)
-                left_forcefield += depth - 3
-                right_forcefield += depth - 3
+                sprite_group_movement(corridor_background, int(depth / 3))
+                sprite_group_movement(corridor_floor, depth)
+                sprite_group_movement(corridor_platforms, depth)
+                left_forcefield += depth
+                right_forcefield += depth
                 self.rect.left = LEFT_BOUND
     
     def Normal_Movement(self, type):
@@ -116,7 +112,7 @@ class Player(pygame.sprite.Sprite):
                 left_forcefield -= 3
                 right_forcefield -= 3
         elif type == "Backward":
-            self.rect.x -= 5
+            self.rect.x -= 6
             if self.at_forcefield == False:
                 sprite_group_movement(corridor_background, 1)
                 sprite_group_movement(corridor_floor, 3)
@@ -133,20 +129,6 @@ class Player(pygame.sprite.Sprite):
                 self.rect.x -= (DASH_DISTANCE / 6)
                 self.Check_Boundaries()
                 self.last_dash_time = self.current_time
-        elif type == "Forward Background":
-            self.rect.x -= 5
-            sprite_group_movement(corridor_background, -3)
-            sprite_group_movement(corridor_floor, -5)
-            sprite_group_movement(corridor_platforms, -5)
-            left_forcefield -= 5
-            right_forcefield -= 5
-        elif type == "Backward Background":
-            self.rect.x += 5 
-            sprite_group_movement(corridor_background, 3)
-            sprite_group_movement(corridor_floor, 5)
-            sprite_group_movement(corridor_platforms, 5)
-            left_forcefield += 5
-            right_forcefield += 5
 
     def update(self):
         self.Movement()
@@ -213,7 +195,7 @@ class Corridor_Platform(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(bottomleft = (bottomleft_x, bottomleft_y))
 
 corridor_platforms = pygame.sprite.Group()
-corridor_platforms.add(Corridor_Platform(-400,350), Corridor_Platform(400,450), Corridor_Platform(800,375), Corridor_Platform(1200,300), Corridor_Platform(1800,425),
+corridor_platforms.add(Corridor_Platform(400,450), Corridor_Platform(800,375), Corridor_Platform(1200,300), Corridor_Platform(1800,425),
                        Corridor_Platform(2500,325), Corridor_Platform(2900,200), Corridor_Platform(3000,450), Corridor_Platform(3500,250), Corridor_Platform(4000,400))
 
 def sprite_group_movement(sprite_list, x_value):

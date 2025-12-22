@@ -148,6 +148,7 @@ class Player(pygame.sprite.Sprite):
                     sprite_group_movement(corridor_platforms, -(DASH_DISTANCE / 6))
                     left_forcefield -= (DASH_DISTANCE / 6)
                     right_forcefield -= (DASH_DISTANCE / 6)
+                    self.Check_Boundaries(None)
                 self.last_dash_time = self.current_time
             elif type == "Backward Dash":
                 for dash_sixth in range(6):
@@ -156,7 +157,8 @@ class Player(pygame.sprite.Sprite):
                     sprite_group_movement(corridor_platforms, (DASH_DISTANCE / 6))
                     left_forcefield += (DASH_DISTANCE / 6)
                     right_forcefield += (DASH_DISTANCE / 6)
-                    self.last_dash_time = self.current_time
+                    self.Check_Boundaries(None)
+                self.last_dash_time = self.current_time
         elif left_forcefield >= 0:
             if type == "Forward":
                 self.rect.x += NORMAL_MOVEMENT_SPEED

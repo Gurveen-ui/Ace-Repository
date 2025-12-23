@@ -21,12 +21,31 @@ BACKGROUND_MOVEMENT_SPEED = 7
 SCREEN_WIDTH = Screen.get_width()
 
 left_forcefield = 0
-right_forcefield = 8960 #that is 7 floors
+right_forcefield = 8960 #7 floors length
+
+player_forward_spritesheet = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Test Images\\Player\\Player Forward Animation.png").convert_alpha()
+player_forward_animation_list = []
+
+player_backward_spritesheet = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Test Images\\Player\\Player Backward Animation.png").convert_alpha()
+player_backward_animation_list = []
+
+def get_image_from_sheet(list,sheet,width,height):
+    sprite_count = 0
+    spritesheet_width = sheet.get_rect().width
+    for sprites in range(0, int(spritesheet_width / width)):
+        image = pygame.Surface((width,height)).convert_alpha()
+        image.blit(sheet, (0,0), ((width * sprite_count,0),((width * sprite_count) + width ,height)))
+        list.append(image)
+        sprite_count += 1
+    return list
+
+player_forward_animation_list = get_image_from_sheet(player_forward_animation_list, player_forward_spritesheet, 128, 128)
+player_backward_animation_list = get_image_from_sheet(player_backward_animation_list, player_backward_spritesheet, 128, 128)
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.image = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Test Images\\Test Player Resized.png").convert_alpha()
+        self.image = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Test Images\\Player\\Test Player Still.png").convert_alpha()
         self.rect = self.image.get_rect(bottomleft = (LEFT_BOUND,GROUND_LEVEL))
 
         self.gravity = 0
@@ -35,6 +54,7 @@ class Player(pygame.sprite.Sprite):
         self.dash_cooldown = 5000
         self.previous_frame_bottom = self.rect.bottom
         self.at_forcefield = False
+        self.horizontal_animation_count = 0
 
 
 
@@ -49,7 +69,7 @@ class Player(pygame.sprite.Sprite):
                 self.Normal_Movement("Forward")
         elif keys[pygame.K_d]:
             self.Normal_Movement("Forward")
-        elif keys[pygame.K_a] and keys[pygame.K_LCTRL]:
+        if keys[pygame.K_a] and keys[pygame.K_LCTRL]:
             if self.current_time - self.last_dash_time > self.dash_cooldown:
                 self.Normal_Movement("Backward Dash")
             else:
@@ -75,7 +95,7 @@ class Player(pygame.sprite.Sprite):
                     self.rect.bottom = sprite.rect.top
                     self.gravity = 0
                     self.jump_count = 0
-                    if keys[pygame.K_c]:
+                    if keys[pygame.K_c] or keys[pygame.K_s]:
                         self.rect.bottom += 1
                 
     def Check_Boundaries(self, type):
@@ -177,6 +197,7 @@ class Player(pygame.sprite.Sprite):
                 self.last_dash_time = self.current_time
         elif right_forcefield <= 1280:
             if type == "Forward":
+                self.forward_animation()
                 self.rect.x += NORMAL_MOVEMENT_SPEED
             elif type == "Backward":
                 self.rect.x -= NORMAL_MOVEMENT_SPEED
@@ -191,12 +212,30 @@ class Player(pygame.sprite.Sprite):
                     self.rect.x -= (DASH_DISTANCE / 6)
                     self.Check_Boundaries("Left")
                 self.last_dash_time = self.current_time
+    
+    def Update_Animation(self):
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_d] and keys[pygame.K_a]:
+            pass
+        elif keys[pygame.K_d]:
+            self.Horizontal_Movement_Animation(player_forward_animation_list)
+        elif keys[pygame.K_a]:
+            self.Horizontal_Movement_Animation(player_backward_animation_list)
+    
+    def Horizontal_Movement_Animation(self, list):
+        if self.image != list[(len(list) - 1)]:
+            self.horizontal_animation_count += 0.2
+            self.image = list[int(self.horizontal_animation_count)]
+            if self.horizontal_animation_count >= (len(list) - 1):
+                self.horizontal_animation_count = 0
+        
 
 
     def update(self):
         self.Movement()
         self.Apply_Gravity()
         self.Platform_Collisions(corridor_platforms)
+        self.Update_Animation()
 
 
 

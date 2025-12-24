@@ -229,7 +229,6 @@ class Player(pygame.sprite.Sprite):
                 self.last_dash_time = self.current_time
         elif right_forcefield <= 1280:
             if type == "Forward":
-                self.forward_animation()
                 self.rect.x += NORMAL_MOVEMENT_SPEED
             elif type == "Backward":
                 self.rect.x -= NORMAL_MOVEMENT_SPEED

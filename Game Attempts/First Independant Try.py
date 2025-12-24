@@ -37,6 +37,12 @@ player_upward_animation_list = []
 player_downward_spritesheet = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Test Images\\Player\\Player Downward Animation.png").convert_alpha()
 player_downward_animation_list = []
 
+player_forward_running_spritesheet = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Test Images\\Player\\Player Forward Running Animation.png").convert_alpha()
+player_forward_running_animation_list = []
+
+player_backward_running_spritesheet = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Test Images\\Player\\Player Backward Running Animation.png").convert_alpha()
+player_backward_running_animation_list = []
+
 def get_image_from_sheet(list,sheet,width,height):
     sprite_count = 0
     spritesheet_width = sheet.get_rect().width
@@ -51,6 +57,8 @@ player_forward_animation_list = get_image_from_sheet(player_forward_animation_li
 player_backward_animation_list = get_image_from_sheet(player_backward_animation_list, player_backward_spritesheet, 128, 128)
 player_upward_animation_list = get_image_from_sheet(player_upward_animation_list, player_upward_spritesheet, 128, 128)
 player_downward_animation_list = get_image_from_sheet(player_downward_animation_list, player_downward_spritesheet, 128, 128)
+player_forward_running_animation_list = get_image_from_sheet(player_forward_running_animation_list, player_forward_running_spritesheet, 128, 128)
+player_backward_running_animation_list = get_image_from_sheet(player_backward_running_animation_list, player_backward_running_spritesheet, 128, 128)
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
@@ -69,6 +77,7 @@ class Player(pygame.sprite.Sprite):
         self.on_ground = False
         self.on_platform = False
         self.on_platform_name = self
+        self.running = False
 
 
 
@@ -244,23 +253,37 @@ class Player(pygame.sprite.Sprite):
             elif self.gravity > 0:
                 self.Vertical_Movement_Animation(player_downward_animation_list)
             else:
+                self.running = False
+                self.horizontal_animation_count = 0
+                self.vertical_animation_count = 0
                 self.image = player_still_image
         else:
             if keys[pygame.K_d] and keys[pygame.K_a]:
+                self.running = False
+                self.horizontal_animation_count = 0
+                self.vertical_animation_count = 0
                 self.image = player_still_image
-                pass
             elif keys[pygame.K_d]:
-                self.Horizontal_Movement_Animation(player_forward_animation_list)
+                self.Horizontal_Movement_Animation(player_forward_animation_list, player_forward_running_animation_list)
             elif keys[pygame.K_a]:
-                self.Horizontal_Movement_Animation(player_backward_animation_list)
+                self.Horizontal_Movement_Animation(player_backward_animation_list, player_backward_running_animation_list)
             else:
+                self.running = False
+                self.horizontal_animation_count = 0
+                self.vertical_animation_count = 0
                 self.image = player_still_image
     
-    def Horizontal_Movement_Animation(self, list):
-        if self.image != list[(len(list) - 1)]:
+    def Horizontal_Movement_Animation(self, list, running_list):
+        if self.image != list[(len(list) - 1)] and self.running == False:
             self.horizontal_animation_count += 0.2
             self.image = list[int(self.horizontal_animation_count)]
             if self.horizontal_animation_count >= (len(list) - 1):
+                self.running = True
+                self.horizontal_animation_count = 0
+        if self.running == True:
+            self.horizontal_animation_count += 0.3
+            self.image = running_list[int(self.horizontal_animation_count)]
+            if self.horizontal_animation_count >= (len(running_list) - 1):
                 self.horizontal_animation_count = 0
     
     def Vertical_Movement_Animation(self, list):

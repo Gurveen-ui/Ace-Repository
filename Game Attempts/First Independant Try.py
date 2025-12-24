@@ -389,6 +389,6 @@ while True:
     corridor_background.update()
     corridor_floor.update() 
     player.update()  
-    #pygame.draw.line(Screen, "red", (640, 0), (640, 720), 5) # center line
+    #wpygame.draw.line(Screen, "red", (640, 0), (640, 720), 5) # center line
     pygame.display.update()
     clock.tick(60)

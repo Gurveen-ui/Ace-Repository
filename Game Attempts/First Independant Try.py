@@ -23,11 +23,19 @@ SCREEN_WIDTH = Screen.get_width()
 left_forcefield = 0
 right_forcefield = 8960 #7 floors length
 
+player_still_image = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Test Images\\Player\\Test Player Still.png").convert_alpha()
+
 player_forward_spritesheet = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Test Images\\Player\\Player Forward Animation.png").convert_alpha()
 player_forward_animation_list = []
 
 player_backward_spritesheet = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Test Images\\Player\\Player Backward Animation.png").convert_alpha()
 player_backward_animation_list = []
+
+player_upward_spritesheet = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Test Images\\Player\\Player Upward Animation.png").convert_alpha()
+player_upward_animation_list = []
+
+player_downward_spritesheet = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Test Images\\Player\\Player Downward Animation.png").convert_alpha()
+player_downward_animation_list = []
 
 def get_image_from_sheet(list,sheet,width,height):
     sprite_count = 0
@@ -41,11 +49,13 @@ def get_image_from_sheet(list,sheet,width,height):
 
 player_forward_animation_list = get_image_from_sheet(player_forward_animation_list, player_forward_spritesheet, 128, 128)
 player_backward_animation_list = get_image_from_sheet(player_backward_animation_list, player_backward_spritesheet, 128, 128)
+player_upward_animation_list = get_image_from_sheet(player_upward_animation_list, player_upward_spritesheet, 128, 128)
+player_downward_animation_list = get_image_from_sheet(player_downward_animation_list, player_downward_spritesheet, 128, 128)
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.image = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Test Images\\Player\\Test Player Still.png").convert_alpha()
+        self.image = player_still_image
         self.rect = self.image.get_rect(bottomleft = (LEFT_BOUND,GROUND_LEVEL))
 
         self.gravity = 0
@@ -55,6 +65,10 @@ class Player(pygame.sprite.Sprite):
         self.previous_frame_bottom = self.rect.bottom
         self.at_forcefield = False
         self.horizontal_animation_count = 0
+        self.vertical_animation_count = 0
+        self.on_ground = False
+        self.on_platform = False
+        self.on_platform_name = self
 
 
 
@@ -84,8 +98,11 @@ class Player(pygame.sprite.Sprite):
         self.gravity += 1
         if self.rect.bottom >= GROUND_LEVEL:
             self.rect.bottom = GROUND_LEVEL
+            self.on_ground = True
             self.gravity = 0
             self.jump_count = 0
+        else:
+            self.on_ground = False
 
     def Platform_Collisions(self, platforms):
         keys = pygame.key.get_pressed()
@@ -94,9 +111,15 @@ class Player(pygame.sprite.Sprite):
                 if self.previous_frame_bottom <= sprite.rect.top:
                     self.rect.bottom = sprite.rect.top
                     self.gravity = 0
+                    self.on_platform_name = sprite
+                    self.on_platform = True
                     self.jump_count = 0
                     if keys[pygame.K_c] or keys[pygame.K_s]:
                         self.rect.bottom += 1
+                        self.on_platform = False
+        if self.rect.bottom != self.on_platform_name.rect.top:
+            self.on_platform = False
+            
                 
     def Check_Boundaries(self, type):
         global left_forcefield, right_forcefield
@@ -215,12 +238,23 @@ class Player(pygame.sprite.Sprite):
     
     def Update_Animation(self):
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_d] and keys[pygame.K_a]:
-            pass
-        elif keys[pygame.K_d]:
-            self.Horizontal_Movement_Animation(player_forward_animation_list)
-        elif keys[pygame.K_a]:
-            self.Horizontal_Movement_Animation(player_backward_animation_list)
+        if self.on_ground == False and self.on_platform == False:
+            if self.gravity < 0:
+                self.Vertical_Movement_Animation(player_upward_animation_list)
+            elif self.gravity > 0:
+                self.Vertical_Movement_Animation(player_downward_animation_list)
+            else:
+                self.image = player_still_image
+        else:
+            if keys[pygame.K_d] and keys[pygame.K_a]:
+                self.image = player_still_image
+                pass
+            elif keys[pygame.K_d]:
+                self.Horizontal_Movement_Animation(player_forward_animation_list)
+            elif keys[pygame.K_a]:
+                self.Horizontal_Movement_Animation(player_backward_animation_list)
+            else:
+                self.image = player_still_image
     
     def Horizontal_Movement_Animation(self, list):
         if self.image != list[(len(list) - 1)]:
@@ -228,6 +262,13 @@ class Player(pygame.sprite.Sprite):
             self.image = list[int(self.horizontal_animation_count)]
             if self.horizontal_animation_count >= (len(list) - 1):
                 self.horizontal_animation_count = 0
+    
+    def Vertical_Movement_Animation(self, list):
+        if self.image != list[(len(list) - 1)]:
+            self.vertical_animation_count += 0.25
+            self.image = list[int(self.vertical_animation_count)]
+            if self.vertical_animation_count >= (len(list) - 1):
+                self.vertical_animation_count = 0
         
 
 

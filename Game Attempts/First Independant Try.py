@@ -16,6 +16,7 @@ CENTER_LEFT_BOUND = 576
 CENTER_RIGHT_BOUND = 704
 DASH_DISTANCE = 300
 LOWEST_PLATFORM = 450
+PLATFORM_HEIGHT = 100
 NORMAL_MOVEMENT_SPEED = 9
 BACKGROUND_MOVEMENT_SPEED = 7
 SCREEN_WIDTH = Screen.get_width()
@@ -333,7 +334,7 @@ class Corridor_Floor(pygame.sprite.Sprite):
     def __init__(self, left_x_pos):
         super().__init__()
         self.left_x_pos = left_x_pos #-1280, 0, 1280
-        self.image = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Test Images\\Test Floor.png").convert_alpha()
+        self.image = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Test Images\\Floor Spritesheet.png").convert_alpha()
         self.rect = self.image.get_rect(bottomleft = (left_x_pos,720))
 
     def destroy(self):
@@ -354,21 +355,20 @@ corridor_floor = pygame.sprite.Group()
 corridor_floor.add(Corridor_Floor(0),Corridor_Floor(SCREEN_WIDTH),Corridor_Floor(-SCREEN_WIDTH))
 
 class Corridor_Platform(pygame.sprite.Sprite):
-    def __init__(self, bottomleft_x, bottomleft_y):
+    def __init__(self, topleft_x, topleft_y):
         super().__init__()
-        self.image = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Test Images\\Test Platform.png").convert_alpha()
-        self.rect = self.image.get_rect(bottomleft = (bottomleft_x, bottomleft_y))
+        self.image = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Test Images\\Platform.png").convert_alpha()
+        self.rect = self.image.get_rect(topleft = (topleft_x, topleft_y))
 
 corridor_platforms = pygame.sprite.Group()
-corridor_platforms.add(Corridor_Platform(400,450), Corridor_Platform(800,375), Corridor_Platform(1200,300), Corridor_Platform(1800,425),
-                       Corridor_Platform(2500,325), Corridor_Platform(2900,200), Corridor_Platform(3000,450), Corridor_Platform(3500,250), Corridor_Platform(4000,400))
+corridor_platforms.add(Corridor_Platform(400,400), Corridor_Platform(800,325), Corridor_Platform(1200,250), Corridor_Platform(1800,375),
+                       Corridor_Platform(2500,275), Corridor_Platform(2900,150), Corridor_Platform(3000,400), Corridor_Platform(3500,200), Corridor_Platform(4000,350))
 
 def sprite_group_movement(sprite_list, x_value):
     for sprite in sprite_list:
         sprite.rect.x = sprite.rect.x + x_value
 
 clock = pygame.time.Clock()
-
 while True:
     for event in pygame.event.get():
         if event.type == pygame.KEYDOWN:

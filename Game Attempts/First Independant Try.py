@@ -309,7 +309,7 @@ class Corridor_Background(pygame.sprite.Sprite):
     def __init__(self, left_x_pos):
         super().__init__()
         self.left_x_pos = left_x_pos #-1280, 0, 1280
-        self.image = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Test Images\\Test Background Resized.png").convert_alpha()
+        self.image = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Test Images\\Background Spritesheet.png").convert_alpha()
         self.rect = self.image.get_rect(topleft = (left_x_pos,0))
 
     def destroy(self):

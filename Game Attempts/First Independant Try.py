@@ -146,6 +146,7 @@ class Player(pygame.sprite.Sprite):
                     depth = self.rect.right - CENTER_RIGHT_BOUND
                     sprite_group_movement(corridor_background, int(-depth / 3))
                     sprite_group_movement(corridor_floor, -depth)
+                    sprite_group_movement(corridor_door, -depth)
                     sprite_group_movement(corridor_platforms, -depth)
                     left_forcefield += -depth
                     right_forcefield += -depth
@@ -155,6 +156,7 @@ class Player(pygame.sprite.Sprite):
                     depth = CENTER_LEFT_BOUND - self.rect.left
                     sprite_group_movement(corridor_background, int(depth / 3))
                     sprite_group_movement(corridor_floor, depth)
+                    sprite_group_movement(corridor_door, depth)
                     sprite_group_movement(corridor_platforms, depth)
                     left_forcefield += depth
                     right_forcefield += depth
@@ -164,6 +166,7 @@ class Player(pygame.sprite.Sprite):
                     depth = self.rect.right - RIGHT_BOUND
                     sprite_group_movement(corridor_background, int(-depth / 3))
                     sprite_group_movement(corridor_floor, -depth)
+                    sprite_group_movement(corridor_door, -depth)
                     sprite_group_movement(corridor_platforms, -depth)
                     left_forcefield += -depth
                     right_forcefield += -depth
@@ -172,6 +175,7 @@ class Player(pygame.sprite.Sprite):
                     depth = LEFT_BOUND - self.rect.left
                     sprite_group_movement(corridor_background, int(depth / 3))
                     sprite_group_movement(corridor_floor, depth)
+                    sprite_group_movement(corridor_door, depth)
                     sprite_group_movement(corridor_platforms, depth)
                     left_forcefield += depth
                     right_forcefield += depth
@@ -184,6 +188,7 @@ class Player(pygame.sprite.Sprite):
                 if self.at_forcefield == False:
                     sprite_group_movement(corridor_background, -BACKGROUND_MOVEMENT_SPEED)
                     sprite_group_movement(corridor_floor, -NORMAL_MOVEMENT_SPEED)
+                    sprite_group_movement(corridor_door, -NORMAL_MOVEMENT_SPEED)
                     sprite_group_movement(corridor_platforms, -NORMAL_MOVEMENT_SPEED)
                     left_forcefield -= NORMAL_MOVEMENT_SPEED
                     right_forcefield -= NORMAL_MOVEMENT_SPEED
@@ -191,6 +196,7 @@ class Player(pygame.sprite.Sprite):
                 if self.at_forcefield == False:
                     sprite_group_movement(corridor_background, BACKGROUND_MOVEMENT_SPEED)
                     sprite_group_movement(corridor_floor, NORMAL_MOVEMENT_SPEED)
+                    sprite_group_movement(corridor_door, NORMAL_MOVEMENT_SPEED)
                     sprite_group_movement(corridor_platforms, NORMAL_MOVEMENT_SPEED)
                     left_forcefield += NORMAL_MOVEMENT_SPEED
                     right_forcefield += NORMAL_MOVEMENT_SPEED
@@ -198,6 +204,7 @@ class Player(pygame.sprite.Sprite):
                 for dash_sixth in range(6):
                     sprite_group_movement(corridor_background, -(DASH_DISTANCE / 18))
                     sprite_group_movement(corridor_floor, -(DASH_DISTANCE / 6))
+                    sprite_group_movement(corridor_door, -(DASH_DISTANCE / 6))
                     sprite_group_movement(corridor_platforms, -(DASH_DISTANCE / 6))
                     left_forcefield -= (DASH_DISTANCE / 6)
                     right_forcefield -= (DASH_DISTANCE / 6)
@@ -207,6 +214,7 @@ class Player(pygame.sprite.Sprite):
                 for dash_sixth in range(6):
                     sprite_group_movement(corridor_background, (DASH_DISTANCE / 18))
                     sprite_group_movement(corridor_floor, (DASH_DISTANCE / 6))
+                    sprite_group_movement(corridor_door, (DASH_DISTANCE / 6))
                     sprite_group_movement(corridor_platforms, (DASH_DISTANCE / 6))
                     left_forcefield += (DASH_DISTANCE / 6)
                     right_forcefield += (DASH_DISTANCE / 6)
@@ -369,7 +377,7 @@ class Corridor_Door(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         self.image = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Test Images\\Gate.png").convert_alpha()
-        self.rect = self.image.get_rect(bottomleft = (592, 8450))
+        self.rect = self.image.get_rect(bottomleft = (8450,592))
 
 corridor_door = pygame.sprite.GroupSingle()
 corridor_door.add(Corridor_Door())
@@ -395,10 +403,12 @@ while True:
     Screen.fill((0,0,0))
     corridor_background.draw(Screen)
     corridor_floor.draw(Screen)
+    corridor_door.draw(Screen)
     corridor_platforms.draw(Screen)
     player.draw(Screen)
     corridor_background.update()
     corridor_floor.update() 
+    corridor_door.update()
     player.update()  
     #pygame.draw.rect(Screen, "red", (100, 100, 300, 450))
     #pygame.draw.line(Screen, "red", (640, 0), (640, 720), 5) # center line

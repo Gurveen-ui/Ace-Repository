@@ -360,9 +360,20 @@ class Corridor_Platform(pygame.sprite.Sprite):
         self.image = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Test Images\\Platform.png").convert_alpha()
         self.rect = self.image.get_rect(topleft = (topleft_x, topleft_y))
 
+
 corridor_platforms = pygame.sprite.Group()
 corridor_platforms.add(Corridor_Platform(400,400), Corridor_Platform(800,325), Corridor_Platform(1200,250), Corridor_Platform(1800,375),
                        Corridor_Platform(2500,275), Corridor_Platform(2900,150), Corridor_Platform(3000,400), Corridor_Platform(3500,200), Corridor_Platform(4000,350))
+
+class Corridor_Door(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        self.image = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Test Images\\Gate.png").convert_alpha()
+        self.rect = self.image.get_rect(bottomleft = (592, 8450))
+
+corridor_door = pygame.sprite.GroupSingle()
+corridor_door.add(Corridor_Door())
+
 
 def sprite_group_movement(sprite_list, x_value):
     for sprite in sprite_list:

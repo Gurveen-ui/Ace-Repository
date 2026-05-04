@@ -11,7 +11,6 @@ LEFT_BOUND = 80 # x value player cant go past
 RIGHT_BOUND = 1200 # x value player cant go past
 CENTER_LEFT_BOUND = 576
 CENTER_RIGHT_BOUND = 704
-DASH_DISTANCE = 300
 LOWEST_PLATFORM = 450
 PLATFORM_HEIGHT = 100
 NORMAL_MOVEMENT_SPEED = 9
@@ -88,18 +87,8 @@ class Player(pygame.sprite.Sprite):
         self.previous_frame_bottom = self.rect.bottom
         keys = pygame.key.get_pressed()
         self.current_time = pygame.time.get_ticks()
-        if keys[pygame.K_d] and keys[pygame.K_LCTRL]:
-            if self.current_time - self.last_dash_time > self.dash_cooldown:
-                self.Normal_Movement("Forward Dash")
-            else:
-                self.Normal_Movement("Forward")
-        elif keys[pygame.K_d]:
+        if keys[pygame.K_d]:
             self.Normal_Movement("Forward")
-        if keys[pygame.K_a] and keys[pygame.K_LCTRL]:
-            if self.current_time - self.last_dash_time > self.dash_cooldown:
-                self.Normal_Movement("Backward Dash")
-            else:
-                self.Normal_Movement("Backward")
         elif keys[pygame.K_a]:
             self.Normal_Movement("Backward")
         self.Check_Boundaries(None)
@@ -202,58 +191,19 @@ class Player(pygame.sprite.Sprite):
                     sprite_group_movement(corridor_platforms, NORMAL_MOVEMENT_SPEED)
                     left_forcefield += NORMAL_MOVEMENT_SPEED
                     right_forcefield += NORMAL_MOVEMENT_SPEED
-            elif type == "Forward Dash":
-                for dash_sixth in range(6):
-                    sprite_group_movement(corridor_background, -(DASH_DISTANCE / 18))
-                    sprite_group_movement(corridor_floor, -(DASH_DISTANCE / 6))
-                    sprite_group_movement(corridor_door, -(DASH_DISTANCE / 6))
-                    sprite_group_movement(corridor_platforms, -(DASH_DISTANCE / 6))
-                    left_forcefield -= (DASH_DISTANCE / 6)
-                    right_forcefield -= (DASH_DISTANCE / 6)
-                    self.Check_Boundaries(None)
-                self.last_dash_time = self.current_time
-            elif type == "Backward Dash":
-                for dash_sixth in range(6):
-                    sprite_group_movement(corridor_background, (DASH_DISTANCE / 18))
-                    sprite_group_movement(corridor_floor, (DASH_DISTANCE / 6))
-                    sprite_group_movement(corridor_door, (DASH_DISTANCE / 6))
-                    sprite_group_movement(corridor_platforms, (DASH_DISTANCE / 6))
-                    left_forcefield += (DASH_DISTANCE / 6)
-                    right_forcefield += (DASH_DISTANCE / 6)
-                    self.Check_Boundaries(None)
-                self.last_dash_time = self.current_time
         elif left_forcefield >= 0:
             if type == "Forward":
                 self.rect.x += NORMAL_MOVEMENT_SPEED
                 self.Check_Boundaries("Right")
             elif type == "Backward":
                 self.rect.x -= NORMAL_MOVEMENT_SPEED
-            elif type == "Forward Dash":
-                for dash_sixth in range(6):
-                    self.rect.x += (DASH_DISTANCE / 6)
-                    self.Check_Boundaries("Right")
-                self.last_dash_time = self.current_time
-            elif type == "Backward Dash":
-                for dash_sixth in range(6):
-                    self.rect.x -= (DASH_DISTANCE / 6)
-                    self.Check_Boundaries(None)
-                self.last_dash_time = self.current_time
         elif right_forcefield <= 1280:
             if type == "Forward":
                 self.rect.x += NORMAL_MOVEMENT_SPEED
             elif type == "Backward":
                 self.rect.x -= NORMAL_MOVEMENT_SPEED
                 self.Check_Boundaries("Left")
-            elif type == "Forward Dash":
-                for dash_sixth in range(6):
-                    self.rect.x += (DASH_DISTANCE / 6)
-                    self.Check_Boundaries(None)
-                self.last_dash_time = self.current_time
-            elif type == "Backward Dash":
-                for dash_sixth in range(6):
-                    self.rect.x -= (DASH_DISTANCE / 6)
-                    self.Check_Boundaries("Left")
-                self.last_dash_time = self.current_time
+            
     
     def Update_Animation(self):
         keys = pygame.key.get_pressed()

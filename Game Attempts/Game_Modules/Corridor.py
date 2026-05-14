@@ -277,7 +277,7 @@ class Corridor_Background(pygame.sprite.Sprite):
     def __init__(self, left_x_pos):
         super().__init__()
         self.left_x_pos = left_x_pos #-1280, 0, 1280
-        self.image = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Images\\Background Spritesheet.png").convert_alpha()
+        self.image = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Images\\Wall\\Wall Pixel.png").convert_alpha()
         self.rect = self.image.get_rect(topleft = (left_x_pos,0))
 
     def destroy(self):
@@ -301,7 +301,7 @@ class Corridor_Floor(pygame.sprite.Sprite):
     def __init__(self, left_x_pos):
         super().__init__()
         self.left_x_pos = left_x_pos #-1280, 0, 1280
-        self.image = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Images\\Floor Spritesheet.png").convert_alpha()
+        self.image = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Images\\Floor\\Floor Pixel.png").convert_alpha()
         self.rect = self.image.get_rect(bottomleft = (left_x_pos,720))
 
     def destroy(self):
@@ -335,8 +335,8 @@ corridor_platforms.add(Corridor_Platform(400,400), Corridor_Platform(800,325), C
 class Corridor_Door(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.image = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Images\\Gate.png").convert_alpha()
-        self.rect = self.image.get_rect(bottomleft = (right_forcefield - 350,592))
+        self.image = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Images\\Gate\\Gate Pixel.png").convert_alpha()
+        self.rect = self.image.get_rect(topleft = (right_forcefield - 350,160))
 
 corridor_door = pygame.sprite.GroupSingle()
 corridor_door.add(Corridor_Door())

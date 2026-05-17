@@ -22,24 +22,24 @@ left_forcefield = 0
 right_forcefield = 5120 #4 floors length
 section = "Corridoor"
 
-player_still_image = pygame.image.load("N:\\Gurveen Work\\Y12\\Computer Science\\Game Attempts\\Images\\Player\\Test Player Still.png").convert_alpha()
+player_still_image = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Images\\Player\\Test Player Still.png").convert_alpha()
 
-player_forward_spritesheet = pygame.image.load("N:\\Gurveen Work\\Y12\\Computer Science\\Game Attempts\\Images\\Player\\Player Forward Animation.png").convert_alpha()
+player_forward_spritesheet = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Images\\Player\\Player Forward Animation.png").convert_alpha()
 player_forward_animation_list = []
 
-player_backward_spritesheet = pygame.image.load("N:\\Gurveen Work\\Y12\\Computer Science\\Game Attempts\\Images\\Player\\Player Backward Animation.png").convert_alpha()
+player_backward_spritesheet = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Images\\Player\\Player Backward Animation.png").convert_alpha()
 player_backward_animation_list = []
 
-player_upward_spritesheet = pygame.image.load("N:\\Gurveen Work\\Y12\\Computer Science\\Game Attempts\\Images\\Player\\Player Upward Animation.png").convert_alpha()
+player_upward_spritesheet = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Images\\Player\\Player Upward Animation.png").convert_alpha()
 player_upward_animation_list = []
 
-player_downward_spritesheet = pygame.image.load("N:\\Gurveen Work\\Y12\\Computer Science\\Game Attempts\\Images\\Player\\Player Downward Animation.png").convert_alpha()
+player_downward_spritesheet = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Images\\Player\\Player Downward Animation.png").convert_alpha()
 player_downward_animation_list = []
 
-player_forward_running_spritesheet = pygame.image.load("N:\\Gurveen Work\\Y12\\Computer Science\\Game Attempts\\Images\\Player\\Player Forward Running Animation.png").convert_alpha()
+player_forward_running_spritesheet = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Images\\Player\\Player Forward Running Animation.png").convert_alpha()
 player_forward_running_animation_list = []
 
-player_backward_running_spritesheet = pygame.image.load("N:\\Gurveen Work\\Y12\\Computer Science\\Game Attempts\\Images\\Player\\Player Backward Running Animation.png").convert_alpha()
+player_backward_running_spritesheet = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Images\\Player\\Player Backward Running Animation.png").convert_alpha()
 player_backward_running_animation_list = []
 
 def get_image_from_sheet(list,sheet,width,height):
@@ -260,11 +260,6 @@ class Player(pygame.sprite.Sprite):
         for gate in Gates:
             if self.rect.colliderect(gate.rect) and keys[pygame.K_e]:
                 section = "Main_Courtyard" 
-    
-    def Text_Box(self, Text_Box):
-        if self.current_time > 5000 and self.current_time < 15000:
-            Text_Box.draw(Screen)
-
 
 
     def update(self):
@@ -273,7 +268,6 @@ class Player(pygame.sprite.Sprite):
         self.Platform_Collisions(corridor_platforms)
         self.Update_Animation()
         self.Gate_Check(corridor_door)
-        self.Text_Box(text_box)
 
 
 
@@ -284,7 +278,7 @@ class Corridor_Background(pygame.sprite.Sprite):
     def __init__(self, left_x_pos):
         super().__init__()
         self.left_x_pos = left_x_pos #-1280, 0, 1280
-        self.image = pygame.image.load("N:\\Gurveen Work\\Y12\\Computer Science\\Game Attempts\\Images\\Wall\\Wall Pixel.png").convert_alpha()
+        self.image = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Images\\Wall\\Wall Pixel.png").convert_alpha()
         self.rect = self.image.get_rect(topleft = (left_x_pos,0))
 
     def destroy(self):
@@ -308,7 +302,7 @@ class Corridor_Floor(pygame.sprite.Sprite):
     def __init__(self, left_x_pos):
         super().__init__()
         self.left_x_pos = left_x_pos #-1280, 0, 1280
-        self.image = pygame.image.load("N:\\Gurveen Work\\Y12\\Computer Science\\Game Attempts\\Images\\Floor\\Floor Pixel.png").convert_alpha()
+        self.image = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Images\\Floor\\Floor Pixel.png").convert_alpha()
         self.rect = self.image.get_rect(bottomleft = (left_x_pos,720))
 
     def destroy(self):
@@ -331,7 +325,7 @@ corridor_floor.add(Corridor_Floor(0),Corridor_Floor(SCREEN_WIDTH),Corridor_Floor
 class Corridor_Platform(pygame.sprite.Sprite):
     def __init__(self, topleft_x, topleft_y):
         super().__init__()
-        self.image = pygame.image.load("N:\\Gurveen Work\\Y12\\Computer Science\\Game Attempts\\Images\\Platform\\Platform.png").convert_alpha()
+        self.image = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Images\\Platform.png").convert_alpha()
         self.rect = self.image.get_rect(topleft = (topleft_x, topleft_y))
 
 
@@ -342,17 +336,8 @@ corridor_platforms.add(Corridor_Platform(400,400), Corridor_Platform(800,325), C
 class Corridor_Door(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.image = pygame.image.load("N:\\Gurveen Work\\Y12\\Computer Science\\Game Attempts\\Images\\Gate\\Gate Pixel.png").convert_alpha()
+        self.image = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Images\\Gate\\Gate Pixel.png").convert_alpha()
         self.rect = self.image.get_rect(topleft = (right_forcefield - 350,160))
 
 corridor_door = pygame.sprite.GroupSingle()
 corridor_door.add(Corridor_Door())
-
-class Text_Box(pygame.sprite.Sprite):
-    def __init__(self):
-        super().__init__()
-        self.image = pygame.image.load("N:\\Gurveen Work\\Y12\\Computer Science\\Game Attempts\\Images\\Text Box\\Animation\\My Knight.png").convert_alpha()
-        self.rect = self.image.get_rect(topleft = (0, 10))
-
-text_box = pygame.sprite.GroupSingle()
-text_box.add(Text_Box())

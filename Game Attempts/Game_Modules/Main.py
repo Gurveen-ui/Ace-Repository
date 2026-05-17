@@ -34,7 +34,8 @@ while True:
         Corridor.corridor_background.update()
         Corridor.corridor_floor.update() 
         Corridor.corridor_door.update()
-        Corridor.player.update()  
+        Corridor.player.update() 
+        Corridor.king_text.update()
         #pygame.draw.rect(Corridor.Screen, "red", (100, 100, 300, 450))
         #pygame.draw.line(Corridor.Screen, "red", (640, 0), (640, 720), 5) # center line
     elif Corridor.section == "Main_Courtyard":

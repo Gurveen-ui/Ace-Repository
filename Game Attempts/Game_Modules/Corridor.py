@@ -83,8 +83,7 @@ class Player(pygame.sprite.Sprite):
         self.on_platform = False
         self.on_platform_name = self
         self.running = False
-        self.Display_box = False
-        self.Finished_displaying = False
+
 
 
 
@@ -263,26 +262,18 @@ class Player(pygame.sprite.Sprite):
         for gate in Gates:
             if self.rect.colliderect(gate.rect) and keys[pygame.K_e]:
                 section = "Main_Courtyard" 
-    
-    def Kings_Words(self, Kings_text_box):
-        global Movement_Stopped
-        if self.Display_box == True and self.Finished_displaying == False:
-            #Movement_Stopped = True
-            Kings_text_box.draw(Screen)
+
 
 
     def update(self):
         global current_time
         current_time = pygame.time.get_ticks()
-        if current_time >= 5000:
-            self.Display_box = True
         if Movement_Stopped == False:
             self.Movement()
             self.Update_Animation()
         self.Apply_Gravity()
         self.Platform_Collisions(corridor_platforms)
         self.Gate_Check(corridor_door)
-        self.Kings_Words(king_text)
 
 
 
@@ -363,6 +354,19 @@ class King_Text(pygame.sprite.Sprite):
         super().__init__()
         self.image = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Images\\Text Box\\Kings Text Box Large.png").convert_alpha()
         self.rect = self.image.get_rect(bottomleft = (10,700))
+        self.Display_box = False
+        self.Finished_displaying = False
+    
+    def Kings_Words(self, Text_box):
+        global Movement_Stopped
+        if self.Display_box == True and self.Finished_displaying == False:
+            Movement_Stopped = True
+            Text_box.draw(Screen)
+
+    def update(self):
+        if current_time >= 5000:
+            self.Display_box = True
+        self.Kings_Words(king_text)
 
 king_text = pygame.sprite.GroupSingle()
 king_text.add(King_Text())

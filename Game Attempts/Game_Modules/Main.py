@@ -1,16 +1,20 @@
 import pygame
 from sys import exit
-import Corridor
 
 pygame.init()
 Screen = pygame.display.set_mode((1280,720))
+
+import Corridor
+
+
+
 
 
 clock = pygame.time.Clock()
 while True:
     if Corridor.section == "Corridoor":
         for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN:
+            if event.type == pygame.KEYDOWN and Corridor.Movement_Stopped == False:
                 if event.key == pygame.K_SPACE and Corridor.player.sprite.jump_count == 0:
                     Corridor.player.sprite.gravity = -20
                     Corridor.player.sprite.jump_count += 1
@@ -26,6 +30,7 @@ while True:
         Corridor.corridor_door.draw(Screen)
         Corridor.corridor_platforms.draw(Screen)
         Corridor.player.draw(Screen)
+        #Corridor.king_text.draw(Screen)
         Corridor.corridor_background.update()
         Corridor.corridor_floor.update() 
         Corridor.corridor_door.update()

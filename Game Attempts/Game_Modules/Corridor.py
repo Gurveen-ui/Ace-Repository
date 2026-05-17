@@ -20,6 +20,8 @@ KING_TEXT = "My Knight!! The princess is getting married today, you must put you
 
 left_forcefield = 0
 right_forcefield = 5120 #4 floors length
+current_time = 0
+Movement_Stopped = False
 section = "Corridoor"
 
 player_still_image = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Images\\Player\\Test Player Still.png").convert_alpha()
@@ -81,13 +83,14 @@ class Player(pygame.sprite.Sprite):
         self.on_platform = False
         self.on_platform_name = self
         self.running = False
+        self.Display_box = False
+        self.Finished_displaying = False
 
 
 
     def Movement(self):
         self.previous_frame_bottom = self.rect.bottom
         keys = pygame.key.get_pressed()
-        self.current_time = pygame.time.get_ticks()
         if keys[pygame.K_d]:
             self.Normal_Movement("Forward")
         elif keys[pygame.K_a]:
@@ -260,14 +263,27 @@ class Player(pygame.sprite.Sprite):
         for gate in Gates:
             if self.rect.colliderect(gate.rect) and keys[pygame.K_e]:
                 section = "Main_Courtyard" 
+    
+    def Kings_Words(self, Kings_text_box):
+        global Movement_Stopped
+        if self.Display_box == True and self.Finished_displaying == False:
+            #Movement_Stopped = True
+            Kings_text_box.draw(Screen)
 
 
     def update(self):
-        self.Movement()
+        global current_time
+        current_time = pygame.time.get_ticks()
+        if current_time >= 5000:
+            self.Display_box = True
+        if Movement_Stopped == False:
+            self.Movement()
+            self.Update_Animation()
         self.Apply_Gravity()
         self.Platform_Collisions(corridor_platforms)
-        self.Update_Animation()
         self.Gate_Check(corridor_door)
+        self.Kings_Words(king_text)
+
 
 
 
@@ -341,3 +357,12 @@ class Corridor_Door(pygame.sprite.Sprite):
 
 corridor_door = pygame.sprite.GroupSingle()
 corridor_door.add(Corridor_Door())
+
+class King_Text(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        self.image = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Images\\Text Box\\Kings Text Box Large.png").convert_alpha()
+        self.rect = self.image.get_rect(bottomleft = (10,700))
+
+king_text = pygame.sprite.GroupSingle()
+king_text.add(King_Text())

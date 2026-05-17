@@ -30,6 +30,7 @@ while True:
         Corridor.corridor_door.draw(Screen)
         Corridor.corridor_platforms.draw(Screen)
         Corridor.player.draw(Screen)
+        #Screen.blit(Corridor.text, (100,100))
         #Corridor.king_text.draw(Screen)
         Corridor.corridor_background.update()
         Corridor.corridor_floor.update() 

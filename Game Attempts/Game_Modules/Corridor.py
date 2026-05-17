@@ -16,12 +16,13 @@ PLATFORM_HEIGHT = 100
 NORMAL_MOVEMENT_SPEED = 9
 BACKGROUND_MOVEMENT_SPEED = 7
 SCREEN_WIDTH = 1280
-KING_TEXT = "My Knight!! The princess is getting married today, you must put your life on the line to ensure nothing goes wrong. Continue on to the courtyard!"
+KING_TEXT = ["My Knight!!"," The princess is getting married today,"," you must put your life on the line"," to ensure nothing goes wrong."," Continue on to the courtyard!"]
 
 left_forcefield = 0
 right_forcefield = 5120 #4 floors length
 current_time = 0
 Movement_Stopped = False
+font = pygame.font.Font("D:\Blaze\Holiday learning\Python\GitHub\Ace-Repository\Game Attempts\Font\citadel_of_blackrose\Citadel of Blackrose.ttf", 30)
 section = "Corridoor"
 
 player_still_image = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Images\\Player\\Test Player Still.png").convert_alpha()
@@ -60,6 +61,8 @@ player_upward_animation_list = get_image_from_sheet(player_upward_animation_list
 player_downward_animation_list = get_image_from_sheet(player_downward_animation_list, player_downward_spritesheet, 128, 128)
 player_forward_running_animation_list = get_image_from_sheet(player_forward_running_animation_list, player_forward_running_spritesheet, 128, 128)
 player_backward_running_animation_list = get_image_from_sheet(player_backward_running_animation_list, player_backward_running_spritesheet, 128, 128)
+
+text = font.render("text", False,(0,0,0))
 
 def sprite_group_movement(sprite_list, x_value):
     for sprite in sprite_list:
@@ -355,18 +358,58 @@ class King_Text(pygame.sprite.Sprite):
         self.image = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Images\\Text Box\\Kings Text Box Large.png").convert_alpha()
         self.rect = self.image.get_rect(bottomleft = (10,700))
         self.Display_box = False
-        self.Finished_displaying = False
+        self.kings_dialogue = []
+        for lines in KING_TEXT:
+            self.kings_dialogue += [""]
+        self.dialogue_counter = 0
+        self.line_counter = 0
+        self.text_paused = False
+        self.pause_timer = 0
     
-    def Kings_Words(self, Text_box):
+    def Display_Box(self,Text_box):
         global Movement_Stopped
-        if self.Display_box == True and self.Finished_displaying == False:
+        if self.Display_box == True:
             Movement_Stopped = True
             Text_box.draw(Screen)
 
+    def Kings_Words_Prep(self, Text_box):
+        global text
+        if self.Display_box == True:
+            if self.dialogue_counter % 1 == 0:
+                if self.kings_dialogue[int(self.line_counter)] == KING_TEXT[int(self.line_counter)]:
+                    self.line_counter += 1
+                    self.dialogue_counter = 0
+                    if self.line_counter >= len(self.kings_dialogue):
+                        self.text_paused = True
+                if self.line_counter <= len(self.kings_dialogue) - 1:
+                    self.kings_dialogue[self.line_counter] += KING_TEXT[self.line_counter][int(self.dialogue_counter)]
+            self.dialogue_counter += 0.5
+        
+    def Kings_Words(self):
+        line_count = 0
+        for line in self.kings_dialogue:
+            text = font.render(line, False, (0,0,0))
+            for i in self.kings_dialogue:
+                if line != self.kings_dialogue[line_count]:
+                    line_count += 1
+            Screen.blit(text,(self.rect.left + 370 , self.rect.top + 100 + (line_count* 35)))
+            line_count = 0
+        if self.text_paused == True:
+            self.pause_timer += 0.1
+        
+        
+
     def update(self):
+        global Movement_Stopped
         if current_time >= 5000:
             self.Display_box = True
-        self.Kings_Words(king_text)
+        if self.pause_timer < 5:
+            self.Display_Box(king_text)
+            if self.text_paused == False:
+                self.Kings_Words_Prep(king_text)
+            self.Kings_Words()
+        else:
+            Movement_Stopped = False
 
 king_text = pygame.sprite.GroupSingle()
 king_text.add(King_Text())

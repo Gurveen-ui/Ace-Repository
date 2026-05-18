@@ -22,7 +22,7 @@ left_forcefield = 0
 right_forcefield = 5120 #4 floors length
 current_time = 0
 Movement_Stopped = False
-font = pygame.font.Font("D:\Blaze\Holiday learning\Python\GitHub\Ace-Repository\Game Attempts\Font\citadel_of_blackrose\Citadel of Blackrose.ttf", 30)
+Royal_Font = pygame.font.Font("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Font\\citadel_of_blackrose\\Citadel of Blackrose.ttf", 30)
 section = "Corridoor"
 
 player_still_image = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Images\\Player\\Test Player Still.png").convert_alpha()
@@ -62,11 +62,34 @@ player_downward_animation_list = get_image_from_sheet(player_downward_animation_
 player_forward_running_animation_list = get_image_from_sheet(player_forward_running_animation_list, player_forward_running_spritesheet, 128, 128)
 player_backward_running_animation_list = get_image_from_sheet(player_backward_running_animation_list, player_backward_running_spritesheet, 128, 128)
 
-text = font.render("text", False,(0,0,0))
 
 def sprite_group_movement(sprite_list, x_value):
     for sprite in sprite_list:
         sprite.rect.x = sprite.rect.x + x_value
+
+def dialogue_producer(Box_class, Text_constant, Letter_Speed):
+    if Box_class.Display_box == True:
+        if Box_class.dialogue_counter % 1 == 0:
+            if Box_class.dialogue[int(Box_class.line_counter)] == Text_constant[int(Box_class.line_counter)]:
+                Box_class.line_counter += 1
+                Box_class.dialogue_counter = 0
+                if Box_class.line_counter >= len(Box_class.dialogue):
+                    Box_class.text_paused = True
+            if Box_class.line_counter <= len(Box_class.dialogue) - 1:
+                Box_class.dialogue[Box_class.line_counter] += Text_constant[Box_class.line_counter][int(Box_class.dialogue_counter)]
+        Box_class.dialogue_counter += Letter_Speed
+
+def Display_Dialogue(Box_class, X_Distance, Y_Distance, Line_Spacing, Font):
+    line_count = 0
+    for line in Box_class.dialogue:
+        text = Font.render(line, False, (0,0,0))
+        for i in Box_class.dialogue:
+            if line != Box_class.dialogue[line_count]:
+                line_count += 1
+        Screen.blit(text,(Box_class.rect.left + X_Distance , Box_class.rect.top + Y_Distance + (line_count* Line_Spacing)))
+        line_count = 0
+    if Box_class.text_paused == True:
+        Box_class.pause_timer += 0.1
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
@@ -121,7 +144,7 @@ class Player(pygame.sprite.Sprite):
                     self.on_platform_name = sprite
                     self.on_platform = True
                     self.jump_count = 0
-                    if keys[pygame.K_c] or keys[pygame.K_s]:
+                    if keys[pygame.K_c] or keys[pygame.K_s] and Movement_Stopped == False:
                         self.rect.bottom += 1
                         self.on_platform = False
         if self.rect.bottom != self.on_platform_name.rect.top:
@@ -335,7 +358,7 @@ corridor_floor.add(Corridor_Floor(0),Corridor_Floor(SCREEN_WIDTH),Corridor_Floor
 class Corridor_Platform(pygame.sprite.Sprite):
     def __init__(self, topleft_x, topleft_y):
         super().__init__()
-        self.image = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Images\\Platform.png").convert_alpha()
+        self.image = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Images\\Platform\\Platform.png").convert_alpha()
         self.rect = self.image.get_rect(topleft = (topleft_x, topleft_y))
 
 
@@ -358,58 +381,43 @@ class King_Text(pygame.sprite.Sprite):
         self.image = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Images\\Text Box\\Kings Text Box Large.png").convert_alpha()
         self.rect = self.image.get_rect(bottomleft = (10,700))
         self.Display_box = False
-        self.kings_dialogue = []
+        self.dialogue = []
         for lines in KING_TEXT:
-            self.kings_dialogue += [""]
+            self.dialogue += [""]
         self.dialogue_counter = 0
         self.line_counter = 0
         self.text_paused = False
         self.pause_timer = 0
+        self.Box_Displayed = False
+        self.Remove_display = False
+        self.Mouse_Sprite_Collision = False
     
     def Display_Box(self,Text_box):
         global Movement_Stopped
         if self.Display_box == True:
             Movement_Stopped = True
             Text_box.draw(Screen)
-
-    def Kings_Words_Prep(self, Text_box):
-        global text
-        if self.Display_box == True:
-            if self.dialogue_counter % 1 == 0:
-                if self.kings_dialogue[int(self.line_counter)] == KING_TEXT[int(self.line_counter)]:
-                    self.line_counter += 1
-                    self.dialogue_counter = 0
-                    if self.line_counter >= len(self.kings_dialogue):
-                        self.text_paused = True
-                if self.line_counter <= len(self.kings_dialogue) - 1:
-                    self.kings_dialogue[self.line_counter] += KING_TEXT[self.line_counter][int(self.dialogue_counter)]
-            self.dialogue_counter += 0.5
-        
-    def Kings_Words(self):
-        line_count = 0
-        for line in self.kings_dialogue:
-            text = font.render(line, False, (0,0,0))
-            for i in self.kings_dialogue:
-                if line != self.kings_dialogue[line_count]:
-                    line_count += 1
-            Screen.blit(text,(self.rect.left + 370 , self.rect.top + 100 + (line_count* 35)))
-            line_count = 0
-        if self.text_paused == True:
-            self.pause_timer += 0.1
-        
         
 
     def update(self):
         global Movement_Stopped
-        if current_time >= 5000:
-            self.Display_box = True
-        if self.pause_timer < 5:
-            self.Display_Box(king_text)
-            if self.text_paused == False:
-                self.Kings_Words_Prep(king_text)
-            self.Kings_Words()
+        if self.Box_Displayed == False:
+            if current_time >= 5000 and self.Remove_display == False:
+                self.Display_box = True
+            if self.pause_timer < 10 and self.Remove_display == False:
+                self.Display_Box(king_text)
+                if self.text_paused == False:
+                    dialogue_producer(self, KING_TEXT, 0.5)
+                Display_Dialogue(self, 370, 100, 35, Royal_Font)
+            else:
+                Movement_Stopped = False
+                self.Display_box = False
+                self.Box_Displayed = True
+        Mouse_x, Mouse_Y = pygame.mouse.get_pos()
+        if self.rect.collidepoint((Mouse_x, Mouse_Y)) and self.Display_box == True:
+            self.Mouse_Sprite_Collision = True
         else:
-            Movement_Stopped = False
+            self.Mouse_Sprite_Collision = False
 
 king_text = pygame.sprite.GroupSingle()
 king_text.add(King_Text())

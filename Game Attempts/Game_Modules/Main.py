@@ -21,6 +21,8 @@ while True:
                 elif event.key == pygame.K_SPACE and Corridor.player.sprite.jump_count > 0 and Corridor.player.sprite.jump_count < 2:
                     Corridor.player.sprite.gravity = -15
                     Corridor.player.sprite.jump_count += 1
+            if Corridor.king_text.sprite.Mouse_Sprite_Collision == True  and event.type == pygame.MOUSEBUTTONDOWN:
+                Corridor.king_text.sprite.Remove_display = True
             if event.type == pygame.QUIT:
                 pygame.quit()
                 exit()

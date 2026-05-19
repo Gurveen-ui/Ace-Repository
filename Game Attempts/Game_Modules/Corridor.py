@@ -17,12 +17,14 @@ NORMAL_MOVEMENT_SPEED = 9
 BACKGROUND_MOVEMENT_SPEED = 7
 SCREEN_WIDTH = 1280
 KING_TEXT = ["My Knight!!"," The princess is getting married today,"," you must put your life on the line"," to ensure nothing goes wrong."," Continue on to the courtyard!"]
+PLAYER_THOUGHTS = ["The princess...                  ","I- I should go."]
 
 left_forcefield = 0
 right_forcefield = 5120 #4 floors length
 current_time = 0
 Movement_Stopped = False
 Royal_Font = pygame.font.Font("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Font\\citadel_of_blackrose\\Citadel of Blackrose.ttf", 30)
+Royal_Font_Small = pygame.font.Font("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Font\\citadel_of_blackrose\\Citadel of Blackrose.ttf", 20)
 section = "Corridoor"
 
 player_still_image = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Images\\Player\\Test Player Still.png").convert_alpha()
@@ -392,11 +394,11 @@ class King_Text(pygame.sprite.Sprite):
         self.Remove_display = False
         self.Mouse_Sprite_Collision = False
     
-    def Display_Box(self,Text_box):
+    def Display_Box(self):
         global Movement_Stopped
         if self.Display_box == True:
             Movement_Stopped = True
-            Text_box.draw(Screen)
+            king_text.draw(Screen)
         
 
     def update(self):
@@ -405,7 +407,7 @@ class King_Text(pygame.sprite.Sprite):
             if current_time >= 5000 and self.Remove_display == False:
                 self.Display_box = True
             if self.pause_timer < 10 and self.Remove_display == False:
-                self.Display_Box(king_text)
+                self.Display_Box()
                 if self.text_paused == False:
                     dialogue_producer(self, KING_TEXT, 0.5)
                 Display_Dialogue(self, 370, 100, 35, Royal_Font)
@@ -421,3 +423,40 @@ class King_Text(pygame.sprite.Sprite):
 
 king_text = pygame.sprite.GroupSingle()
 king_text.add(King_Text())
+
+class Player_Thoughts(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        self.image = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Images\\Player Thoughts\\Thought Pixel.png").convert_alpha()
+        self.rect = self.image.get_rect(bottomright = (player.sprite.rect.x,player.sprite.rect.y))
+        self.Display_box = False
+        self.dialogue = []
+        for lines in PLAYER_THOUGHTS:
+            self.dialogue += [""]
+        self.dialogue_counter = 0
+        self.line_counter = 0
+        self.text_paused = False
+        self.pause_timer = 0
+        self.Box_Displayed = False
+        self.Remove_display = False
+    
+    def Display_Box(self):
+        if self.Display_box == True and self.Box_Displayed == False:
+            self.rect.bottomright = ((player.sprite.rect.x + 30,player.sprite.rect.y + 30))
+            thought_bubble.draw(Screen)
+    
+    def update(self):
+        if self.Box_Displayed == False:
+            if king_text.sprite.Box_Displayed == True and self.Remove_display == False:
+                self.Display_box = True
+            if self.pause_timer < 15 and self.Remove_display == False:
+                self.Display_Box()
+                if self.text_paused == False:
+                    dialogue_producer(self, PLAYER_THOUGHTS, 0.25)
+                Display_Dialogue(self, 60, 50, 25, Royal_Font_Small)
+            else:
+                self.Display_box = False
+                self.Box_Displayed = True
+
+thought_bubble = pygame.sprite.GroupSingle()
+thought_bubble.add(Player_Thoughts())

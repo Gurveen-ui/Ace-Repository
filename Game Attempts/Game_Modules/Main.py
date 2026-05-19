@@ -4,6 +4,7 @@ from sys import exit
 pygame.init()
 Screen = pygame.display.set_mode((1280,720))
 
+import Start_Menu
 import Corridor
 
 
@@ -12,7 +13,18 @@ import Corridor
 
 clock = pygame.time.Clock()
 while True:
-    if Corridor.section == "Corridoor":
+    if Start_Menu.section == "Start_Menu":
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                exit()
+        Screen.fill((0,0,0))
+        Screen.blit(Start_Menu.Background,(0,0))
+        #pygame.draw.rect(Start_Menu.Screen, "red", (400, 550, 390, 100))
+        Start_Menu.start_button.draw(Screen)
+
+
+    elif Corridor.section == "Corridoor":
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN and Corridor.Movement_Stopped == False:
                 if event.key == pygame.K_SPACE and Corridor.player.sprite.jump_count == 0:
@@ -26,7 +38,7 @@ while True:
             if event.type == pygame.QUIT:
                 pygame.quit()
                 exit()
-        Corridor.Screen.fill((0,0,0))
+        Screen.fill((0,0,0))
         Corridor.corridor_background.draw(Screen)
         Corridor.corridor_floor.draw(Screen)
         Corridor.corridor_door.draw(Screen)
@@ -39,6 +51,7 @@ while True:
         Corridor.corridor_door.update()
         Corridor.player.update() 
         Corridor.king_text.update()
+        Corridor.thought_bubble.update()
         #pygame.draw.rect(Corridor.Screen, "red", (100, 130, 300, 150))
         #pygame.draw.line(Corridor.Screen, "red", (640, 0), (640, 720), 5) # center line
     elif Corridor.section == "Main_Courtyard":

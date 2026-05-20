@@ -25,7 +25,8 @@ current_time = 0
 Movement_Stopped = False
 Royal_Font = pygame.font.Font("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Font\\citadel_of_blackrose\\Citadel of Blackrose.ttf", 30)
 Royal_Font_Small = pygame.font.Font("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Font\\citadel_of_blackrose\\Citadel of Blackrose.ttf", 20)
-section = "Corridoor"
+section = "Corridor"
+start_time = 0
 
 player_still_image = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Images\\Player\\Test Player Still.png").convert_alpha()
 
@@ -404,7 +405,7 @@ class King_Text(pygame.sprite.Sprite):
     def update(self):
         global Movement_Stopped
         if self.Box_Displayed == False:
-            if current_time >= 5000 and self.Remove_display == False:
+            if current_time >= start_time + 5000 and self.Remove_display == False:
                 self.Display_box = True
             if self.pause_timer < 10 and self.Remove_display == False:
                 self.Display_Box()

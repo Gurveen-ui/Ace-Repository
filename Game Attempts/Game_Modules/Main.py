@@ -15,16 +15,26 @@ clock = pygame.time.Clock()
 while True:
     if Start_Menu.section == "Start_Menu":
         for event in pygame.event.get():
+            if Start_Menu.start_button.sprite.Mouse_Sprite_Collision == True  and event.type == pygame.MOUSEBUTTONDOWN:
+                Start_Menu.section = "Corridor"
+                Corridor.start_time = pygame.time.get_ticks()
+            elif Start_Menu.exit_button.sprite.Mouse_Sprite_Collision == True  and event.type == pygame.MOUSEBUTTONDOWN:
+                pygame.quit()
+                exit()
             if event.type == pygame.QUIT:
                 pygame.quit()
                 exit()
         Screen.fill((0,0,0))
-        Screen.blit(Start_Menu.Background,(0,0))
+        Screen.blit(Start_Menu.Background, (0,0))
+        #Start_Menu.Background.draw(Screen)
         #pygame.draw.rect(Start_Menu.Screen, "red", (400, 550, 390, 100))
         Start_Menu.start_button.draw(Screen)
+        Start_Menu.exit_button.draw(Screen)
+        Start_Menu.start_button.update()
+        Start_Menu.exit_button.update()
 
 
-    elif Corridor.section == "Corridoor":
+    elif Corridor.section == "Corridor":
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN and Corridor.Movement_Stopped == False:
                 if event.key == pygame.K_SPACE and Corridor.player.sprite.jump_count == 0:

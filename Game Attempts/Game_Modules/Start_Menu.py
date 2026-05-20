@@ -42,11 +42,11 @@ start_button.add(Start_Button())
 class Exit_Button(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.image = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Images\\Start_Menu\\Exit Button\\Animation\\Exit Pixel.png").convert_alpha()
+        self.image = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Images\\Start_Menu\\Exit Button\\Exit Pixel.png").convert_alpha()
         self.rect = self.image.get_rect(center = (665,520)) #445,
-        self.Still_Image = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Images\\Start_Menu\\Exit Button\\Animation\\Exit Pixel.png").convert_alpha()
+        self.Still_Image = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Images\\Start_Menu\\Exit Button\\Exit Pixel.png").convert_alpha()
         self.Mouse_Sprite_Collision = False
-        self.Hover_Image = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Images\\Start_Menu\\Exit Button\\Animation\\Exit Pixel Hover.png").convert_alpha()
+        self.Hover_Image = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Images\\Start_Menu\\Exit Button\\Exit Pixel Hover.png").convert_alpha()
         self.center = (665,520)
     
 

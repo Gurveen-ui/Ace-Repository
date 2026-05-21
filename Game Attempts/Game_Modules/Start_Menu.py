@@ -7,6 +7,10 @@ pygame.display.set_caption("Start Menu")
 section = "Start_Menu"
 
 Background = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Images\\Start_Menu\\Background Pixel.png").convert_alpha()
+AkaKnight = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Images\\Start_Menu\\AkaKnight Pixel.png").convert_alpha()
+Title_Rect = AkaKnight.get_rect(center = (640, 165))
+Knight = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Images\\Start_Menu\\Knight Pixel.png").convert_alpha()
+Knight_Rect = Knight.get_rect(center = (935, 465))
 
 def Button_Hover(Button):
         Mouse_x, Mouse_Y = pygame.mouse.get_pos()
@@ -26,11 +30,11 @@ class Start_Button(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         self.image = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Images\\Start_Menu\\Start Button\\Start Pixel.png").convert_alpha()
-        self.rect = self.image.get_rect(center = (640,400))
+        self.rect = self.image.get_rect(center = (520,400))
         self.Still_Image = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Images\\Start_Menu\\Start Button\\Start Pixel.png").convert_alpha()
         self.Mouse_Sprite_Collision = False
         self.Hover_Image = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Images\\Start_Menu\\Start Button\\Start Pixel Hover.png").convert_alpha()
-        self.center = (640,400)
+        self.center = (520,400)
 
 
     def update(self):
@@ -43,11 +47,11 @@ class Exit_Button(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         self.image = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Images\\Start_Menu\\Exit Button\\Exit Pixel.png").convert_alpha()
-        self.rect = self.image.get_rect(center = (665,520)) #445,
+        self.rect = self.image.get_rect(center = (545,520)) #445,
         self.Still_Image = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Images\\Start_Menu\\Exit Button\\Exit Pixel.png").convert_alpha()
         self.Mouse_Sprite_Collision = False
         self.Hover_Image = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Images\\Start_Menu\\Exit Button\\Exit Pixel Hover.png").convert_alpha()
-        self.center = (665,520)
+        self.center = (545,520)
     
 
     def update(self):

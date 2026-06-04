@@ -23,29 +23,29 @@ left_forcefield = 0
 right_forcefield = 5120 #4 floors length
 current_time = 0
 Movement_Stopped = False
-Royal_Font = pygame.font.Font("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Font\\citadel_of_blackrose\\Citadel of Blackrose.ttf", 30)
-Royal_Font_Small = pygame.font.Font("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Font\\citadel_of_blackrose\\Citadel of Blackrose.ttf", 20)
+Royal_Font = pygame.font.Font("Game Attempts\\Font\\citadel_of_blackrose\\Citadel of Blackrose.ttf", 30)
+Royal_Font_Small = pygame.font.Font("Game Attempts\\Font\\citadel_of_blackrose\\Citadel of Blackrose.ttf", 20)
 section = "Corridor"
 start_time = 0
 
-player_still_image = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Images\\Player\\Test Player Still.png").convert_alpha()
+player_still_image = pygame.image.load("Game Attempts\\Images\\Player\\Test Player Resized.png").convert_alpha()
 
-player_forward_spritesheet = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Images\\Player\\Player Forward Animation.png").convert_alpha()
+player_forward_spritesheet = pygame.image.load("Game Attempts\\Images\\Player\\Player Forward Animation.png").convert_alpha()
 player_forward_animation_list = []
 
-player_backward_spritesheet = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Images\\Player\\Player Backward Animation.png").convert_alpha()
+player_backward_spritesheet = pygame.image.load("Game Attempts\\Images\\Player\\Player Backward Animation.png").convert_alpha()
 player_backward_animation_list = []
 
-player_upward_spritesheet = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Images\\Player\\Player Upward Animation.png").convert_alpha()
+player_upward_spritesheet = pygame.image.load("Game Attempts\\Images\\Player\\Player Upward Animation.png").convert_alpha()
 player_upward_animation_list = []
 
-player_downward_spritesheet = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Images\\Player\\Player Downward Animation.png").convert_alpha()
+player_downward_spritesheet = pygame.image.load("Game Attempts\\Images\\Player\\Player Downward Animation.png").convert_alpha()
 player_downward_animation_list = []
 
-player_forward_running_spritesheet = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Images\\Player\\Player Forward Running Animation.png").convert_alpha()
+player_forward_running_spritesheet = pygame.image.load("Game Attempts\\Images\\Player\\Player Forward Running Animation.png").convert_alpha()
 player_forward_running_animation_list = []
 
-player_backward_running_spritesheet = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Images\\Player\\Player Backward Running Animation.png").convert_alpha()
+player_backward_running_spritesheet = pygame.image.load("Game Attempts\\Images\\Player\\Player Backward Running Animation.png").convert_alpha()
 player_backward_running_animation_list = []
 
 def get_image_from_sheet(list,sheet,width,height):
@@ -314,7 +314,7 @@ class Corridor_Background(pygame.sprite.Sprite):
     def __init__(self, left_x_pos):
         super().__init__()
         self.left_x_pos = left_x_pos #-1280, 0, 1280
-        self.image = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Images\\Wall\\Wall Pixel.png").convert_alpha()
+        self.image = pygame.image.load("Game Attempts\\Images\\Wall\\Wall Pixel.png").convert_alpha()
         self.rect = self.image.get_rect(topleft = (left_x_pos,0))
 
     def destroy(self):
@@ -338,7 +338,7 @@ class Corridor_Floor(pygame.sprite.Sprite):
     def __init__(self, left_x_pos):
         super().__init__()
         self.left_x_pos = left_x_pos #-1280, 0, 1280
-        self.image = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Images\\Floor\\Floor Pixel.png").convert_alpha()
+        self.image = pygame.image.load("Game Attempts\\Images\\Floor\\Floor Pixel.png").convert_alpha()
         self.rect = self.image.get_rect(bottomleft = (left_x_pos,720))
 
     def destroy(self):
@@ -361,7 +361,7 @@ corridor_floor.add(Corridor_Floor(0),Corridor_Floor(SCREEN_WIDTH),Corridor_Floor
 class Corridor_Platform(pygame.sprite.Sprite):
     def __init__(self, topleft_x, topleft_y):
         super().__init__()
-        self.image = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Images\\Platform\\Platform.png").convert_alpha()
+        self.image = pygame.image.load("Game Attempts\\Images\\Platform\\Platform.png").convert_alpha()
         self.rect = self.image.get_rect(topleft = (topleft_x, topleft_y))
 
 
@@ -372,7 +372,7 @@ corridor_platforms.add(Corridor_Platform(400,400), Corridor_Platform(800,325), C
 class Corridor_Door(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.image = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Images\\Gate\\Gate Pixel.png").convert_alpha()
+        self.image = pygame.image.load("Game Attempts\\Images\\Gate\\Gate Pixel.png").convert_alpha()
         self.rect = self.image.get_rect(topleft = (right_forcefield - 350,160))
 
 corridor_door = pygame.sprite.GroupSingle()
@@ -381,7 +381,7 @@ corridor_door.add(Corridor_Door())
 class King_Text(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.image = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Images\\Text Box\\Kings Text Box Large.png").convert_alpha()
+        self.image = pygame.image.load("Game Attempts\\Images\\Text Box\\Kings Text Box Large.png").convert_alpha()
         self.rect = self.image.get_rect(bottomleft = (10,700))
         self.Display_box = False
         self.dialogue = []
@@ -428,7 +428,7 @@ king_text.add(King_Text())
 class Player_Thoughts(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.image = pygame.image.load("D:\\Blaze\\Holiday learning\\Python\\GitHub\\Ace-Repository\\Game Attempts\\Images\\Player Thoughts\\Thought Pixel.png").convert_alpha()
+        self.image = pygame.image.load("Game Attempts\\Images\\Player Thoughts\\Thought Pixel.png").convert_alpha()
         self.rect = self.image.get_rect(bottomright = (player.sprite.rect.x,player.sprite.rect.y))
         self.Display_box = False
         self.dialogue = []

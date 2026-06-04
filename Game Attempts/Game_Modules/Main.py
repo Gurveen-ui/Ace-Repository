@@ -46,7 +46,8 @@ while True:
         for event in pygame.event.get():
             if Pause.start_button.sprite.Mouse_Sprite_Collision == True  and event.type == pygame.MOUSEBUTTONDOWN:
                 paused = False
-            elif Start_Menu.exit_button.sprite.Mouse_Sprite_Collision == True  and event.type == pygame.MOUSEBUTTONDOWN:
+            elif Pause.exit_button.sprite.Mouse_Sprite_Collision == True  and event.type == pygame.MOUSEBUTTONDOWN:
+                print("hi")
                 pygame.quit()
                 exit()
             if event.type == pygame.QUIT:

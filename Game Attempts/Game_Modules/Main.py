@@ -15,15 +15,7 @@ pause_screen.fill((0,0,0))
 pause_screen.set_alpha(180)
 
 def pause_display():
-    if type == "Start_Menu":
-        Screen.fill((0,0,0))
-        Screen.blit(Start_Menu.Background, (0,0))
-        Screen.blit(Start_Menu.AkaKnight, Start_Menu.Title_Rect)
-        Screen.blit(Start_Menu.Knight, Start_Menu.Knight_Rect)
-        Start_Menu.start_button.draw(Screen)
-        Start_Menu.exit_button.draw(Screen)
-        Screen.blit(pause_screen, (0,0))
-    elif type == "Corridor":
+    if type == "Corridor":
         Screen.fill((0,0,0))
         Corridor.corridor_background.draw(Screen)
         Corridor.corridor_floor.draw(Screen)
@@ -35,19 +27,18 @@ def pause_display():
         Corridor.Screen.fill((0,0,0))
         Screen.blit(pause_screen, (0,0))
 clock = pygame.time.Clock()
+
 while True:
     keys = pygame.key.get_pressed()  
-    if keys[pygame.K_ESCAPE] and type == "Corridor" or type == "Courtyard":
+    if keys[pygame.K_ESCAPE] and (type == "Corridor" or type == "Courtyard"):
         if paused == False:
             paused = True
             
-    
     if paused == True:
         for event in pygame.event.get():
             if Pause.start_button.sprite.Mouse_Sprite_Collision == True  and event.type == pygame.MOUSEBUTTONDOWN:
                 paused = False
             elif Pause.exit_button.sprite.Mouse_Sprite_Collision == True  and event.type == pygame.MOUSEBUTTONDOWN:
-                print("hi")
                 pygame.quit()
                 exit()
             if event.type == pygame.QUIT:

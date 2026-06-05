@@ -54,7 +54,6 @@ while True:
         clock.tick(60)  
         continue
 
-
     if Start_Menu.section == "Start_Menu":
         for event in pygame.event.get():
             if Start_Menu.start_button.sprite.Mouse_Sprite_Collision == True  and event.type == pygame.MOUSEBUTTONDOWN:

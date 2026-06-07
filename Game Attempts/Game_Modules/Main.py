@@ -69,7 +69,7 @@ while True:
         Screen.blit(Start_Menu.Background, (0,0))
         Screen.blit(Start_Menu.AkaKnight, Start_Menu.Title_Rect)
         Screen.blit(Start_Menu.Knight, Start_Menu.Knight_Rect)
-        #pygame.draw.rect(Start_Menu.Screen, "red", (800, 300, 225, 300))
+        #pygame.draw.rect(Start_Menu.Screen, "red", (800, 300, 80, 80))
         Start_Menu.start_button.draw(Screen)
         Start_Menu.exit_button.draw(Screen)
         Start_Menu.start_button.update()

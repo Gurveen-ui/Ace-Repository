@@ -6,10 +6,10 @@ pygame.display.set_caption("Start Menu")
 
 section = "Start_Menu"
 
-Background = pygame.image.load("Game Attempts\\Images\\Start_Menu\\Background Pixel.png").convert_alpha()
-AkaKnight = pygame.image.load("Game Attempts\\Images\\Start_Menu\\AkaKnight Pixel.png").convert_alpha()
+Background = pygame.image.load("Game Attempts\\Images\\Start_Menu\\Background\\Background Pixel.png").convert_alpha()
+AkaKnight = pygame.image.load("Game Attempts\\Images\\Start_Menu\\\\Title\\AkaKnight Pixel.png").convert_alpha()
 Title_Rect = AkaKnight.get_rect(center = (640, 165))
-Knight = pygame.image.load("Game Attempts\\Images\\Start_Menu\\Knight Pixel.png").convert_alpha()
+Knight = pygame.image.load("Game Attempts\\Images\\Start_Menu\\Knight Display\\Knight Pixel.png").convert_alpha()
 Knight_Rect = Knight.get_rect(center = (935, 465))
 
 def Button_Hover(Button):

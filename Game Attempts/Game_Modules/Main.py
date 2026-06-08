@@ -7,6 +7,7 @@ Screen = pygame.display.set_mode((1280,720))
 import Pause
 import Start_Menu
 import Corridor
+import Courtyard
 
 type = "Start_Menu"
 paused = False
@@ -24,7 +25,8 @@ def pause_display():
         Corridor.player.draw(Screen)
         Screen.blit(pause_screen, (0,0))
     elif type == "Courtyard":
-        Corridor.Screen.fill((0,0,0))
+        Courtyard.Screen.fill((0,0,0))
+        Courtyard.sprite_group.draw(Screen)
         Screen.blit(pause_screen, (0,0))
 clock = pygame.time.Clock()
 
@@ -108,12 +110,13 @@ while True:
         #pygame.draw.rect(Corridor.Screen, "red", (100, 130, 300, 150))
         #pygame.draw.line(Corridor.Screen, "red", (640, 0), (640, 720), 5) # center line
         type = "Corridor"
-    elif Corridor.section == "Main_Courtyard":
+    elif Courtyard.section == "Main_Courtyard":
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 exit()
-        Corridor.Screen.fill((0,0,0))
+        Courtyard.Screen.fill((0,0,0))
+        Courtyard.sprite_group.draw(Screen)
         type = "Courtyard"
     pygame.display.update()
     clock.tick(60)

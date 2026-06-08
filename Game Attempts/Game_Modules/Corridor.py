@@ -290,7 +290,7 @@ class Player(pygame.sprite.Sprite):
         keys = pygame.key.get_pressed()
         for gate in Gates:
             if self.rect.colliderect(gate.rect) and keys[pygame.K_e]:
-                section = "Main_Courtyard" 
+                section = "Courtyard" 
 
 
 

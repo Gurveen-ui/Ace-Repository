@@ -5,6 +5,8 @@ pygame.init()
 Screen = pygame.display.set_mode((1280,720))
 pygame.display.set_caption("Courtyard")
 
+TOP_BOUND = 80
+BOTTOM_BOUND = 640
 RIGHT_BOUND = 1200
 LEFT_BOUND = 80
 
@@ -40,8 +42,8 @@ class Player(pygame.sprite.Sprite):
         self.position = vector(self.rect.center)
         self.velocity = vector(0,0)
         self.acceleration = vector(0,0)
-        self.ACCELERATION = 2
-        self.FRICTION = 0.18
+        self.ACCELERATION = 1.4
+        self.FRICTION = 0.2
 
 
 
@@ -77,6 +79,14 @@ class Player(pygame.sprite.Sprite):
             tile_movement = self.velocity
             sprite_group_movement("Horizontal", courtyard_tiles, -tile_movement.x)
             self.rect.left = LEFT_BOUND
+        if self.rect.top < TOP_BOUND:
+            tile_movement = self.velocity
+            sprite_group_movement("Vertical", courtyard_tiles, -tile_movement.y)
+            self.rect.top = TOP_BOUND
+        elif self.rect.bottom > BOTTOM_BOUND:
+            tile_movement = self.velocity
+            sprite_group_movement("Vertical", courtyard_tiles, -tile_movement.y)
+            self.rect.bottom = BOTTOM_BOUND
         self.position = self.rect.center
 
     def update(self):

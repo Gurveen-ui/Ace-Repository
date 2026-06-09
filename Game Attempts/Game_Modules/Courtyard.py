@@ -44,7 +44,7 @@ class Player(pygame.sprite.Sprite):
             pass
         elif keys[pygame.K_s]:
             pass
-        elif keys[pygame.K_QUOTEDBL]:
+        elif keys[pygame.K_d]:
             pass
 
     def update(self):

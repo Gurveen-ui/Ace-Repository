@@ -9,6 +9,8 @@ import Start_Menu
 import Corridor
 import Courtyard
 
+
+
 type = "Start_Menu"
 paused = False
 pause_screen = pygame.surface.Surface((1280,720))
@@ -119,6 +121,7 @@ while True:
         Courtyard.Screen.fill((0,0,0))
         Courtyard.courtyard_tiles.draw(Screen)
         Courtyard.player.draw(Screen)
+        Courtyard.player.update()
         type = "Courtyard"
     pygame.display.update()
     clock.tick(60)

@@ -10,6 +10,11 @@ BOTTOM_BOUND = 640
 RIGHT_BOUND = 1200
 LEFT_BOUND = 80
 
+left_forcefield = 0
+right_forcefield = 6400
+top_forcefield = -2080
+bottom_forcefield = 720
+
 tmx_data = load_pygame("Game Attempts\\Tiled\\tmx\\Courtyard Map.tmx")
 
 
@@ -42,8 +47,8 @@ class Player(pygame.sprite.Sprite):
         self.position = vector(self.rect.center)
         self.velocity = vector(0,0)
         self.acceleration = vector(0,0)
-        self.ACCELERATION = 1.4
-        self.FRICTION = 0.2
+        self.ACCELERATION = 1
+        self.FRICTION = -0.15
 
 
 
@@ -56,43 +61,87 @@ class Player(pygame.sprite.Sprite):
             self.acceleration.y = -self.ACCELERATION
         elif keys[pygame.K_s]:
             self.acceleration.y = self.ACCELERATION
+        else:
+            self.acceleration.y = 0
         if keys[pygame.K_a] and keys[pygame.K_d]:
             self.acceleration.x = 0
         elif keys[pygame.K_a]:
             self.acceleration.x = -self.ACCELERATION
         elif keys[pygame.K_d]:
             self.acceleration.x = self.ACCELERATION
+        else:
+            self.acceleration.x = 0
 
     def Apply_Movement(self):
-        self.acceleration.x -= self.velocity.x * self.FRICTION
-        self.acceleration.y -= self.velocity.y * self.FRICTION
+        self.acceleration.x += self.velocity.x * self.FRICTION
+        self.acceleration.y += self.velocity.y * self.FRICTION
         self.velocity += self.acceleration
-        self.position += self.velocity + (0.5 * self.acceleration)
+        if abs(self.velocity.x) < 0.2:
+            self.velocity.x = 0
+        if abs(self.velocity.y) < 0.2:
+            self.velocity.y = 0
+        if abs(self.acceleration.x) < 0.2:
+            self.acceleration.x = 0
+        if abs(self.acceleration.y) < 0.2:
+            self.acceleration.y = 0
+        self.position += self.velocity
         self.rect.center = self.position  
     
     def Check_Boundaries(self):
-        if self.rect.right > RIGHT_BOUND:
-            tile_movement = self.velocity
-            sprite_group_movement("Horizontal", courtyard_tiles, -tile_movement.x)
-            self.rect.right = RIGHT_BOUND
-        elif self.rect.left < LEFT_BOUND:
-            tile_movement = self.velocity
-            sprite_group_movement("Horizontal", courtyard_tiles, -tile_movement.x)
+        global left_forcefield, right_forcefield, top_forcefield, bottom_forcefield
+        tile_movement = self.velocity
+        if self.rect.left -80 <= left_forcefield:
             self.rect.left = LEFT_BOUND
-        if self.rect.top < TOP_BOUND:
-            tile_movement = self.velocity
-            sprite_group_movement("Vertical", courtyard_tiles, -tile_movement.y)
+            self.at_forcefield = True
+        elif self.rect.right + 80 >= right_forcefield:
+            self.rect.right = RIGHT_BOUND
+            self.at_forcefield = True
+        else:
+            self.at_horizontal_forcefield = False
+        if self.rect.top -80 <= top_forcefield:
             self.rect.top = TOP_BOUND
-        elif self.rect.bottom > BOTTOM_BOUND:
-            tile_movement = self.velocity
-            sprite_group_movement("Vertical", courtyard_tiles, -tile_movement.y)
+            self.at_vertical_forcefield = True
+        elif self.rect.bottom + 80 >= bottom_forcefield:
             self.rect.bottom = BOTTOM_BOUND
+            self.at_vertical_forcefield = True
+        else:
+            self.at_vertical_forcefield = False
+        if self.at_horizontal_forcefield == False:
+             if self.rect.right > RIGHT_BOUND:
+                sprite_group_movement("Horizontal", courtyard_tiles, -tile_movement.x)
+                left_forcefield += -tile_movement.x
+                right_forcefield += -tile_movement.x
+                self.rect.right = RIGHT_BOUND
+             elif self.rect.left < LEFT_BOUND:
+                sprite_group_movement("Horizontal", courtyard_tiles, -tile_movement.x)
+                left_forcefield += -tile_movement.x
+                right_forcefield += tile_movement.x
+                self.rect.left = LEFT_BOUND
+        if self.at_vertical_forcefield == False:
+             if self.rect.top < TOP_BOUND:
+                sprite_group_movement("Vertical", courtyard_tiles, -tile_movement.y)
+                top_forcefield += -tile_movement.y
+                bottom_forcefield += -tile_movement.y
+                self.rect.top = TOP_BOUND
+             elif self.rect.bottom > BOTTOM_BOUND:
+                sprite_group_movement("Vertical", courtyard_tiles, -tile_movement.y)
+                top_forcefield += -tile_movement.y
+                bottom_forcefield += -tile_movement.y
+                self.rect.bottom = BOTTOM_BOUND
         self.position = self.rect.center
+
+    def Forcefield_Updates(self):
+        global left_forcefield, right_forcefield, top_forcefield, bottom_forcefield
+        right_forcefield = max([tl.rect.right for tl in courtyard_tiles])
+        left_forcefield = min([tl.rect.left for tl in courtyard_tiles])
+        top_forcefield = min([tl.rect.top for tl in courtyard_tiles])
+        bottom_forcefield = max([tl.rect.bottom for tl in courtyard_tiles])
 
     def update(self):
         self.Movement()
         self.Apply_Movement()
         self.Check_Boundaries()
+        self.Forcefield_Updates()
 
 
 player = pygame.sprite.GroupSingle()
@@ -104,10 +153,12 @@ class Courtyard_Tile(pygame.sprite.Sprite):
         super().__init__(Group)
         self.image = surface
         self.rect = self.image.get_rect(topleft = pos)
+    
+
+
 
 courtyard_tiles = pygame.sprite.Group()
 Extract_Tiles(Courtyard_Tile, "Sand", courtyard_tiles)
-
 
 
 

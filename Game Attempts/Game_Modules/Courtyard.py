@@ -139,11 +139,18 @@ class Player(pygame.sprite.Sprite):
         top_forcefield = min([tl.rect.top for tl in courtyard_tiles])
         bottom_forcefield = max([tl.rect.bottom for tl in courtyard_tiles])
 
+    def rotate(self):
+        if self.velocity == 0: pass
+        else:
+            pass
+
+
     def update(self):
         self.Movement()
         self.Apply_Movement()
         self.Check_Boundaries()
         self.Forcefield_Updates()
+        self.rotate()
 
 
 player = pygame.sprite.GroupSingle()

@@ -65,6 +65,9 @@ player_downward_animation_list = get_image_from_sheet(player_downward_animation_
 player_forward_running_animation_list = get_image_from_sheet(player_forward_running_animation_list, player_forward_running_spritesheet, 128, 128)
 player_backward_running_animation_list = get_image_from_sheet(player_backward_running_animation_list, player_backward_running_spritesheet, 128, 128)
 
+left_wall = pygame.image.load("Game Attempts\\Images\\Wall\\Left Wall Pixel.png").convert_alpha()
+right_wall = pygame.image.load("Game Attempts\\Images\\Wall\\Right Wall Pixel.png").convert_alpha()
+
 
 def sprite_group_movement(sprite_list, x_value):
     for sprite in sprite_list:
@@ -171,6 +174,7 @@ class Player(pygame.sprite.Sprite):
                     sprite_group_movement(corridor_floor, -depth)
                     sprite_group_movement(corridor_door, -depth)
                     sprite_group_movement(corridor_platforms, -depth)
+                    sprite_group_movement(corridor_side_walls, -depth)
                     left_forcefield += -depth
                     right_forcefield += -depth
                     self.rect.right = CENTER_RIGHT_BOUND
@@ -181,6 +185,7 @@ class Player(pygame.sprite.Sprite):
                     sprite_group_movement(corridor_floor, depth)
                     sprite_group_movement(corridor_door, depth)
                     sprite_group_movement(corridor_platforms, depth)
+                    sprite_group_movement(corridor_side_walls, depth)
                     left_forcefield += depth
                     right_forcefield += depth
                     self.rect.left = CENTER_LEFT_BOUND
@@ -191,6 +196,7 @@ class Player(pygame.sprite.Sprite):
                     sprite_group_movement(corridor_floor, -depth)
                     sprite_group_movement(corridor_door, -depth)
                     sprite_group_movement(corridor_platforms, -depth)
+                    sprite_group_movement(corridor_side_walls, -depth)
                     left_forcefield += -depth
                     right_forcefield += -depth
                     self.rect.right = RIGHT_BOUND
@@ -200,6 +206,7 @@ class Player(pygame.sprite.Sprite):
                     sprite_group_movement(corridor_floor, depth)
                     sprite_group_movement(corridor_door, depth)
                     sprite_group_movement(corridor_platforms, depth)
+                    sprite_group_movement(corridor_side_walls, depth)
                     left_forcefield += depth
                     right_forcefield += depth
                     self.rect.left = LEFT_BOUND
@@ -213,6 +220,7 @@ class Player(pygame.sprite.Sprite):
                     sprite_group_movement(corridor_floor, -NORMAL_MOVEMENT_SPEED)
                     sprite_group_movement(corridor_door, -NORMAL_MOVEMENT_SPEED)
                     sprite_group_movement(corridor_platforms, -NORMAL_MOVEMENT_SPEED)
+                    sprite_group_movement(corridor_side_walls, -NORMAL_MOVEMENT_SPEED)
                     left_forcefield -= NORMAL_MOVEMENT_SPEED
                     right_forcefield -= NORMAL_MOVEMENT_SPEED
             elif type == "Backward":
@@ -221,6 +229,7 @@ class Player(pygame.sprite.Sprite):
                     sprite_group_movement(corridor_floor, NORMAL_MOVEMENT_SPEED)
                     sprite_group_movement(corridor_door, NORMAL_MOVEMENT_SPEED)
                     sprite_group_movement(corridor_platforms, NORMAL_MOVEMENT_SPEED)
+                    sprite_group_movement(corridor_side_walls, NORMAL_MOVEMENT_SPEED)
                     left_forcefield += NORMAL_MOVEMENT_SPEED
                     right_forcefield += NORMAL_MOVEMENT_SPEED
         elif left_forcefield >= 0:
@@ -461,3 +470,12 @@ class Player_Thoughts(pygame.sprite.Sprite):
 
 thought_bubble = pygame.sprite.GroupSingle()
 thought_bubble.add(Player_Thoughts())
+
+class Corridor_Side_Wall(pygame.sprite.Sprite):
+    def __init__(self, image, topleft_x, topleft_y):
+        super().__init__()
+        self.image = image
+        self.rect = self.image.get_rect(topleft = (topleft_x, topleft_y))
+
+corridor_side_walls = pygame.sprite.Group()
+corridor_side_walls.add(Corridor_Side_Wall(left_wall, -80, 0), Corridor_Side_Wall(right_wall, 5120, 0))

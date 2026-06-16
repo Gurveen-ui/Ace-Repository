@@ -153,7 +153,6 @@ class Player(pygame.sprite.Sprite):
             angle_diff = (target_angle - self.current_angle) % 360
             if angle_diff > 180:
                 angle_diff -= 360
-            #print(angle)
             if abs(angle_diff) < self.rotation_speed:
                 self.current_angle = target_angle
             else:

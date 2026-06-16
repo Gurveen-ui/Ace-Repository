@@ -118,7 +118,7 @@ while True:
             if event.type == pygame.QUIT:
                 pygame.quit()
                 exit()
-        Courtyard.Screen.fill((0,0,0))
+        Screen.fill((0,0,0))
         Courtyard.courtyard_tiles.draw(Screen)
         Courtyard.player.draw(Screen)
         Courtyard.player.update()

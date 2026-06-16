@@ -43,12 +43,14 @@ class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         self.image = pygame.image.load("Game Attempts\\Images\\Courtyard\\Player\\Knight Top Down Test.png").convert_alpha()
-        self.rect = self.image.get_rect(center = (640, 360))
+        self.rect = self.image.get_rect(bottomleft = (80, 520))
         self.position = vector(self.rect.center)
         self.velocity = vector(0,0)
         self.acceleration = vector(0,0)
         self.ACCELERATION = 1
         self.FRICTION = -0.15
+        self.at_horizontal_forcefield = False
+        self.at_vertical_forcefield = False
 
 
 
@@ -153,12 +155,13 @@ class Courtyard_Tile(pygame.sprite.Sprite):
         super().__init__(Group)
         self.image = surface
         self.rect = self.image.get_rect(topleft = pos)
-    
+
 
 
 
 courtyard_tiles = pygame.sprite.Group()
 Extract_Tiles(Courtyard_Tile, "Sand", courtyard_tiles)
+Extract_Tiles(Courtyard_Tile, "Walls", courtyard_tiles)
 
 
 

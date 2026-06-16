@@ -1,4 +1,5 @@
 import pygame
+import math
 from pytmx.util_pygame import load_pygame
 pygame.init()
 
@@ -16,6 +17,7 @@ top_forcefield = -2080
 bottom_forcefield = 720
 
 tmx_data = load_pygame("Game Attempts\\Tiled\\tmx\\Courtyard Map.tmx")
+
 
 
 vector = pygame.math.Vector2
@@ -43,6 +45,7 @@ class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         self.image = pygame.image.load("Game Attempts\\Images\\Courtyard\\Player\\Knight Top Down Test.png").convert_alpha()
+        self.Pre_rotation_image = pygame.image.load("Game Attempts\\Images\\Courtyard\\Player\\Knight Top Down Test.png").convert_alpha()
         self.rect = self.image.get_rect(bottomleft = (80, 520))
         self.position = vector(self.rect.center)
         self.velocity = vector(0,0)
@@ -51,6 +54,8 @@ class Player(pygame.sprite.Sprite):
         self.FRICTION = -0.15
         self.at_horizontal_forcefield = False
         self.at_vertical_forcefield = False
+        self.current_angle = 0
+        self.rotation_speed = 10
 
 
 
@@ -75,16 +80,15 @@ class Player(pygame.sprite.Sprite):
             self.acceleration.x = 0
 
     def Apply_Movement(self):
-        self.acceleration.x += self.velocity.x * self.FRICTION
-        self.acceleration.y += self.velocity.y * self.FRICTION
+        self.velocity *= (1 + self.FRICTION)
         self.velocity += self.acceleration
-        if abs(self.velocity.x) < 0.2:
+        if abs(self.velocity.x) < 0.1:
             self.velocity.x = 0
-        if abs(self.velocity.y) < 0.2:
+        if abs(self.velocity.y) < 0.1:
             self.velocity.y = 0
-        if abs(self.acceleration.x) < 0.2:
+        if abs(self.acceleration.x) < 0.1:
             self.acceleration.x = 0
-        if abs(self.acceleration.y) < 0.2:
+        if abs(self.acceleration.y) < 0.1:
             self.acceleration.y = 0
         self.position += self.velocity
         self.rect.center = self.position  
@@ -140,9 +144,24 @@ class Player(pygame.sprite.Sprite):
         bottom_forcefield = max([tl.rect.bottom for tl in courtyard_tiles])
 
     def rotate(self):
-        if self.velocity == 0: pass
+        if self.acceleration.length_squared() == 0: pass
         else:
-            pass
+            y_distance = -self.velocity.y
+            x_distance = self.velocity.x
+            target_angle = math.degrees(math.atan2(y_distance,x_distance)) - 90
+
+            angle_diff = (target_angle - self.current_angle) % 360
+            if angle_diff > 180:
+                angle_diff -= 360
+            #print(angle)
+            if abs(angle_diff) < self.rotation_speed:
+                self.current_angle = target_angle
+            else:
+                self.current_angle += self.rotation_speed * (1 if angle_diff > 0 else -1)
+
+            rotated_image = pygame.transform.rotate(self.Pre_rotation_image, self.current_angle)
+            self.image = rotated_image
+            self.rect = self.image.get_rect(center=self.position)
 
 
     def update(self):

@@ -169,6 +169,7 @@ class Player(pygame.sprite.Sprite):
         self.Check_Boundaries()
         self.Forcefield_Updates()
         self.rotate()
+        #pygame.draw.rect(Screen, "red", self.rect)
 
 
 player = pygame.sprite.GroupSingle()

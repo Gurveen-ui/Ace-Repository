@@ -25,7 +25,7 @@ current_time = 0
 Movement_Stopped = False
 Royal_Font = pygame.font.Font("Game Attempts\\Font\\citadel_of_blackrose\\Citadel of Blackrose.ttf", 30)
 Royal_Font_Small = pygame.font.Font("Game Attempts\\Font\\citadel_of_blackrose\\Citadel of Blackrose.ttf", 20)
-section = "Corridr"
+section = "Corridor"
 start_time = 0
 
 player_still_image = pygame.image.load("Game Attempts\\Images\\Player\\Test Player Resized.png").convert_alpha()

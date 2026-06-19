@@ -10,6 +10,7 @@ TOP_BOUND = 80
 BOTTOM_BOUND = 640
 RIGHT_BOUND = 1200
 LEFT_BOUND = 80
+PLAYER_SIZE = (67,67)
 
 left_forcefield = 0
 right_forcefield = 6400
@@ -35,7 +36,7 @@ def sprite_group_movement(type, sprite_list, value):
              sprite.rect.y = sprite.rect.y + int(round(value))
 
 def Extract_Tiles(Class, Layer_Name, Group):
-    for layer in tmx_data.visible_layers:
+    for layer in tmx_data:
         if hasattr(layer, "data") and layer.name == Layer_Name:
             for x, y, surf in layer.tiles():
                 pos = (x * 80, (y * 80 - 2880))
@@ -44,11 +45,13 @@ def Extract_Tiles(Class, Layer_Name, Group):
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.image = pygame.image.load("Game Attempts\\Images\\Courtyard\\Player\\Knight Top Down Test.png").convert_alpha()
-        self.Pre_rotation_image = pygame.image.load("Game Attempts\\Images\\Courtyard\\Player\\Knight Top Down Test.png").convert_alpha()
+        self.image = pygame.image.load("Game Attempts\\Images\\Courtyard\\Player\\Knight Centered.png").convert_alpha()
+        self.Pre_rotation_image = self.image
         self.rect = self.image.get_rect(bottomleft = (80, 520))
         self.position = vector(self.rect.center)
         self.velocity = vector(0,0)
+        self.prior_velocity_x = 0
+        self.prior_velocity_y = 0
         self.acceleration = vector(0,0)
         self.ACCELERATION = 1
         self.FRICTION = -0.15
@@ -80,18 +83,25 @@ class Player(pygame.sprite.Sprite):
             self.acceleration.x = 0
 
     def Apply_Movement(self):
-        self.velocity *= (1 + self.FRICTION)
-        self.velocity += self.acceleration
+        self.velocity.x *= (1 + self.FRICTION)
+        self.velocity.x += self.acceleration.x
         if abs(self.velocity.x) < 0.1:
             self.velocity.x = 0
-        if abs(self.velocity.y) < 0.1:
-            self.velocity.y = 0
         if abs(self.acceleration.x) < 0.1:
             self.acceleration.x = 0
+        self.position.x += self.velocity.x
+        self.rect.center = self.position  
+        self.Collision_Check("Horizontal",collision_tiles)
+        
+        self.velocity.y *= (1 + self.FRICTION)
+        self.velocity.y += self.acceleration.y
+        if abs(self.velocity.y) < 0.1:
+            self.velocity.y = 0
         if abs(self.acceleration.y) < 0.1:
             self.acceleration.y = 0
-        self.position += self.velocity
-        self.rect.center = self.position  
+        self.position.y += self.velocity.y
+        self.rect.center = self.position
+        self.Collision_Check("Vertical",collision_tiles)
     
     def Check_Boundaries(self):
         global left_forcefield, right_forcefield, top_forcefield, bottom_forcefield
@@ -115,26 +125,30 @@ class Player(pygame.sprite.Sprite):
         if self.at_horizontal_forcefield == False:
              if self.rect.right > RIGHT_BOUND:
                 sprite_group_movement("Horizontal", courtyard_tiles, -tile_movement.x)
+                sprite_group_movement("Horizontal", collision_tiles, -tile_movement.x)
                 left_forcefield += -tile_movement.x
                 right_forcefield += -tile_movement.x
                 self.rect.right = RIGHT_BOUND
              elif self.rect.left < LEFT_BOUND:
                 sprite_group_movement("Horizontal", courtyard_tiles, -tile_movement.x)
+                sprite_group_movement("Horizontal", collision_tiles, -tile_movement.x)
                 left_forcefield += -tile_movement.x
                 right_forcefield += tile_movement.x
                 self.rect.left = LEFT_BOUND
         if self.at_vertical_forcefield == False:
              if self.rect.top < TOP_BOUND:
                 sprite_group_movement("Vertical", courtyard_tiles, -tile_movement.y)
+                sprite_group_movement("Vertical", collision_tiles, -tile_movement.y)
                 top_forcefield += -tile_movement.y
                 bottom_forcefield += -tile_movement.y
                 self.rect.top = TOP_BOUND
              elif self.rect.bottom > BOTTOM_BOUND:
                 sprite_group_movement("Vertical", courtyard_tiles, -tile_movement.y)
+                sprite_group_movement("Vertical", collision_tiles, -tile_movement.y)
                 top_forcefield += -tile_movement.y
                 bottom_forcefield += -tile_movement.y
                 self.rect.bottom = BOTTOM_BOUND
-        self.position = self.rect.center
+        self.position = vector(self.rect.center)
 
     def Forcefield_Updates(self):
         global left_forcefield, right_forcefield, top_forcefield, bottom_forcefield
@@ -143,11 +157,11 @@ class Player(pygame.sprite.Sprite):
         top_forcefield = min([tl.rect.top for tl in courtyard_tiles])
         bottom_forcefield = max([tl.rect.bottom for tl in courtyard_tiles])
 
-    def rotate(self):
-        if self.acceleration.length_squared() == 0: pass
+    def Rotate(self):
+        if self.acceleration.length_squared() == 0 or self.velocity.length_squared() == 0: pass
         else:
-            y_distance = -self.velocity.y
-            x_distance = self.velocity.x
+            y_distance = -self.prior_velocity_y
+            x_distance = self.prior_velocity_x
             target_angle = math.degrees(math.atan2(y_distance,x_distance)) - 90
 
             angle_diff = (target_angle - self.current_angle) % 360
@@ -160,7 +174,33 @@ class Player(pygame.sprite.Sprite):
 
             rotated_image = pygame.transform.rotate(self.Pre_rotation_image, self.current_angle)
             self.image = rotated_image
-            self.rect = self.image.get_rect(center=self.position)
+            #self.rect = pygame.rect.Rect()
+            self.rect = self.image.get_rect(center= self.position, size = PLAYER_SIZE)
+
+    def Collision_Check(self, type, tiles):
+        
+        if type == "Horizontal":
+            self.prior_velocity_x = self.velocity.x
+            for tile in tiles:
+                if self.rect.colliderect(tile.rect):
+                    if self.velocity.x > 0:
+                        self.rect.right = tile.rect.left
+                        self.velocity.x = 0
+                    elif self.velocity.x < 0:
+                        self.rect.left = tile.rect.right
+                        self.velocity.x = 0
+        elif type == "Vertical":
+            self.prior_velocity_y = self.velocity.y
+            for tile in tiles:
+                if self.rect.colliderect(tile.rect):
+                    if self.velocity.y > 0:
+                        self.rect.bottom = tile.rect.top
+                        self.velocity.y = 0
+                    elif self.velocity.y < 0:
+                        self.rect.top = tile.rect.bottom
+                        self.velocity.y = 0
+        self.position = vector(self.rect.center)
+                    
 
 
     def update(self):
@@ -168,7 +208,7 @@ class Player(pygame.sprite.Sprite):
         self.Apply_Movement()
         self.Check_Boundaries()
         self.Forcefield_Updates()
-        self.rotate()
+        self.Rotate()
         #pygame.draw.rect(Screen, "red", self.rect)
 
 
@@ -186,8 +226,10 @@ class Courtyard_Tile(pygame.sprite.Sprite):
 
 
 courtyard_tiles = pygame.sprite.Group()
+collision_tiles = pygame.sprite.Group()
 Extract_Tiles(Courtyard_Tile, "Sand", courtyard_tiles)
 Extract_Tiles(Courtyard_Tile, "Walls", courtyard_tiles)
+Extract_Tiles(Courtyard_Tile, "Wall_Hit", collision_tiles)
 
 
 

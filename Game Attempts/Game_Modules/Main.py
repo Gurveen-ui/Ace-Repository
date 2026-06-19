@@ -25,6 +25,7 @@ def pause_display():
         Corridor.corridor_side_walls.draw(Screen)
         Corridor.corridor_door.draw(Screen)
         Corridor.corridor_platforms.draw(Screen)
+        Corridor.corridor_signs.draw(Screen)
         Corridor.player.draw(Screen)
         Screen.blit(pause_screen, (0,0))
     elif type == "Courtyard":

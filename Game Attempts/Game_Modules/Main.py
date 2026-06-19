@@ -112,7 +112,7 @@ while True:
         Corridor.player.update() 
         Corridor.king_text.update()
         Corridor.thought_bubble.update()
-        #pygame.draw.rect(Corridor.Screen, "red", (100, 130, 300, 150))
+        #pygame.draw.rect(Corridor.Screen, "red", (100, 200, 300, 150))
         #pygame.draw.line(Corridor.Screen, "red", (640, 0), (640, 720), 5) # center line
         type = "Corridor"
     elif Courtyard.section == "Courtyard":

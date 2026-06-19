@@ -272,6 +272,7 @@ class Player(pygame.sprite.Sprite):
                 section = "Courtyard" 
 
     def Foreground_Movement(self, speed):
+        global left_forcefield, right_forcefield
         sprite_group_movement(corridor_floor, speed)
         sprite_group_movement(corridor_door, speed)
         sprite_group_movement(corridor_platforms, speed)

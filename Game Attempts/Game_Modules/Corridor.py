@@ -25,7 +25,7 @@ current_time = 0
 Movement_Stopped = False
 Royal_Font = pygame.font.Font("Game Attempts\\Font\\citadel_of_blackrose\\Citadel of Blackrose.ttf", 30)
 Royal_Font_Small = pygame.font.Font("Game Attempts\\Font\\citadel_of_blackrose\\Citadel of Blackrose.ttf", 20)
-section = "Corridr"
+section = "Corridor"
 start_time = 0
 
 player_still_image = pygame.image.load("Game Attempts\\Images\\Player\\Test Player Resized.png").convert_alpha()
@@ -171,44 +171,24 @@ class Player(pygame.sprite.Sprite):
                 if self.rect.right > CENTER_RIGHT_BOUND:
                     depth = self.rect.right - CENTER_RIGHT_BOUND
                     sprite_group_movement(corridor_background, int(-depth / 3))
-                    sprite_group_movement(corridor_floor, -depth)
-                    sprite_group_movement(corridor_door, -depth)
-                    sprite_group_movement(corridor_platforms, -depth)
-                    sprite_group_movement(corridor_side_walls, -depth)
-                    left_forcefield += -depth
-                    right_forcefield += -depth
+                    self.Foreground_Movement(-depth)
                     self.rect.right = CENTER_RIGHT_BOUND
             elif type == "Left":
                 if self.rect.left < CENTER_LEFT_BOUND:
                     depth = CENTER_LEFT_BOUND - self.rect.left
                     sprite_group_movement(corridor_background, int(depth / 3))
-                    sprite_group_movement(corridor_floor, depth)
-                    sprite_group_movement(corridor_door, depth)
-                    sprite_group_movement(corridor_platforms, depth)
-                    sprite_group_movement(corridor_side_walls, depth)
-                    left_forcefield += depth
-                    right_forcefield += depth
+                    self.Foreground_Movement(depth)
                     self.rect.left = CENTER_LEFT_BOUND
             else:
                 if self.rect.right > RIGHT_BOUND:
                     depth = self.rect.right - RIGHT_BOUND
                     sprite_group_movement(corridor_background, int(-depth / 3))
-                    sprite_group_movement(corridor_floor, -depth)
-                    sprite_group_movement(corridor_door, -depth)
-                    sprite_group_movement(corridor_platforms, -depth)
-                    sprite_group_movement(corridor_side_walls, -depth)
-                    left_forcefield += -depth
-                    right_forcefield += -depth
+                    self.Foreground_Movement(-depth)
                     self.rect.right = RIGHT_BOUND
                 elif self.rect.left < LEFT_BOUND:
                     depth = LEFT_BOUND - self.rect.left
                     sprite_group_movement(corridor_background, int(depth / 3))
-                    sprite_group_movement(corridor_floor, depth)
-                    sprite_group_movement(corridor_door, depth)
-                    sprite_group_movement(corridor_platforms, depth)
-                    sprite_group_movement(corridor_side_walls, depth)
-                    left_forcefield += depth
-                    right_forcefield += depth
+                    self.Foreground_Movement(depth)
                     self.rect.left = LEFT_BOUND
     
     def Normal_Movement(self, type):
@@ -217,21 +197,11 @@ class Player(pygame.sprite.Sprite):
             if type == "Forward":
                 if self.at_forcefield == False:
                     sprite_group_movement(corridor_background, -BACKGROUND_MOVEMENT_SPEED)
-                    sprite_group_movement(corridor_floor, -NORMAL_MOVEMENT_SPEED)
-                    sprite_group_movement(corridor_door, -NORMAL_MOVEMENT_SPEED)
-                    sprite_group_movement(corridor_platforms, -NORMAL_MOVEMENT_SPEED)
-                    sprite_group_movement(corridor_side_walls, -NORMAL_MOVEMENT_SPEED)
-                    left_forcefield -= NORMAL_MOVEMENT_SPEED
-                    right_forcefield -= NORMAL_MOVEMENT_SPEED
+                    self.Foreground_Movement(-NORMAL_MOVEMENT_SPEED)
             elif type == "Backward":
                 if self.at_forcefield == False:
                     sprite_group_movement(corridor_background, BACKGROUND_MOVEMENT_SPEED)
-                    sprite_group_movement(corridor_floor, NORMAL_MOVEMENT_SPEED)
-                    sprite_group_movement(corridor_door, NORMAL_MOVEMENT_SPEED)
-                    sprite_group_movement(corridor_platforms, NORMAL_MOVEMENT_SPEED)
-                    sprite_group_movement(corridor_side_walls, NORMAL_MOVEMENT_SPEED)
-                    left_forcefield += NORMAL_MOVEMENT_SPEED
-                    right_forcefield += NORMAL_MOVEMENT_SPEED
+                    self.Foreground_Movement(NORMAL_MOVEMENT_SPEED)
         elif left_forcefield >= 0:
             if type == "Forward":
                 self.rect.x += NORMAL_MOVEMENT_SPEED
@@ -301,6 +271,13 @@ class Player(pygame.sprite.Sprite):
             if self.rect.colliderect(gate.rect) and keys[pygame.K_e]:
                 section = "Courtyard" 
 
+    def Foreground_Movement(self, speed):
+        sprite_group_movement(corridor_floor, speed)
+        sprite_group_movement(corridor_door, speed)
+        sprite_group_movement(corridor_platforms, speed)
+        sprite_group_movement(corridor_side_walls, speed)
+        left_forcefield += speed
+        right_forcefield += speed
 
 
     def update(self):

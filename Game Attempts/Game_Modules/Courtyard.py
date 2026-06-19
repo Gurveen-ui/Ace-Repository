@@ -45,7 +45,7 @@ def Extract_Tiles(Class, Layer_Name, Group):
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.image = pygame.image.load("Game Attempts\\Images\\Courtyard\\Player\\Knight Centered.png").convert_alpha()
+        self.image = pygame.image.load("Game Attempts\\Images\\Courtyard\\Player\\Knight Top Down Test.png").convert_alpha()
         self.Pre_rotation_image = self.image
         self.rect = self.image.get_rect(bottomleft = (80, 520))
         self.position = vector(self.rect.center)

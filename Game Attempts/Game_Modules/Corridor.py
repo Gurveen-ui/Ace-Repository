@@ -277,6 +277,7 @@ class Player(pygame.sprite.Sprite):
         sprite_group_movement(corridor_door, speed)
         sprite_group_movement(corridor_platforms, speed)
         sprite_group_movement(corridor_side_walls, speed)
+        sprite_group_movement(corridor_signs, speed)
         left_forcefield += speed
         right_forcefield += speed
 
@@ -448,6 +449,17 @@ class Player_Thoughts(pygame.sprite.Sprite):
 
 thought_bubble = pygame.sprite.GroupSingle()
 thought_bubble.add(Player_Thoughts())
+
+class Corridor_Sign(pygame.sprite.Sprite):
+    def __init__(self, sign, topleft_x, topleft_y):
+        super().__init__()
+        if sign == "A_D":
+            self.image = pygame.image.load("Game Attempts\\Images\\Signs\\A_D Sign Pixel.png").convert_alpha()
+        elif sign == "E":
+            self.image = pygame.image.load("Game Attempts\\Images\\Signs\\E Sign Pixel.png").convert_alpha()
+        self.rect = self.image.get_rect(topleft = (topleft_x, topleft_y))
+corridor_signs = pygame.sprite.Group()
+corridor_signs.add(Corridor_Sign("A_D", 70, 100), Corridor_Sign("E", right_forcefield - 750, 40))
 
 class Corridor_Side_Wall(pygame.sprite.Sprite):
     def __init__(self, image, topleft_x, topleft_y):

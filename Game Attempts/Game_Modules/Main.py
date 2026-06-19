@@ -103,6 +103,7 @@ while True:
         Corridor.corridor_side_walls.draw(Screen)
         Corridor.corridor_door.draw(Screen)
         Corridor.corridor_platforms.draw(Screen)
+        Corridor.corridor_signs.draw(Screen)
         Corridor.player.draw(Screen)
         #Screen.blit(Corridor.text, (100,100))
         #Corridor.king_text.draw(Screen)
@@ -112,7 +113,7 @@ while True:
         Corridor.player.update() 
         Corridor.king_text.update()
         Corridor.thought_bubble.update()
-        #pygame.draw.rect(Corridor.Screen, "red", (100, 200, 300, 150))
+        #pygame.draw.rect(Corridor.Screen, "red", (70, 100, 400, 150))
         #pygame.draw.line(Corridor.Screen, "red", (640, 0), (640, 720), 5) # center line
         type = "Corridor"
     elif Courtyard.section == "Courtyard":

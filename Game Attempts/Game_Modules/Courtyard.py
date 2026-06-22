@@ -104,50 +104,32 @@ class Player(pygame.sprite.Sprite):
         self.Collision_Check("Vertical",collision_tiles)
     
     def Check_Boundaries(self):
-        global left_forcefield, right_forcefield, top_forcefield, bottom_forcefield
+        global top_forcefield, bottom_forcefield, right_forcefield, left_forcefield
         tile_movement = self.velocity
-        if self.rect.left -80 <= left_forcefield:
-            self.rect.left = LEFT_BOUND
-            self.at_forcefield = True
-        elif self.rect.right + 80 >= right_forcefield:
+        if self.rect.right > RIGHT_BOUND:
+            sprite_group_movement("Horizontal", courtyard_tiles, -tile_movement.x)
+            sprite_group_movement("Horizontal", collision_tiles, -tile_movement.x)
+            left_forcefield += -tile_movement.x
+            right_forcefield += -tile_movement.x
             self.rect.right = RIGHT_BOUND
-            self.at_forcefield = True
-        else:
-            self.at_horizontal_forcefield = False
-        if self.rect.top -80 <= top_forcefield:
+        elif self.rect.left < LEFT_BOUND:
+            sprite_group_movement("Horizontal", courtyard_tiles, -tile_movement.x)
+            sprite_group_movement("Horizontal", collision_tiles, -tile_movement.x)
+            left_forcefield += -tile_movement.x
+            right_forcefield += tile_movement.x
+            self.rect.left = LEFT_BOUND
+        if self.rect.top < TOP_BOUND:
+            sprite_group_movement("Vertical", courtyard_tiles, -tile_movement.y)
+            sprite_group_movement("Vertical", collision_tiles, -tile_movement.y)
+            top_forcefield += -tile_movement.y
+            bottom_forcefield += -tile_movement.y
             self.rect.top = TOP_BOUND
-            self.at_vertical_forcefield = True
-        elif self.rect.bottom + 80 >= bottom_forcefield:
+        elif self.rect.bottom > BOTTOM_BOUND:
+            sprite_group_movement("Vertical", courtyard_tiles, -tile_movement.y)
+            sprite_group_movement("Vertical", collision_tiles, -tile_movement.y)
+            top_forcefield += -tile_movement.y
+            bottom_forcefield += -tile_movement.y
             self.rect.bottom = BOTTOM_BOUND
-            self.at_vertical_forcefield = True
-        else:
-            self.at_vertical_forcefield = False
-        if self.at_horizontal_forcefield == False:
-             if self.rect.right > RIGHT_BOUND:
-                sprite_group_movement("Horizontal", courtyard_tiles, -tile_movement.x)
-                sprite_group_movement("Horizontal", collision_tiles, -tile_movement.x)
-                left_forcefield += -tile_movement.x
-                right_forcefield += -tile_movement.x
-                self.rect.right = RIGHT_BOUND
-             elif self.rect.left < LEFT_BOUND:
-                sprite_group_movement("Horizontal", courtyard_tiles, -tile_movement.x)
-                sprite_group_movement("Horizontal", collision_tiles, -tile_movement.x)
-                left_forcefield += -tile_movement.x
-                right_forcefield += tile_movement.x
-                self.rect.left = LEFT_BOUND
-        if self.at_vertical_forcefield == False:
-             if self.rect.top < TOP_BOUND:
-                sprite_group_movement("Vertical", courtyard_tiles, -tile_movement.y)
-                sprite_group_movement("Vertical", collision_tiles, -tile_movement.y)
-                top_forcefield += -tile_movement.y
-                bottom_forcefield += -tile_movement.y
-                self.rect.top = TOP_BOUND
-             elif self.rect.bottom > BOTTOM_BOUND:
-                sprite_group_movement("Vertical", courtyard_tiles, -tile_movement.y)
-                sprite_group_movement("Vertical", collision_tiles, -tile_movement.y)
-                top_forcefield += -tile_movement.y
-                bottom_forcefield += -tile_movement.y
-                self.rect.bottom = BOTTOM_BOUND
         self.position = vector(self.rect.center)
 
     def Forcefield_Updates(self):
@@ -207,7 +189,7 @@ class Player(pygame.sprite.Sprite):
         self.Movement()
         self.Apply_Movement()
         self.Check_Boundaries()
-        self.Forcefield_Updates()
+        #self.Forcefield_Updates()
         self.Rotate()
         #pygame.draw.rect(Screen, "red", self.rect)
 

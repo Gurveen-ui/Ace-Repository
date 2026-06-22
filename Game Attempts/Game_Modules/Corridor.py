@@ -122,7 +122,9 @@ class Player(pygame.sprite.Sprite):
     def Movement(self):
         self.previous_frame_bottom = self.rect.bottom
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_d]:
+        if keys[pygame.K_d] and keys[pygame.K_a]:
+            pass
+        elif keys[pygame.K_d]:
             self.Normal_Movement("Forward")
         elif keys[pygame.K_a]:
             self.Normal_Movement("Backward")

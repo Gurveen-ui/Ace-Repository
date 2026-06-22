@@ -14,14 +14,14 @@
         },
         "C:/Users/gurve/Gurveen Kapoor/Repository/Ace-Repository/Game Attempts/Tiled/tsx/Walls.tsx": {
             "scaleInDock": 1,
-            "scaleInEditor": 3
+            "scaleInEditor": 1.5
         },
         "Courtyard Map.tmx": {
-            "scale": 2,
+            "scale": 1.5,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 575.25,
-                "y": 3302.75
+                "x": 6090.333333333333,
+                "y": 2987.6666666666665
             }
         }
     },

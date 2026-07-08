@@ -17,11 +17,11 @@
             "scaleInEditor": 1.5
         },
         "Courtyard Map.tmx": {
-            "scale": 1.5,
+            "scale": 0.25,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 6090.333333333333,
-                "y": 2987.6666666666665
+                "x": 2238,
+                "y": 1950
             }
         }
     },

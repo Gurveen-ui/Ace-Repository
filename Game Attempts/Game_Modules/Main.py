@@ -132,6 +132,8 @@ while True:
         Courtyard.player.draw(Screen)
         Courtyard.player.update()
         type = "Courtyard"
+
+    Screen.blit((Corridor.Royal_Font.render(str(round(clock.get_fps())), False, (255,0,0))),(1280 - 90 ,720 - 50))
     pygame.display.update()
-    clock.tick(60)
+    clock.tick(10000)
     

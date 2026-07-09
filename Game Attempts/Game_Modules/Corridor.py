@@ -95,7 +95,7 @@ class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         self.image = player_still_image
-        self.rect = self.image.get_rect(bottomleft = (LEFT_BOUND,GROUND_LEVEL))
+        self.rect = self.image.get_rect(bottomleft = (CENTER_LEFT_BOUND ,GROUND_LEVEL))
         self.gravity = 0
         self.jump_count = 0
         self.previous_frame_bottom = self.rect.bottom
@@ -172,7 +172,7 @@ class Player(pygame.sprite.Sprite):
                     sprite_group_movement(corridor_background, int(depth / 3))
                     self.Foreground_Movement(depth)
                     self.rect.left = CENTER_LEFT_BOUND
-            else:
+            elif type == None:
                 if self.rect.right > RIGHT_BOUND:
                     depth = self.rect.right - RIGHT_BOUND
                     sprite_group_movement(corridor_background, int(-depth / 3))

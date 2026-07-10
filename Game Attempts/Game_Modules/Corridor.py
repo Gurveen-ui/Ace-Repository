@@ -9,8 +9,7 @@ FLOOR_HEIGHT = 38
 GROUND_LEVEL = 592 # point at which gravity cant pull player below
 LEFT_BOUND = 80 # x value player cant go past and moves background instead
 RIGHT_BOUND = 1200 # x value player cant go past and moves background instead
-CENTER_LEFT_BOUND = 576 # left border of central "cage"
-CENTER_RIGHT_BOUND = 704 # right border of central "cage"
+CENTER_BOUND = 640 # center of screen horizontally (holds player in center)
 LOWEST_PLATFORM = 450 # Y value of lowest platform to allow proper jumping
 PLATFORM_HEIGHT = 80 # Height of platforms
 NORMAL_MOVEMENT_SPEED = 9 # movement speed of player
@@ -95,7 +94,7 @@ class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         self.image = player_still_image
-        self.rect = self.image.get_rect(bottomleft = (CENTER_LEFT_BOUND ,GROUND_LEVEL))
+        self.rect = self.image.get_rect(bottomleft = (CENTER_BOUND - 40 ,GROUND_LEVEL))
         self.gravity = 0
         self.jump_count = 0
         self.previous_frame_bottom = self.rect.bottom
@@ -161,17 +160,17 @@ class Player(pygame.sprite.Sprite):
         else:
             self.at_forcefield = False
             if type == "Right":
-                if self.rect.right > CENTER_RIGHT_BOUND:
-                    depth = self.rect.right - CENTER_RIGHT_BOUND
+                if self.rect.centerx > CENTER_BOUND:
+                    depth = self.rect.centerx - CENTER_BOUND
                     sprite_group_movement(corridor_background, int(-depth / 3))
                     self.Foreground_Movement(-depth)
-                    self.rect.right = CENTER_RIGHT_BOUND
+                    self.rect.centerx = CENTER_BOUND
             elif type == "Left":
-                if self.rect.left < CENTER_LEFT_BOUND:
-                    depth = CENTER_LEFT_BOUND - self.rect.left
+                if self.rect.centerx < CENTER_BOUND:
+                    depth = CENTER_BOUND - self.rect.centerx
                     sprite_group_movement(corridor_background, int(depth / 3))
                     self.Foreground_Movement(depth)
-                    self.rect.left = CENTER_LEFT_BOUND
+                    self.rect.centerx = CENTER_BOUND
             elif type == None:
                 if self.rect.right > RIGHT_BOUND:
                     depth = self.rect.right - RIGHT_BOUND

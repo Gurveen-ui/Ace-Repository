@@ -109,26 +109,18 @@ class Player(pygame.sprite.Sprite):
         if self.rect.right > RIGHT_BOUND:
             sprite_group_movement("Horizontal", courtyard_tiles, -tile_movement.x)
             sprite_group_movement("Horizontal", collision_tiles, -tile_movement.x)
-            left_forcefield += -tile_movement.x
-            right_forcefield += -tile_movement.x
             self.rect.right = RIGHT_BOUND
         elif self.rect.left < LEFT_BOUND:
             sprite_group_movement("Horizontal", courtyard_tiles, -tile_movement.x)
             sprite_group_movement("Horizontal", collision_tiles, -tile_movement.x)
-            left_forcefield += -tile_movement.x
-            right_forcefield += tile_movement.x
             self.rect.left = LEFT_BOUND
         if self.rect.top < TOP_BOUND:
             sprite_group_movement("Vertical", courtyard_tiles, -tile_movement.y)
             sprite_group_movement("Vertical", collision_tiles, -tile_movement.y)
-            top_forcefield += -tile_movement.y
-            bottom_forcefield += -tile_movement.y
             self.rect.top = TOP_BOUND
         elif self.rect.bottom > BOTTOM_BOUND:
             sprite_group_movement("Vertical", courtyard_tiles, -tile_movement.y)
             sprite_group_movement("Vertical", collision_tiles, -tile_movement.y)
-            top_forcefield += -tile_movement.y
-            bottom_forcefield += -tile_movement.y
             self.rect.bottom = BOTTOM_BOUND
         self.position = vector(self.rect.center)
 
@@ -189,7 +181,7 @@ class Player(pygame.sprite.Sprite):
         self.Movement()
         self.Apply_Movement()
         self.Check_Boundaries()
-        #self.Forcefield_Updates()
+        self.Forcefield_Updates()
         self.Rotate()
         #pygame.draw.rect(Screen, "red", self.rect)
 
@@ -203,6 +195,7 @@ class Courtyard_Tile(pygame.sprite.Sprite):
         super().__init__(Group)
         self.image = surface
         self.rect = self.image.get_rect(topleft = pos)
+    
 
 
 

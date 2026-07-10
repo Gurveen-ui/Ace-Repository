@@ -27,8 +27,6 @@ class Start_Button(pygame.sprite.Sprite):
         self.Mouse_Sprite_Collision = False
         self.Hover_Image = pygame.image.load("Game Attempts\\Images\\Start_Menu\\Start Button\\Start Pixel Hover.png").convert_alpha()
         self.center = self.rect.center
-
-
     def update(self):
         Button_Hover(start_button)
 

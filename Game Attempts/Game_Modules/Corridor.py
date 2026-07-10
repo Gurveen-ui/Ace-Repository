@@ -12,7 +12,7 @@ RIGHT_BOUND = 1200 # x value player cant go past and moves background instead
 CENTER_BOUND = 640 # center of screen horizontally (holds player in center)
 LOWEST_PLATFORM = 450 # Y value of lowest platform to allow proper jumping
 PLATFORM_HEIGHT = 80 # Height of platforms
-NORMAL_MOVEMENT_SPEED = 9 # movement speed of player
+NORMAL_MOVEMENT_SPEED = 12 # movement speed of player
 BACKGROUND_MOVEMENT_SPEED = 7 # movement speed of background
 SCREEN_WIDTH = 1280 # width of screen
 KING_TEXT = ["My Knight!!"," The princess is getting married today,"," you must put your life on the line"," to ensure nothing goes wrong."," Continue on to the courtyard!"] # texts that the king will speak
@@ -24,10 +24,10 @@ current_time = 0 # time
 Movement_Stopped = False # if movement is stopped due to speech
 Royal_Font = pygame.font.Font("Game Attempts\\Font\\citadel_of_blackrose\\Citadel of Blackrose.ttf", 30) # text font
 Royal_Font_Small = pygame.font.Font("Game Attempts\\Font\\citadel_of_blackrose\\Citadel of Blackrose.ttf", 20) # text font small
-section = "Corridor" # current section
+section = "Corridr" # current section
 start_time = 0 # time this section starts at
 
-player_still_image = pygame.image.load("Game Attempts\\Images\\Player\\Red Test Player.png").convert_alpha()
+player_still_image = pygame.image.load("Game Attempts\\Images\\Player\\Test Player Resized.png").convert_alpha()
 player_forward_spritesheet = pygame.image.load("Game Attempts\\Images\\Player\\Player Forward Animation.png").convert_alpha()
 player_forward_animation_list = []
 player_backward_spritesheet = pygame.image.load("Game Attempts\\Images\\Player\\Player Backward Animation.png").convert_alpha()
@@ -58,8 +58,8 @@ player_downward_animation_list = get_image_from_sheet(player_downward_animation_
 player_forward_running_animation_list = get_image_from_sheet(player_forward_running_animation_list, player_forward_running_spritesheet, 128, 128)
 player_backward_running_animation_list = get_image_from_sheet(player_backward_running_animation_list, player_backward_running_spritesheet, 128, 128)
 
-left_wall = pygame.image.load("Game Attempts\\Images\\Wall\\Test Side Wall.png").convert_alpha()
-right_wall = pygame.image.load("Game Attempts\\Images\\Wall\\Test Side Wall.png").convert_alpha()
+left_wall = pygame.image.load("Game Attempts\\Images\\Wall\\Side Walls\\Left Wall Pixel.png").convert_alpha()
+right_wall = pygame.image.load("Game Attempts\\Images\\Wall\\Side Walls\\Right Wall Pixel.png").convert_alpha()
 
 
 def sprite_group_movement(sprite_list, x_value):
@@ -94,7 +94,7 @@ class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         self.image = player_still_image
-        self.rect = self.image.get_rect(bottomleft = (CENTER_BOUND - 40 ,GROUND_LEVEL))
+        self.rect = self.image.get_rect(bottomleft = (LEFT_BOUND ,GROUND_LEVEL))
         self.gravity = 0
         self.jump_count = 0
         self.previous_frame_bottom = self.rect.bottom
@@ -279,7 +279,7 @@ class Player(pygame.sprite.Sprite):
         current_time = pygame.time.get_ticks()
         if Movement_Stopped == False:
             self.Movement()
-            #self.Update_Animation()
+            self.Update_Animation()
         self.Apply_Gravity()
         self.Platform_Collisions(corridor_platforms)
         self.Gate_Check(corridor_door)
@@ -294,31 +294,37 @@ class Corridor_Background(pygame.sprite.Sprite):
     def __init__(self, left_x_pos):
         super().__init__()
         self.left_x_pos = left_x_pos #-1280, 0, 1280
-        self.image = pygame.image.load("Game Attempts\\Images\\Wall\\Test Wall.png").convert_alpha()
+        self.image = pygame.image.load("Game Attempts\\Images\\Wall\\New Walls\\Wall Pixel.png").convert_alpha()
         self.rect = self.image.get_rect(topleft = (left_x_pos,0))
+
+    def add(self):
+        rightmost = max([bg.rect.right for bg in corridor_background])
+        leftmost = min([bg.rect.left for bg in corridor_background])
+        if self.rect.right < SCREEN_WIDTH and rightmost < SCREEN_WIDTH:
+            corridor_background.add(Corridor_Background(rightmost))
+        elif self.rect.left > 0 and leftmost > 0:
+            corridor_background.add(Corridor_Background(leftmost - SCREEN_WIDTH))
+
 
     def destroy(self):
         if self.rect.right <= 0:
-            rightmost = max([bg.rect.right for bg in corridor_background])
-            corridor_background.add(Corridor_Background(rightmost))
             self.kill()
         elif self.rect.left >= SCREEN_WIDTH:
-            leftmost = min([bg.rect.left for bg in corridor_background])
-            corridor_background.add(Corridor_Background(leftmost - self.rect.width))
             self.kill()
 
     def update(self):
+        self.add()
         self.destroy()
 
 corridor_background = pygame.sprite.Group()
-corridor_background.add(Corridor_Background(-SCREEN_WIDTH), Corridor_Background(0), Corridor_Background(SCREEN_WIDTH))
+corridor_background.add(Corridor_Background(0))
 
 
 class Corridor_Floor(pygame.sprite.Sprite):
     def __init__(self, left_x_pos):
         super().__init__()
         self.left_x_pos = left_x_pos #-1280, 0, 1280
-        self.image = pygame.image.load("Game Attempts\\Images\\Floor\\Test Floor.png").convert_alpha()
+        self.image = pygame.image.load("Game Attempts\\Images\\Floor\\New Floor\\Floor Pixel.png").convert_alpha()
         self.rect = self.image.get_rect(bottomleft = (left_x_pos,720))
 
     def destroy(self):
@@ -341,7 +347,7 @@ corridor_floor.add(Corridor_Floor(0),Corridor_Floor(SCREEN_WIDTH),Corridor_Floor
 class Corridor_Platform(pygame.sprite.Sprite):
     def __init__(self, topleft_x, topleft_y):
         super().__init__()
-        self.image = pygame.image.load("Game Attempts\\Images\\Platform\\Test Platform.png").convert_alpha()
+        self.image = pygame.image.load("Game Attempts\\Images\\Platform\\Platform.png").convert_alpha()
         self.rect = self.image.get_rect(topleft = (topleft_x, topleft_y))
 
 
@@ -352,7 +358,7 @@ corridor_platforms.add(Corridor_Platform(400,400), Corridor_Platform(800,325), C
 class Corridor_Door(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.image = pygame.image.load("Game Attempts\\Images\\Gate\\Test Gate.png").convert_alpha()
+        self.image = pygame.image.load("Game Attempts\\Images\\Gate\\Gate Pixel.png").convert_alpha()
         self.rect = self.image.get_rect(topleft = (right_forcefield - 350,160))
 
 corridor_door = pygame.sprite.GroupSingle()
@@ -361,7 +367,7 @@ corridor_door.add(Corridor_Door())
 class King_Text(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.image = pygame.image.load("Game Attempts\\Images\\Text Box\\Test Kings Text Box.png").convert_alpha()
+        self.image = pygame.image.load("Game Attempts\\Images\\Text Box\\Kings Text Box Large.png").convert_alpha()
         self.rect = self.image.get_rect(bottomleft = (10,700))
         self.Display_box = False
         self.dialogue = []
@@ -408,7 +414,7 @@ king_text.add(King_Text())
 class Player_Thoughts(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.image = pygame.image.load("Game Attempts\\Images\\Player Thoughts\\Test Thought.png").convert_alpha()
+        self.image = pygame.image.load("Game Attempts\\Images\\Player Thoughts\\Thought Pixel.png").convert_alpha()
         self.rect = self.image.get_rect(bottomright = (player.sprite.rect.x,player.sprite.rect.y))
         self.Display_box = False
         self.dialogue = []
@@ -446,9 +452,9 @@ class Corridor_Sign(pygame.sprite.Sprite):
     def __init__(self, sign, topleft_x, topleft_y):
         super().__init__()
         if sign == "A_D":
-            self.image = pygame.image.load("Game Attempts\\Images\\Signs\\Test A_D Sign.png").convert_alpha()
+            self.image = pygame.image.load("Game Attempts\\Images\\Signs\\A_D Sign Pixel.png").convert_alpha()
         elif sign == "E":
-            self.image = pygame.image.load("Game Attempts\\Images\\Signs\\Test E Sign.png").convert_alpha()
+            self.image = pygame.image.load("Game Attempts\\Images\\Signs\\E Sign Pixel.png").convert_alpha()
         self.rect = self.image.get_rect(topleft = (topleft_x, topleft_y))
 corridor_signs = pygame.sprite.Group()
 corridor_signs.add(Corridor_Sign("A_D", 70, 100), Corridor_Sign("E", right_forcefield - 750, 40))

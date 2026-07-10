@@ -1,5 +1,5 @@
 {
-    "activeFile": "Courtyard Map.tmx",
+    "activeFile": "C:/Users/gurve/Gurveen Kapoor/Repository/Ace-Repository/Game Attempts/Tiled/tsx/Sand.tsx",
     "expandedProjectPaths": [
     ],
     "file.lastUsedOpenFilter": "All Files (*)",
@@ -17,11 +17,11 @@
             "scaleInEditor": 1.5
         },
         "Courtyard Map.tmx": {
-            "scale": 0.25,
+            "scale": 5.5,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 2238,
-                "y": 1950
+                "x": 3866.454545454546,
+                "y": 2711.727272727273
             }
         }
     },
@@ -33,9 +33,9 @@
     ],
     "project": "",
     "recentFiles": [
+        "Courtyard Map.tmx",
         "C:/Users/gurve/Gurveen Kapoor/Repository/Ace-Repository/Game Attempts/Tiled/tsx/Walls.tsx",
         "C:/Users/gurve/Gurveen Kapoor/Repository/Ace-Repository/Game Attempts/Tiled/tsx/Sand.tsx",
-        "Courtyard Map.tmx",
         "C:/Users/gurve/Gurveen Kapoor/Repository/Ace-Repository/Game Attempts/Tiled/tsx/Courtyard Sand.tsx"
     ],
     "tileset.lastUsedFormat": "tsx",

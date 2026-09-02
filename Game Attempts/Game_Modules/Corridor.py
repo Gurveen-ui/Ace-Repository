@@ -24,10 +24,10 @@ current_time = 0 # time
 Movement_Stopped = False # if movement is stopped due to speech
 Royal_Font = pygame.font.Font("Game Attempts\\Font\\citadel_of_blackrose\\Citadel of Blackrose.ttf", 30) # text font
 Royal_Font_Small = pygame.font.Font("Game Attempts\\Font\\citadel_of_blackrose\\Citadel of Blackrose.ttf", 20) # text font small
-section = "Corridr" # current section
+section = "Corridor" # current section
 start_time = 0 # time this section starts at
 
-player_still_image = pygame.image.load("Game Attempts\\Images\\Player\\Test Player Resized.png").convert_alpha()
+player_still_image = pygame.image.load("Game Attempts\\Images\\Player\\Test Player Still.png").convert_alpha()
 player_forward_spritesheet = pygame.image.load("Game Attempts\\Images\\Player\\Player Forward Animation.png").convert_alpha()
 player_forward_animation_list = []
 player_backward_spritesheet = pygame.image.load("Game Attempts\\Images\\Player\\Player Backward Animation.png").convert_alpha()
@@ -89,6 +89,16 @@ def Display_Dialogue(Box_class, X_Distance, Y_Distance, Line_Spacing, Font):
         line_count = 0
     if Box_class.text_paused == True:
         Box_class.pause_timer += 0.1
+
+def destroy(object,Group,Class):
+    if object.rect.right <= 0:
+        rightmost = max([obj.rect.right for obj in Group])
+        Class.add(Class(rightmost))
+        object.kill()
+    elif object.rect.left >= SCREEN_WIDTH:
+        leftmost = min([obj.rect.left for obj in Group])
+        Group.add(Class(leftmost - object.rect.width))
+        object.kill()
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
@@ -297,27 +307,12 @@ class Corridor_Background(pygame.sprite.Sprite):
         self.image = pygame.image.load("Game Attempts\\Images\\Wall\\New Walls\\Wall Pixel.png").convert_alpha()
         self.rect = self.image.get_rect(topleft = (left_x_pos,0))
 
-    def add(self):
-        rightmost = max([bg.rect.right for bg in corridor_background])
-        leftmost = min([bg.rect.left for bg in corridor_background])
-        if self.rect.right < SCREEN_WIDTH and rightmost < SCREEN_WIDTH:
-            corridor_background.add(Corridor_Background(rightmost))
-        elif self.rect.left > 0 and leftmost > 0:
-            corridor_background.add(Corridor_Background(leftmost - SCREEN_WIDTH))
-
-
-    def destroy(self):
-        if self.rect.right <= 0:
-            self.kill()
-        elif self.rect.left >= SCREEN_WIDTH:
-            self.kill()
-
     def update(self):
-        self.add()
-        self.destroy()
+        destroy(self,corridor_background,Corridor_Background)
+
 
 corridor_background = pygame.sprite.Group()
-corridor_background.add(Corridor_Background(0))
+corridor_background.add(Corridor_Background(0),Corridor_Background(SCREEN_WIDTH))
 
 
 class Corridor_Floor(pygame.sprite.Sprite):
@@ -327,22 +322,13 @@ class Corridor_Floor(pygame.sprite.Sprite):
         self.image = pygame.image.load("Game Attempts\\Images\\Floor\\New Floor\\Floor Pixel.png").convert_alpha()
         self.rect = self.image.get_rect(bottomleft = (left_x_pos,720))
 
-    def destroy(self):
-        if self.rect.right <= 0:
-            rightmost = max([flr.rect.right for flr in corridor_floor])
-            corridor_floor.add(Corridor_Floor(rightmost))
-            self.kill()
-        elif self.rect.left >= SCREEN_WIDTH:
-            leftmost = min([flr.rect.left for flr in corridor_floor])
-            corridor_floor.add(Corridor_Floor(leftmost - self.rect.width))
-            self.kill()
-
     def update(self):
-        self.destroy()
+        destroy(self,corridor_floor,Corridor_Floor)
+
 
 
 corridor_floor = pygame.sprite.Group()
-corridor_floor.add(Corridor_Floor(0),Corridor_Floor(SCREEN_WIDTH),Corridor_Floor(-SCREEN_WIDTH))
+corridor_floor.add(Corridor_Floor(0),Corridor_Floor(SCREEN_WIDTH))
 
 class Corridor_Platform(pygame.sprite.Sprite):
     def __init__(self, topleft_x, topleft_y):

@@ -93,8 +93,6 @@ while True:
                 elif event.key == pygame.K_SPACE and Corridor.player.sprite.jump_count > 0 and Corridor.player.sprite.jump_count < 2:
                     Corridor.player.sprite.gravity = -15
                     Corridor.player.sprite.jump_count += 1
-                if event.key == pygame.K_f: 
-                    print(clock.get_fps())
             if Corridor.king_text.sprite.Mouse_Sprite_Collision == True and event.type == pygame.MOUSEBUTTONDOWN:
                 Corridor.king_text.sprite.Remove_display = True
             if event.type == pygame.QUIT:
@@ -102,10 +100,10 @@ while True:
                 exit()
         Screen.fill((0,0,0))
         Corridor.corridor_background.draw(Screen)
-        Corridor.corridor_floor.draw(Screen)
         Corridor.corridor_side_walls.draw(Screen)
         Corridor.corridor_signs.draw(Screen)
         Corridor.corridor_door.draw(Screen)
+        Corridor.corridor_floor.draw(Screen)
         Corridor.player.draw(Screen)
         Corridor.corridor_platforms.draw(Screen)
         #Screen.blit(Corridor.text, (100,100))
@@ -121,9 +119,6 @@ while True:
         type = "Corridor"
     elif Courtyard.section == "Courtyard":
         for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_f:      
-                    print(clock.get_fps())
             if event.type == pygame.QUIT:
                 pygame.quit()
                 exit()

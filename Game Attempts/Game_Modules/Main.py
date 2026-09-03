@@ -94,12 +94,6 @@ while True:
                     Corridor.player.sprite.gravity = -15
                     Corridor.player.sprite.jump_count += 1
                 if event.key == pygame.K_f: 
-                    for obj in Corridor.corridor_floor:
-                        print("?", end="")
-                        print(obj.rect.centerx)
-                    for obj in Corridor.corridor_background:
-                        print("!", end="")
-                        print(obj.rect.centerx)
                     print(clock.get_fps())
             if Corridor.king_text.sprite.Mouse_Sprite_Collision == True and event.type == pygame.MOUSEBUTTONDOWN:
                 Corridor.king_text.sprite.Remove_display = True

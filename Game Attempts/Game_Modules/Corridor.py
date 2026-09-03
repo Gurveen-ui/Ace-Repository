@@ -93,7 +93,7 @@ def Display_Dialogue(Box_class, X_Distance, Y_Distance, Line_Spacing, Font):
 def destroy(object,Group,Class):
     if object.rect.right <= 0:
         rightmost = max([obj.rect.right for obj in Group])
-        Class.add(Class(rightmost))
+        Group.add(Class(rightmost))
         object.kill()
     elif object.rect.left >= SCREEN_WIDTH:
         leftmost = min([obj.rect.left for obj in Group])
@@ -377,6 +377,11 @@ class King_Text(pygame.sprite.Sprite):
     def update(self):
         global Movement_Stopped
         if self.Box_Displayed == False:
+            Mouse_x, Mouse_Y = pygame.mouse.get_pos()
+            if self.rect.collidepoint((Mouse_x, Mouse_Y)) and self.Display_box == True:
+                self.Mouse_Sprite_Collision = True
+            else:
+                self.Mouse_Sprite_Collision = False
             if current_time >= start_time + 5000 and self.Remove_display == False:
                 self.Display_box = True
             if self.pause_timer < 10 and self.Remove_display == False:
@@ -388,11 +393,6 @@ class King_Text(pygame.sprite.Sprite):
                 Movement_Stopped = False
                 self.Display_box = False
                 self.Box_Displayed = True
-        Mouse_x, Mouse_Y = pygame.mouse.get_pos()
-        if self.rect.collidepoint((Mouse_x, Mouse_Y)) and self.Display_box == True:
-            self.Mouse_Sprite_Collision = True
-        else:
-            self.Mouse_Sprite_Collision = False
 
 king_text = pygame.sprite.GroupSingle()
 king_text.add(King_Text())

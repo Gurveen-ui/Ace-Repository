@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tileset version="1.10" tiledversion="1.12.2" name="Sand" tilewidth="80" tileheight="80" tilecount="30" columns="3">
+ <grid orientation="orthogonal" width="80" height="80"/>
  <image source="../Tileset Images/Courtyard Sand.png" width="240" height="800"/>
  <tile id="19" probability="2"/>
  <tile id="20" probability="3"/>

@@ -11,6 +11,8 @@ BOTTOM_BOUND = 640
 RIGHT_BOUND = 1200
 LEFT_BOUND = 80
 PLAYER_SIZE = (67,67)
+SCREEN_WIDTH = 1280
+SCREEN_HEIGHT = 720
 
 left_forcefield = 0
 right_forcefield = 6400
@@ -35,11 +37,11 @@ def sprite_group_movement(type, sprite_list, value):
          for sprite in sprite_list:
              sprite.rect.y = sprite.rect.y + int(round(value))
 
-def Extract_Tiles(Class, Layer_Name, Group):
+def Extract_Tiles(Class, Layer_Name, Group, Side_length):
     for layer in tmx_data:
         if hasattr(layer, "data") and layer.name == Layer_Name:
             for x, y, surf in layer.tiles():
-                pos = (x * 80, (y * 80 - 2880))
+                pos = (x * Side_length, (y * Side_length - 2880)) # -200, -3000
                 Class(pos, surf, Group)
 
 class Player(pygame.sprite.Sprite):
@@ -202,9 +204,9 @@ class Courtyard_Tile(pygame.sprite.Sprite):
 
 courtyard_tiles = pygame.sprite.Group()
 collision_tiles = pygame.sprite.Group()
-Extract_Tiles(Courtyard_Tile, "Sand", courtyard_tiles)
-Extract_Tiles(Courtyard_Tile, "Walls", courtyard_tiles)
-Extract_Tiles(Courtyard_Tile, "Wall_Hit", collision_tiles)
+Extract_Tiles(Courtyard_Tile, "Sand", courtyard_tiles, 80)
+Extract_Tiles(Courtyard_Tile, "Walls", courtyard_tiles, 80)
+Extract_Tiles(Courtyard_Tile, "Wall_Hit", collision_tiles, 80)
 
 
 

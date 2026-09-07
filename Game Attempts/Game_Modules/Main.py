@@ -126,10 +126,10 @@ while True:
         for tile in Courtyard.courtyard_tiles:
             if tile.rect.right > 0 and tile.rect.left < Courtyard.SCREEN_WIDTH and tile.rect.top < Courtyard.SCREEN_HEIGHT and tile.rect.bottom > 0:
                Screen.blit(tile.image,tile.rect)
+        #pygame.draw.rect(Screen, "red", (80,320,320,320))
         Courtyard.player.draw(Screen)
         Courtyard.player.update()
         type = "Courtyard"
-
     Screen.blit((Corridor.Royal_Font.render(str(round(clock.get_fps())), False, (255,0,0))),(1280 - 90 ,720 - 50))
     pygame.display.update()
     clock.tick(60)

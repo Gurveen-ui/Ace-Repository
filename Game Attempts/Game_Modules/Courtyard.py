@@ -49,7 +49,7 @@ class Player(pygame.sprite.Sprite):
         super().__init__()
         self.image = pygame.image.load("Game Attempts\\Images\\Courtyard\\Player\\Knight Top Down Test.png").convert_alpha()
         self.Pre_rotation_image = self.image
-        self.rect = self.image.get_rect(bottomleft = (80, 520))
+        self.rect = self.image.get_rect(bottomleft = (90, 220))
         self.position = vector(self.rect.center)
         self.velocity = vector(0,0)
         self.prior_velocity_x = 0

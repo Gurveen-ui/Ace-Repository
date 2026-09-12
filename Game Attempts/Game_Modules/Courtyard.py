@@ -14,10 +14,6 @@ PLAYER_SIZE = (67,67)
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
 
-left_forcefield = 0
-right_forcefield = 6400
-top_forcefield = -2080
-bottom_forcefield = 720
 
 tmx_data = load_pygame("Game Attempts\\Tiled\\tmx\\Courtyard Map.tmx")
 
@@ -106,7 +102,6 @@ class Player(pygame.sprite.Sprite):
         self.Collision_Check("Vertical",collision_tiles)
     
     def Check_Boundaries(self):
-        global top_forcefield, bottom_forcefield, right_forcefield, left_forcefield
         tile_movement = self.velocity
         if self.rect.right > RIGHT_BOUND:
             sprite_group_movement("Horizontal", courtyard_tiles, -tile_movement.x)
@@ -126,12 +121,6 @@ class Player(pygame.sprite.Sprite):
             self.rect.bottom = BOTTOM_BOUND
         self.position = vector(self.rect.center)
 
-    def Forcefield_Updates(self):
-        global left_forcefield, right_forcefield, top_forcefield, bottom_forcefield
-        right_forcefield = max([tl.rect.right for tl in courtyard_tiles])
-        left_forcefield = min([tl.rect.left for tl in courtyard_tiles])
-        top_forcefield = min([tl.rect.top for tl in courtyard_tiles])
-        bottom_forcefield = max([tl.rect.bottom for tl in courtyard_tiles])
 
     def Rotate(self):
         if self.acceleration.length_squared() == 0 or self.velocity.length_squared() == 0: pass
@@ -183,7 +172,6 @@ class Player(pygame.sprite.Sprite):
         self.Movement()
         self.Apply_Movement()
         self.Check_Boundaries()
-        self.Forcefield_Updates()
         self.Rotate()
         #pygame.draw.rect(Screen, "red", self.rect)
 

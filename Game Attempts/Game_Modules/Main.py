@@ -87,6 +87,8 @@ while True:
     elif Corridor.section == "Corridor":
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN and Corridor.Movement_Stopped == False:
+                if event.key == pygame.K_j:
+                    Corridor.section = "Courtyard"
                 if event.key == pygame.K_SPACE and Corridor.player.sprite.jump_count == 0:
                     Corridor.player.sprite.gravity = -20
                     Corridor.player.sprite.jump_count += 1

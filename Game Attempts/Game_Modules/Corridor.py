@@ -272,8 +272,6 @@ class Player(pygame.sprite.Sprite):
         for gate in Gates:
             if self.rect.colliderect(gate.rect) and keys[pygame.K_e]:
                 section = "Courtyard" 
-        if keys[pygame.K_j]:
-           section = "Courtyard"  
 
 
     def Foreground_Movement(self, speed):

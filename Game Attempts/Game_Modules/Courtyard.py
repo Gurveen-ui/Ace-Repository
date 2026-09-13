@@ -35,6 +35,12 @@ def draw_courtyard(surface):
         if screen_rect.colliderect(surface.get_rect()):
             surface.blit(tile.image, screen_rect)
 
+def draw_enemies(surface, enemy_group):
+    offset = (round(camera_offset.x),round(camera_offset.y))
+    for enemy in enemy_group:
+        screen_rect = enemy.world_rect.move(offset)
+        surface.blit(enemy.image, screen_rect)
+
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
@@ -185,3 +191,15 @@ collision_tiles = pygame.sprite.Group()
 Extract_Tiles(Courtyard_Tile, "Sand", courtyard_tiles, 80)
 Extract_Tiles(Courtyard_Tile, "Walls", courtyard_tiles, 80)
 Extract_Tiles(Courtyard_Tile, "Wall_Hit", collision_tiles, 80)
+
+
+class Courtyard_Enemies(pygame.sprite.Sprite):
+    def __init__(self, world_pos):
+        super().__init__()
+        self.image = pygame.image.load("Game Attempts\\Images\\Courtyard\\Player\\Knight Top Down Test.png").convert_alpha()
+        self.rect = self.image.get_rect(bottomleft = world_pos)
+        self.world_rect = self.rect
+
+
+enemies = pygame.sprite.Group()
+enemies.add(Courtyard_Enemies((400,300)))

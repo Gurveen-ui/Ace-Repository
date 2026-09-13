@@ -13,6 +13,8 @@ LEFT_BOUND = 80
 PLAYER_SIZE = (67,67)
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
+MAP_WIDTH = 80 * 80
+MAP_HEIGHT = 80 * 45
 
 
 
@@ -21,25 +23,26 @@ tmx_data = load_pygame("Game Attempts\\Tiled\\tmx\\Courtyard Map.tmx")
 
 
 vector = pygame.math.Vector2
-sprite_group = pygame.sprite.Group()
+camera_offset = vector(0,0)
 
 
 section = "Courtyard"
 
-def sprite_group_movement(type, sprite_list, value):
-     if type == "Horizontal":
-         for sprite in sprite_list:
-             sprite.rect.x = sprite.rect.x + int(round(value))
-     if type == "Vertical":
-         for sprite in sprite_list:
-             sprite.rect.y = sprite.rect.y + int(round(value))
+
 
 def Extract_Tiles(Class, Layer_Name, Group, Side_length):
     for layer in tmx_data:
         if hasattr(layer, "data") and layer.name == Layer_Name:
             for x, y, surf in layer.tiles():
-                pos = (x * Side_length, (y * Side_length - 2880)) # -200, -3000
-                Class(pos, surf, Group)
+                world_pos = vector(x * Side_length, (y * Side_length - 2880)) # -200, -3000
+                Class(world_pos, surf, Group)
+
+def draw_courtyard(surface):
+    offset = (round(camera_offset.x),round(camera_offset.y))
+    for tile in courtyard_tiles:
+        screen_rect = tile.world_rect.move(offset)
+        if screen_rect.colliderect(surface.get_rect()):
+            surface.blit(tile.image, screen_rect)
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
@@ -58,6 +61,7 @@ class Player(pygame.sprite.Sprite):
         self.at_vertical_forcefield = False
         self.current_angle = 0
         self.rotation_speed = 10
+        self.world_rect = self.rect
 
 
 
@@ -103,23 +107,27 @@ class Player(pygame.sprite.Sprite):
         self.Collision_Check("Vertical",collision_tiles)
     
     def Check_Boundaries(self):
+        global camera_offset
         tile_movement = self.velocity
         if self.rect.right > RIGHT_BOUND:
-            sprite_group_movement("Horizontal", courtyard_tiles, -tile_movement.x)
-            sprite_group_movement("Horizontal", collision_tiles, -tile_movement.x)
+            depth = self.rect.right - RIGHT_BOUND
+            camera_offset.x -= depth
             self.rect.right = RIGHT_BOUND
         elif self.rect.left < LEFT_BOUND:
-            sprite_group_movement("Horizontal", courtyard_tiles, -tile_movement.x)
-            sprite_group_movement("Horizontal", collision_tiles, -tile_movement.x)
+            depth = LEFT_BOUND - self.rect.left
+            camera_offset.x += depth
             self.rect.left = LEFT_BOUND
         if self.rect.top < TOP_BOUND:
-            sprite_group_movement("Vertical", courtyard_tiles, -tile_movement.y)
-            sprite_group_movement("Vertical", collision_tiles, -tile_movement.y)
+            depth = TOP_BOUND - self.rect.top
+            camera_offset.y += depth
             self.rect.top = TOP_BOUND
         elif self.rect.bottom > BOTTOM_BOUND:
-            sprite_group_movement("Vertical", courtyard_tiles, -tile_movement.y)
-            sprite_group_movement("Vertical", collision_tiles, -tile_movement.y)
+            depth = self.rect.bottom - BOTTOM_BOUND
+            camera_offset.y -= depth
             self.rect.bottom = BOTTOM_BOUND
+
+        camera_offset.x = max(SCREEN_WIDTH - MAP_WIDTH, min(0, camera_offset.x))
+        camera_offset.y = max(0, min(2880, camera_offset.y))
         self.position = vector(self.rect.center)
 
 
@@ -144,27 +152,31 @@ class Player(pygame.sprite.Sprite):
             self.rect = self.image.get_rect(center= self.position, size = PLAYER_SIZE)
 
     def Collision_Check(self, type, tiles):
-        
-        if type == "Horizontal":
-            self.prior_velocity_x = self.velocity.x
-            for tile in tiles:
-                if self.rect.colliderect(tile.rect):
-                    if self.velocity.x > 0:
-                        self.rect.right = tile.rect.left
-                        self.velocity.x = 0
-                    elif self.velocity.x < 0:
-                        self.rect.left = tile.rect.right
-                        self.velocity.x = 0
-        elif type == "Vertical":
-            self.prior_velocity_y = self.velocity.y
-            for tile in tiles:
-                if self.rect.colliderect(tile.rect):
-                    if self.velocity.y > 0:
-                        self.rect.bottom = tile.rect.top
-                        self.velocity.y = 0
-                    elif self.velocity.y < 0:
-                        self.rect.top = tile.rect.bottom
-                        self.velocity.y = 0
+        if type == "Horizontal": self.prior_velocity_x = self.velocity.x
+        else: self.prior_velocity_y = self.velocity.y
+
+        self.world_rect = self.rect.move(-round(camera_offset.x), -round(camera_offset.y))
+
+        for tile in tiles:
+            if not self.world_rect.colliderect(tile.world_rect):
+                continue
+
+            if type == "Horizontal":
+                if self.velocity.x > 0:
+                    self.world_rect.right = tile.world_rect.left
+                    self.velocity.x = 0
+                elif self.velocity.x < 0:
+                    self.world_rect.left = tile.world_rect.right
+                    self.velocity.x = 0
+            elif type == "Vertical":
+                if self.velocity.y > 0:
+                    self.world_rect.bottom = tile.world_rect.top
+                    self.velocity.y = 0
+                elif self.velocity.y < 0:
+                    self.world_rect.top = tile.world_rect.bottom
+                    self.velocity.y = 0
+        self.rect.topleft = (self.world_rect.left + round(camera_offset.x),
+                             self.world_rect.top + round(camera_offset.y))
         self.position = vector(self.rect.center)
                     
 
@@ -182,11 +194,12 @@ player.add(Player())
 
 
 class Courtyard_Tile(pygame.sprite.Sprite):
-    def __init__(self, pos, surface,Group):
+    def __init__(self, world_pos, surface,Group):
         super().__init__(Group)
         self.image = surface
-        self.rect = self.image.get_rect(topleft = pos)
-    
+        self.rect = self.image.get_rect(topleft = world_pos)
+        self.world_rect = self.image.get_rect(topleft = (round(world_pos.x), round(world_pos.y)))
+
 
 
 

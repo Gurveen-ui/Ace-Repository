@@ -1,5 +1,5 @@
 import pygame
-import math
+import math, random
 from pytmx.util_pygame import load_pygame
 pygame.init()
 
@@ -16,17 +16,27 @@ SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
 MAP_WIDTH = 80 * 80
 MAP_HEIGHT = 80 * 45
+ENEMY_SPAWNS = [(6000, -2480), (5600, -2480), (5200, -2480), (6000, -2080), (6000, -1680), (5600, -2080)]
 
 tmx_data = load_pygame("Game Attempts\\Tiled\\tmx\\Courtyard Map.tmx")
 camera_offset = vector(0,0)
 section = "Courtyard"
+grid = dict()
+for x in range(80):
+    for y in range(45):
+        grid[(x,y)] = {"accessible": True,
+                       "cost": 1 }
+
 
 def Extract_Tiles(Class, Layer_Name, Group, Side_length):
     for layer in tmx_data:
         if hasattr(layer, "data") and layer.name == Layer_Name:
             for x, y, surf in layer.tiles():
                 world_pos = vector(x * Side_length, (y * Side_length - 2880)) # -200, -3000
-                Class(world_pos, surf, Group)
+                Class(world_pos, (x,y), surf, Group)
+                if Layer_Name == "Wall_Hit":
+                    grid[(x, y)] = {"accessible": False,
+                                    "cost": 1}
 
 def draw_courtyard(surface):
     offset = (round(camera_offset.x),round(camera_offset.y))
@@ -40,6 +50,11 @@ def draw_enemies(surface, enemy_group):
     for enemy in enemy_group:
         screen_rect = enemy.world_rect.move(offset)
         surface.blit(enemy.image, screen_rect)
+
+def get_grid_pos(object):
+    grid_x = round(object.world_rect.x / 80)
+    grid_y = round((object.world_rect.y + 2880) / 80)
+    return (grid_x, grid_y)
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
@@ -180,10 +195,11 @@ player = pygame.sprite.GroupSingle()
 player.add(Player())
 
 class Courtyard_Tile(pygame.sprite.Sprite):
-    def __init__(self, world_pos, surface,Group):
+    def __init__(self, world_pos, grid_pos, surface, Group):
         super().__init__(Group)
         self.image = surface
         self.rect = self.image.get_rect(topleft = world_pos)
+        self.grid_pos = grid_pos
         self.world_rect = self.image.get_rect(topleft = (round(world_pos.x), round(world_pos.y)))
 
 courtyard_tiles = pygame.sprite.Group()
@@ -196,10 +212,12 @@ Extract_Tiles(Courtyard_Tile, "Wall_Hit", collision_tiles, 80)
 class Courtyard_Enemies(pygame.sprite.Sprite):
     def __init__(self, world_pos):
         super().__init__()
-        self.image = pygame.image.load("Game Attempts\\Images\\Courtyard\\Player\\Knight Top Down Test.png").convert_alpha()
+        self.image = pygame.image.load("Game Attempts\\Images\\Courtyard\\Enemies\\Slimes\\Goof_Slime.png").convert_alpha()
         self.rect = self.image.get_rect(bottomleft = world_pos)
         self.world_rect = self.rect
 
+    
 
 enemies = pygame.sprite.Group()
-enemies.add(Courtyard_Enemies((400,300)))
+for i in range(15):
+    enemies.add(Courtyard_Enemies(random.choice(ENEMY_SPAWNS)))

@@ -52,8 +52,9 @@ def draw_enemies(surface, enemy_group):
         surface.blit(enemy.image, screen_rect)
 
 def get_grid_pos(object):
-    grid_x = round(object.world_rect.x / 80)
-    grid_y = round((object.world_rect.y + 2880) / 80)
+    world_rect = object.rect.center - camera_offset
+    grid_x = int(world_rect.x // 80)
+    grid_y = int((world_rect.y + 2880) // 80)
     return (grid_x, grid_y)
 
 class Player(pygame.sprite.Sprite):

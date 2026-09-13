@@ -5,6 +5,7 @@ pygame.init()
 
 Screen = pygame.display.set_mode((1280,720))
 pygame.display.set_caption("Courtyard")
+vector = pygame.math.Vector2
 
 TOP_BOUND = 80
 BOTTOM_BOUND = 640
@@ -16,19 +17,9 @@ SCREEN_HEIGHT = 720
 MAP_WIDTH = 80 * 80
 MAP_HEIGHT = 80 * 45
 
-
-
 tmx_data = load_pygame("Game Attempts\\Tiled\\tmx\\Courtyard Map.tmx")
-
-
-
-vector = pygame.math.Vector2
 camera_offset = vector(0,0)
-
-
 section = "Courtyard"
-
-
 
 def Extract_Tiles(Class, Layer_Name, Group, Side_length):
     for layer in tmx_data:
@@ -57,13 +48,8 @@ class Player(pygame.sprite.Sprite):
         self.acceleration = vector(0,0)
         self.ACCELERATION = 1
         self.FRICTION = -0.15
-        self.at_horizontal_forcefield = False
-        self.at_vertical_forcefield = False
         self.current_angle = 0
         self.rotation_speed = 10
-        self.world_rect = self.rect
-
-
 
     def Movement(self):
         self.acceleration = vector(0,0)
@@ -108,7 +94,6 @@ class Player(pygame.sprite.Sprite):
     
     def Check_Boundaries(self):
         global camera_offset
-        tile_movement = self.velocity
         if self.rect.right > RIGHT_BOUND:
             depth = self.rect.right - RIGHT_BOUND
             camera_offset.x -= depth
@@ -129,7 +114,6 @@ class Player(pygame.sprite.Sprite):
         camera_offset.x = max(SCREEN_WIDTH - MAP_WIDTH, min(0, camera_offset.x))
         camera_offset.y = max(0, min(2880, camera_offset.y))
         self.position = vector(self.rect.center)
-
 
     def Rotate(self):
         if self.acceleration.length_squared() == 0 or self.velocity.length_squared() == 0: pass
@@ -179,8 +163,6 @@ class Player(pygame.sprite.Sprite):
                              self.world_rect.top + round(camera_offset.y))
         self.position = vector(self.rect.center)
                     
-
-
     def update(self):
         self.Movement()
         self.Apply_Movement()
@@ -188,10 +170,8 @@ class Player(pygame.sprite.Sprite):
         self.Rotate()
         #pygame.draw.rect(Screen, "red", self.rect)
 
-
 player = pygame.sprite.GroupSingle()
 player.add(Player())
-
 
 class Courtyard_Tile(pygame.sprite.Sprite):
     def __init__(self, world_pos, surface,Group):
@@ -200,16 +180,8 @@ class Courtyard_Tile(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(topleft = world_pos)
         self.world_rect = self.image.get_rect(topleft = (round(world_pos.x), round(world_pos.y)))
 
-
-
-
-
 courtyard_tiles = pygame.sprite.Group()
 collision_tiles = pygame.sprite.Group()
 Extract_Tiles(Courtyard_Tile, "Sand", courtyard_tiles, 80)
 Extract_Tiles(Courtyard_Tile, "Walls", courtyard_tiles, 80)
 Extract_Tiles(Courtyard_Tile, "Wall_Hit", collision_tiles, 80)
-
-
-
-

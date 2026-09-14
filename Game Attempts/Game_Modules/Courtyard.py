@@ -38,6 +38,7 @@ def Extract_Tiles(Class, Layer_Name, Group, Side_length):
                     grid[(x, y)] = {"accessible": False,
                                     "cost": 1}
 
+
 def draw_courtyard(surface):
     offset = (round(camera_offset.x),round(camera_offset.y))
     for tile in courtyard_tiles:
@@ -56,6 +57,63 @@ def get_grid_pos(object):
     grid_x = int(world_rect.x // 80)
     grid_y = int((world_rect.y + 2880) // 80)
     return vector(grid_x, grid_y)
+
+def h_value(start, target):
+    start = vector(start)
+    target = vector(target)
+    h = abs(target.x - start.x) + abs(target.y - start.y)
+    return h
+
+def A_Star(start, target):
+    if start not in grid or target not in grid:
+        return[]
+    if not grid[start]["accessible"] or not grid[target]["accessible"]:
+        return []
+    open = [start]
+    accessible = {start: grid[start]["accessible"]}
+    g_cost = {start: 0}
+    f_cost = {start: h_value(start, target)}
+    parent = {start: None}
+    closed = set()
+    while open:
+        q = min(open, key=lambda pos: f_cost[pos])
+        open.remove(q)
+        for i in range(-1,2):
+            for j in range(-1,2):
+                child = (q[0] + i, q[1] + j)
+                if child == q or child not in grid or not grid[child]["accessible"]:
+                    continue
+                if i != 0 and j != 0:
+                    movement_cost = 1.414
+                else:
+                    movement_cost = 1
+
+                child_g = g_cost[q] + movement_cost
+                child_h = h_value(child, target)
+                child_cost = child_g + child_h
+
+                if child in closed:
+                    continue
+                if child in g_cost and child_g >= g_cost[child]:
+                    continue
+                if child == target:
+                    parent[child] = q
+                    path = []
+                    current = child
+                    while current != None:
+                        path.insert(0,current)
+                        current = parent[current]
+                    return path
+                parent[child] = q
+                g_cost[child] = child_g
+                f_cost[child] = child_cost
+                if child not in open:
+                    open.append(child)
+        closed.add(q)
+    return[]
+
+
+
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
@@ -227,3 +285,4 @@ class Courtyard_Enemies(pygame.sprite.Sprite):
 enemies = pygame.sprite.Group()
 for i in range(15):
     enemies.add(Courtyard_Enemies(random.choice(ENEMY_SPAWNS)))
+

@@ -55,7 +55,7 @@ def get_grid_pos(object):
     world_rect = object.rect.center - camera_offset
     grid_x = int(world_rect.x // 80)
     grid_y = int((world_rect.y + 2880) // 80)
-    return (grid_x, grid_y)
+    return vector(grid_x, grid_y)
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
@@ -216,6 +216,11 @@ class Courtyard_Enemies(pygame.sprite.Sprite):
         self.image = pygame.image.load("Game Attempts\\Images\\Courtyard\\Enemies\\Slimes\\Goof_Slime.png").convert_alpha()
         self.rect = self.image.get_rect(bottomleft = world_pos)
         self.world_rect = self.rect
+
+
+
+
+
 
     
 

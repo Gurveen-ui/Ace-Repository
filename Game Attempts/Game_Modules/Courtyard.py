@@ -67,7 +67,7 @@ def get_enemy_grid_pos(object):
 def h_value(start, target):
     start = vector(start)
     target = vector(target)
-    h = abs(target.x - start.x) + abs(target.y - start.y)
+    h = math.sqrt((target.x - start.x)**2 + (target.y - start.y)**2)
     return h
 
 def A_Star(start, target):

@@ -19,6 +19,7 @@ MAP_HEIGHT = 80 * 45
 ENEMY_SPAWNS = [(6000, -2480), (5600, -2480), (5200, -2480), (6000, -2080), (6000, -1680), (5600, -2080)]
 
 tmx_data = load_pygame("Game Attempts\\Tiled\\tmx\\Courtyard Map.tmx")
+current_time = 0
 camera_offset = vector(0,0)
 section = "Courtyard"
 grid = dict()
@@ -58,6 +59,11 @@ def get_grid_pos(object):
     grid_y = int((world_rect.y + 2880) // 80)
     return vector(grid_x, grid_y)
 
+def get_enemy_grid_pos(object):
+    grid_x = int(vector(object.world_rect.center).x // 80)
+    grid_y = int((vector(object.world_rect.center).y + 2880) // 80)
+    return vector(grid_x, grid_y)
+
 def h_value(start, target):
     start = vector(start)
     target = vector(target)
@@ -65,6 +71,8 @@ def h_value(start, target):
     return h
 
 def A_Star(start, target):
+    start = tuple((int(start.x),int(start.y)))
+    target = tuple((int(target.x),int(target.y)))
     if start not in grid or target not in grid:
         return[]
     if not grid[start]["accessible"] or not grid[target]["accessible"]:
@@ -130,6 +138,7 @@ class Player(pygame.sprite.Sprite):
         self.FRICTION = -0.15
         self.current_angle = 0
         self.rotation_speed = 10
+        self.grid_pos = get_grid_pos(self)
 
     def Movement(self):
         self.acceleration = vector(0,0)
@@ -194,6 +203,7 @@ class Player(pygame.sprite.Sprite):
         camera_offset.x = max(SCREEN_WIDTH - MAP_WIDTH, min(0, camera_offset.x))
         camera_offset.y = max(0, min(2880, camera_offset.y))
         self.position = vector(self.rect.center)
+        self.grid_pos = get_grid_pos(self)
 
     def Rotate(self):
         if self.acceleration.length_squared() == 0 or self.velocity.length_squared() == 0: pass
@@ -244,6 +254,8 @@ class Player(pygame.sprite.Sprite):
         self.position = vector(self.rect.center)
                     
     def update(self):
+        global current_time
+        current_time = pygame.time.get_ticks()
         self.Movement()
         self.Apply_Movement()
         self.Check_Boundaries()
@@ -274,6 +286,102 @@ class Courtyard_Enemies(pygame.sprite.Sprite):
         self.image = pygame.image.load("Game Attempts\\Images\\Courtyard\\Enemies\\Slimes\\Goof_Slime.png").convert_alpha()
         self.rect = self.image.get_rect(bottomleft = world_pos)
         self.world_rect = self.rect
+        self.position = vector(self.rect.center)
+        self.grid_pos = get_enemy_grid_pos(self)
+        self.velocity = vector(0,0)
+        self.acceleration = vector(0,0)
+        self.ACCELERATION = 0.3
+        self.FRICTION = -0.1
+        self.last_target_check = 0
+        self.path = [self.grid_pos]
+        self.current_target = self.grid_pos
+
+    def Movement(self):
+        self.acceleration = vector(0,0)
+        if self.current_target.y < self.grid_pos.y:
+            self.acceleration.y = -self.ACCELERATION
+        elif self.current_target.y > self.grid_pos.y:
+            self.acceleration.y = self.ACCELERATION
+
+        if self.current_target.x < self.grid_pos.x:
+            self.acceleration.x = -self.ACCELERATION
+        elif self.current_target.x > self.grid_pos.x:
+            self.acceleration.x = self.ACCELERATION
+
+    def Apply_Movement(self):
+        self.velocity.x *= (1 + self.FRICTION)
+        self.velocity.x += self.acceleration.x
+        if abs(self.velocity.x) < 0.1:
+            self.velocity.x = 0
+        if abs(self.acceleration.x) < 0.1:
+            self.acceleration.x = 0
+        self.position.x += self.velocity.x
+        self.world_rect.center = self.position
+        self.Collision_Check("Horizontal", collision_tiles)  
+        
+        self.velocity.y *= (1 + self.FRICTION)
+        self.velocity.y += self.acceleration.y
+        if abs(self.velocity.y) < 0.1:
+            self.velocity.y = 0
+        if abs(self.acceleration.y) < 0.1:
+            self.acceleration.y = 0
+        self.position.y += self.velocity.y
+        self.world_rect.center = self.position
+        self.Collision_Check("Vertical", collision_tiles)
+
+    def Collision_Check(self, type, tiles):
+
+        for tile in tiles:
+            if not self.world_rect.colliderect(tile.world_rect):
+                continue
+
+            if type == "Horizontal":
+                if self.velocity.x > 0:
+                    self.world_rect.right = tile.world_rect.left
+                    self.velocity.x = 0
+                elif self.velocity.x < 0:
+                    self.world_rect.left = tile.world_rect.right
+                    self.velocity.x = 0
+            elif type == "Vertical":
+                if self.velocity.y > 0:
+                    self.world_rect.bottom = tile.world_rect.top
+                    self.velocity.y = 0
+                elif self.velocity.y < 0:
+                    self.world_rect.top = tile.world_rect.bottom
+                    self.velocity.y = 0
+        self.position = vector(self.world_rect.center)
+
+    def Find_path(self):
+        global current_time
+        if h_value(player.sprite.grid_pos, self.grid_pos) < 10 and self.last_target_check + 2000 < current_time:
+            if not player.sprite.grid_pos == self.grid_pos:
+                self.path = A_Star((self.grid_pos), (player.sprite.grid_pos))
+        else:
+            if self.grid_pos == self.path[0] and self.last_target_check + 7000 < current_time :
+                target_x = self.grid_pos.x + random.randint(-10, 10)
+                target_y = self.grid_pos.y + random.randint(-10, 10)
+                new_path = A_Star((self.grid_pos), vector(target_x, target_y))
+                if new_path:
+                    self.path = new_path
+                    self.last_target_check = current_time
+                
+
+    def Update_Path(self):
+        if self.grid_pos == self.path[0] and len(self.path) != 1:
+            self.path.remove(self.path[0])
+        self.current_target = vector(self.path[0])
+
+    def update(self):
+        self.grid_pos = get_enemy_grid_pos(self)
+        self.Find_path()
+        self.Update_Path()
+        self.Movement()
+        self.Apply_Movement()
+
+
+
+
+
 
 
 
@@ -283,6 +391,6 @@ class Courtyard_Enemies(pygame.sprite.Sprite):
     
 
 enemies = pygame.sprite.Group()
-for i in range(15):
+for i in range(5):
     enemies.add(Courtyard_Enemies(random.choice(ENEMY_SPAWNS)))
 

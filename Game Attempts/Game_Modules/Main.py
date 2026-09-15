@@ -130,10 +130,12 @@ while True:
                 exit()
         Screen.fill((0,0,0))
         Courtyard.player.update()
+        Courtyard.enemies.update()
         Courtyard.draw_courtyard(Screen)
         Courtyard.draw_enemies(Screen, Courtyard.enemies)
         #pygame.draw.rect(Screen, "red", (80,320,320,320))
         Courtyard.player.draw(Screen)
+        Screen.blit(Corridor.Royal_Font.render(str(Courtyard.current_time // 1000), False, (0,0,0)),(1280 - 110 ,720 - 170))
         Screen.blit(Corridor.Royal_Font.render(str(Courtyard.get_grid_pos(Courtyard.player.sprite)), False, (255,0,255)),(1280 - 110 ,720 - 120))
         type = "Courtyard"
     Screen.blit(Corridor.Royal_Font.render(str(round(clock.get_fps())), False, (255,0,0)), (1280 - 90,720 - 50))

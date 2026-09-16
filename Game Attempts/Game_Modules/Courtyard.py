@@ -363,7 +363,7 @@ class Courtyard_Enemies(pygame.sprite.Sprite):
                 self.path = A_Star((self.grid_pos), (player.sprite.grid_pos))
                 self.last_target_check = current_time
         else:
-            if vector.length(self.vector_distance) < 1 and self.last_target_check + 10000 < current_time :
+            if vector.length(self.vector_distance) < 2 and self.last_target_check + 10000 < current_time :
                 target_x = self.grid_pos.x + random.randint(-10, 10)
                 target_y = self.grid_pos.y + random.randint(-10, 10)
                 new_path = A_Star((self.grid_pos), vector(target_x, target_y))
@@ -373,7 +373,7 @@ class Courtyard_Enemies(pygame.sprite.Sprite):
                 
 
     def Update_Path(self):
-        if vector.length(self.vector_distance) < 1 and len(self.path) > 1:
+        if vector.length(self.vector_distance) < 2 and len(self.path) > 1:
             self.path.remove(self.path[0])
         self.current_target = vector(self.path[0])
 

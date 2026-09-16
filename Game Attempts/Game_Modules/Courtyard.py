@@ -51,7 +51,15 @@ def draw_enemies(surface, enemy_group):
     offset = (round(camera_offset.x),round(camera_offset.y))
     for enemy in enemy_group:
         screen_rect = enemy.world_rect.move(offset)
-        surface.blit(enemy.image, screen_rect)
+        if screen_rect.colliderect(surface.get_rect()):
+            surface.blit(enemy.image, screen_rect)
+        
+
+def draw_monk(surface, object):
+    offset = (round(camera_offset.x),round(camera_offset.y))
+    screen_rect = object.world_rect.move(offset)
+    if screen_rect.colliderect(surface.get_rect()):
+        surface.blit(object.image, screen_rect)
 
 def get_player_grid_pos(object):
     world_rect = object.rect.center - camera_offset
@@ -287,6 +295,7 @@ class Monk_NPC(pygame.sprite.Sprite):
         super().__init__()
         self.image = pygame.image.load("Game Attempts\\Images\\Courtyard\\Monk NPC\\monk npc pixel.png").convert_alpha()
         self.rect = self.image.get_rect(bottomleft = (80, 640))
+        self.world_rect = self.rect
 
 monk_npc = pygame.sprite.GroupSingle()
 monk_npc.add(Monk_NPC())

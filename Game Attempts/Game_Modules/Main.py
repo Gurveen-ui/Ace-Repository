@@ -32,6 +32,7 @@ def pause_display():
     elif type == "Courtyard":
         Courtyard.Screen.fill((0,0,0))
         Courtyard.draw_courtyard(Screen)
+        Courtyard.draw_monk(Screen, Courtyard.monk_npc.sprite)
         Courtyard.draw_enemies(Screen, Courtyard.enemies)
         Courtyard.player.draw(Screen)
         Screen.blit(pause_screen, (0,0))
@@ -132,7 +133,7 @@ while True:
         Courtyard.player.update()
         Courtyard.enemies.update()
         Courtyard.draw_courtyard(Screen)
-        Courtyard.monk_npc.draw(Screen)
+        Courtyard.draw_monk(Screen, Courtyard.monk_npc.sprite)
         Courtyard.draw_enemies(Screen, Courtyard.enemies)
         #pygame.draw.rect(Screen, "red", (80,320,320,320), 5)
         Courtyard.player.draw(Screen)

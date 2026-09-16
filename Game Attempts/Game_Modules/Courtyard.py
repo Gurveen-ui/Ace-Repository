@@ -282,6 +282,14 @@ Extract_Tiles(Courtyard_Tile, "Sand", courtyard_tiles, 80)
 Extract_Tiles(Courtyard_Tile, "Walls", courtyard_tiles, 80)
 Extract_Tiles(Courtyard_Tile, "Wall_Hit", collision_tiles, 80)
 
+class Monk_NPC(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        self.image = pygame.image.load("Game Attempts\\Images\\Courtyard\\Monk NPC\\monk npc pixel.png").convert_alpha()
+        self.rect = self.image.get_rect(bottomleft = (80, 640))
+
+monk_npc = pygame.sprite.GroupSingle()
+monk_npc.add(Monk_NPC())
 
 class Courtyard_Enemies(pygame.sprite.Sprite):
     def __init__(self, world_pos):
@@ -334,11 +342,9 @@ class Courtyard_Enemies(pygame.sprite.Sprite):
         self.Collision_Check("Vertical", collision_tiles)
 
     def Collision_Check(self, type, tiles):
-
         for tile in tiles:
             if not self.world_rect.colliderect(tile.world_rect):
                 continue
-
             if type == "Horizontal":
                 if self.velocity.x > 0:
                     self.world_rect.right = tile.world_rect.left

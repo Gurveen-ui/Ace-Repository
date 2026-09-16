@@ -53,15 +53,15 @@ def draw_enemies(surface, enemy_group):
         screen_rect = enemy.world_rect.move(offset)
         surface.blit(enemy.image, screen_rect)
 
-def get_grid_pos(object):
+def get_player_grid_pos(object):
     world_rect = object.rect.center - camera_offset
-    grid_x = int(world_rect.x // 80)
-    grid_y = int((world_rect.y + 2880) // 80)
+    grid_x = int(world_rect.x / 80)
+    grid_y = int((world_rect.y + 2880) / 80)
     return vector(grid_x, grid_y)
 
-def get_enemy_grid_pos(object):
-    grid_x = int(vector(object.world_rect.center).x // 80)
-    grid_y = int((vector(object.world_rect.center).y + 2880) // 80)
+def get_grid_pos(world_rect):
+    grid_x = int(vector(world_rect.center).x / 80)
+    grid_y = int((vector(world_rect.center).y + 2880) / 80)
     return vector(grid_x, grid_y)
 
 def h_value(start, target):
@@ -69,6 +69,11 @@ def h_value(start, target):
     target = vector(target)
     h = math.sqrt((target.x - start.x)**2 + (target.y - start.y)**2)
     return h
+
+def find_pixel_distance(start, target):
+    x_distance = target.x * 80 - start.x * 80
+    y_distance =  ((target.y * 80) + 2880) - ((start.y * 80) + 2880)
+    return vector(x_distance, y_distance)
 
 def A_Star(start, target):
     start = tuple((int(start.x),int(start.y)))
@@ -78,7 +83,6 @@ def A_Star(start, target):
     if not grid[start]["accessible"] or not grid[target]["accessible"]:
         return []
     open = [start]
-    accessible = {start: grid[start]["accessible"]}
     g_cost = {start: 0}
     f_cost = {start: h_value(start, target)}
     parent = {start: None}
@@ -92,9 +96,8 @@ def A_Star(start, target):
                 if child == q or child not in grid or not grid[child]["accessible"]:
                     continue
                 if i != 0 and j != 0:
-                    movement_cost = 1.414
-                else:
-                    movement_cost = 1
+                        continue
+                else: movement_cost = 1
 
                 child_g = g_cost[q] + movement_cost
                 child_h = h_value(child, target)
@@ -138,7 +141,7 @@ class Player(pygame.sprite.Sprite):
         self.FRICTION = -0.15
         self.current_angle = 0
         self.rotation_speed = 10
-        self.grid_pos = get_grid_pos(self)
+        self.grid_pos = get_player_grid_pos(self)
 
     def Movement(self):
         self.acceleration = vector(0,0)
@@ -203,7 +206,7 @@ class Player(pygame.sprite.Sprite):
         camera_offset.x = max(SCREEN_WIDTH - MAP_WIDTH, min(0, camera_offset.x))
         camera_offset.y = max(0, min(2880, camera_offset.y))
         self.position = vector(self.rect.center)
-        self.grid_pos = get_grid_pos(self)
+        self.grid_pos = get_player_grid_pos(self)
 
     def Rotate(self):
         if self.acceleration.length_squared() == 0 or self.velocity.length_squared() == 0: pass
@@ -284,28 +287,29 @@ class Courtyard_Enemies(pygame.sprite.Sprite):
     def __init__(self, world_pos):
         super().__init__()
         self.image = pygame.image.load("Game Attempts\\Images\\Courtyard\\Enemies\\Slimes\\Goof_Slime.png").convert_alpha()
-        self.rect = self.image.get_rect(bottomleft = world_pos)
-        self.world_rect = self.rect
+        self.rect = self.image.get_rect(center = world_pos)
+        self.world_rect = self.rect.copy()
         self.position = vector(self.rect.center)
-        self.grid_pos = get_enemy_grid_pos(self)
+        self.grid_pos = get_grid_pos(self.world_rect)
         self.velocity = vector(0,0)
         self.acceleration = vector(0,0)
         self.ACCELERATION = 0.3
-        self.FRICTION = -0.1
+        self.FRICTION = -0.05
         self.last_target_check = 0
         self.path = [self.grid_pos]
         self.current_target = self.grid_pos
+        self.vector_distance = vector(0)
 
     def Movement(self):
         self.acceleration = vector(0,0)
-        if self.current_target.y < self.grid_pos.y:
+        if self.vector_distance.y < -10:
             self.acceleration.y = -self.ACCELERATION
-        elif self.current_target.y > self.grid_pos.y:
+        elif self.vector_distance.y > 10:
             self.acceleration.y = self.ACCELERATION
 
-        if self.current_target.x < self.grid_pos.x:
+        if self.vector_distance.x < -10:
             self.acceleration.x = -self.ACCELERATION
-        elif self.current_target.x > self.grid_pos.x:
+        elif self.vector_distance.x > 10:
             self.acceleration.x = self.ACCELERATION
 
     def Apply_Movement(self):
@@ -350,14 +354,16 @@ class Courtyard_Enemies(pygame.sprite.Sprite):
                     self.world_rect.top = tile.world_rect.bottom
                     self.velocity.y = 0
         self.position = vector(self.world_rect.center)
+        self.world_rect.center = self.position
 
     def Find_path(self):
         global current_time
-        if h_value(player.sprite.grid_pos, self.grid_pos) < 10 and self.last_target_check + 2000 < current_time:
+        if h_value(player.sprite.grid_pos, self.grid_pos) < 10 and self.last_target_check + 500 < current_time:
             if not player.sprite.grid_pos == self.grid_pos:
                 self.path = A_Star((self.grid_pos), (player.sprite.grid_pos))
+                self.last_target_check = current_time
         else:
-            if self.grid_pos == self.path[0] and self.last_target_check + 7000 < current_time :
+            if vector.length(self.vector_distance) < 1 and self.last_target_check + 10000 < current_time :
                 target_x = self.grid_pos.x + random.randint(-10, 10)
                 target_y = self.grid_pos.y + random.randint(-10, 10)
                 new_path = A_Star((self.grid_pos), vector(target_x, target_y))
@@ -367,12 +373,13 @@ class Courtyard_Enemies(pygame.sprite.Sprite):
                 
 
     def Update_Path(self):
-        if self.grid_pos == self.path[0] and len(self.path) != 1:
+        if vector.length(self.vector_distance) < 1 and len(self.path) > 1:
             self.path.remove(self.path[0])
         self.current_target = vector(self.path[0])
 
     def update(self):
-        self.grid_pos = get_enemy_grid_pos(self)
+        self.grid_pos = get_grid_pos(self.world_rect)
+        self.vector_distance = find_pixel_distance(self.grid_pos, self.current_target)
         self.Find_path()
         self.Update_Path()
         self.Movement()

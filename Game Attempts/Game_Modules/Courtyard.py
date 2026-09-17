@@ -16,27 +16,37 @@ SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
 MAP_WIDTH = 80 * 80
 MAP_HEIGHT = 80 * 45
-ENEMY_SPAWNS = [(6000, -2480), (5600, -2480), (5200, -2480), (6000, -2080), (6000, -1680), (5600, -2080)]
 
-tmx_data = load_pygame("Game Attempts\\Tiled\\tmx\\Courtyard Map.tmx")
+tmx_data = load_pygame("Game Attempts\\Tiled\\tmx\\Courtyard Map Small.tmx")
 current_time = 0
 camera_offset = vector(0,0)
 section = "Courtyard"
+enemy_spawns = []
 grid = dict()
 for x in range(80):
     for y in range(45):
         grid[(x,y)] = {"accessible": True,
                        "cost": 1 }
 
-def Extract_Tiles(Class, Layer_Name, Group, Side_length):
-    for layer in tmx_data:
-        if hasattr(layer, "data") and layer.name == Layer_Name:
-            for x, y, surf in layer.tiles():
-                world_pos = vector(x * Side_length, (y * Side_length - 2880)) # -200, -3000
-                Class(world_pos, (x,y), surf, Group)
-                if Layer_Name == "Wall_Hit":
-                    grid[(x, y)] = {"accessible": False,
-                                    "cost": 1}
+
+def Extract_Tiles(Class, Layer_Name, Group, Side_length, Type = None, List = None):
+    if Type == "Object":
+        for layer in tmx_data:
+            if layer.name == Layer_Name:
+                for obj in layer:
+                    world_pos = vector(int(obj.x + 40) , int(obj.y - 2880 + 40)) # -200, -3000
+                    List.append(tuple(world_pos))
+    else:
+        for layer in tmx_data:
+            if hasattr(layer, "data") and layer.name == Layer_Name:
+                for x, y, surf in layer.tiles():
+                    world_pos = vector(x * Side_length, (y * Side_length - 2880)) # -200, -3000
+                    Class(world_pos, (x,y), surf, Group)
+                    if Layer_Name == "Wall_Hit":
+                        grid[(x, y)] = {"accessible": False,
+                                        "cost": 1}
+
+Extract_Tiles(None,"Spawnpoints", None, 80, "Object", enemy_spawns)
 
 def draw_courtyard(surface):
     offset = (round(camera_offset.x),round(camera_offset.y))
@@ -392,24 +402,15 @@ class Courtyard_Enemies(pygame.sprite.Sprite):
     def update(self):
         self.grid_pos = get_grid_pos(self.world_rect)
         self.vector_distance = find_pixel_distance(self.grid_pos, self.current_target)
-        self.Find_path()
-        self.Update_Path()
-        self.Movement()
-        self.Apply_Movement()
+        # self.Find_path()
+        # self.Update_Path()
+        # self.Movement()
+        # self.Apply_Movement()
 
 
 
-
-
-
-
-
-
-
-
-    
 
 enemies = pygame.sprite.Group()
-for i in range(5):
-    enemies.add(Courtyard_Enemies(random.choice(ENEMY_SPAWNS)))
+for i in range(20):
+    enemies.add(Courtyard_Enemies(random.choice(enemy_spawns)))
 

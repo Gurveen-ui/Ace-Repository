@@ -25,15 +25,15 @@
             }
         },
         "Courtyard Map.tmx": {
-            "scale": 0.5,
+            "scale": 0.33,
             "selectedLayer": 2,
             "viewCenter": {
-                "x": 1827,
-                "y": 1913
+                "x": 440.90909090909076,
+                "y": 1153.030303030303
             }
         }
     },
-    "last.imagePath": "C:/Users/gurve/Gurveen Kapoor/Repository/Ace-Repository/Game Attempts/Tiled/Tileset Images",
+    "last.imagePath": "C:/Users/gurve/Gurveen Kapoor/Repository/Ace-Repository/Game Attempts/Images/Courtyard/Enemies/Slimes",
     "openFiles": [
         "Courtyard Map.tmx",
         "C:/Users/gurve/Gurveen Kapoor/Repository/Ace-Repository/Game Attempts/Tiled/tsx/Sand.tsx",

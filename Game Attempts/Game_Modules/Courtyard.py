@@ -33,9 +33,14 @@ def Extract_Tiles(Class, Layer_Name, Group, Side_length, Type = None, List = Non
     if Type == "Object":
         for layer in tmx_data:
             if layer.name == Layer_Name:
-                for obj in layer:
-                    world_pos = vector(int(obj.x + 40) , int(obj.y - 2880 + 40)) # -200, -3000
-                    List.append(tuple(world_pos))
+                if Layer_Name == "Wall_NPC":
+                    for obj in layer:
+                        world_pos = vector(int(obj.x) , int(obj.y - 2880))
+                        Class(world_pos, obj.image, Group)
+                else:
+                    for obj in layer:
+                        world_pos = vector(int(obj.x + 40) , int(obj.y - 2880 + 40)) # -200, -3000
+                        List.append(tuple(world_pos))
     else:
         for layer in tmx_data:
             if hasattr(layer, "data") and layer.name == Layer_Name:
@@ -62,7 +67,7 @@ def draw_enemies(surface, enemy_group):
         if screen_rect.colliderect(surface.get_rect()):
             surface.blit(enemy.image, screen_rect)
 
-def draw_monk(surface, object):
+def draw_wall_npc(surface, object):
     offset = (round(camera_offset.x),round(camera_offset.y))
     screen_rect = object.world_rect.move(offset)
     if screen_rect.colliderect(surface.get_rect()):
@@ -297,15 +302,15 @@ Extract_Tiles(Courtyard_Tile, "Sand", courtyard_tiles, 80)
 Extract_Tiles(Courtyard_Tile, "Walls", courtyard_tiles, 80)
 Extract_Tiles(Courtyard_Tile, "Wall_Hit", collision_tiles, 80)
 
-class Monk_NPC(pygame.sprite.Sprite):
-    def __init__(self):
-        super().__init__()
-        self.image = pygame.image.load("Game Attempts\\Images\\Courtyard\\Monk NPC\\monk npc pixel.png").convert_alpha()
-        self.rect = self.image.get_rect(bottomleft = (80, 640))
+class Wall_NPC(pygame.sprite.Sprite):
+    def __init__(self, world_pos, surface, Group):
+        super().__init__(Group)
+        self.image = surface
+        self.rect = self.image.get_rect(topleft = (world_pos))
         self.world_rect = self.rect
 
-monk_npc = pygame.sprite.GroupSingle()
-monk_npc.add(Monk_NPC())
+wall_npc = pygame.sprite.GroupSingle()
+Extract_Tiles(Wall_NPC, "Wall_NPC", wall_npc, 80, "Object")
 
 class Courtyard_Enemies(pygame.sprite.Sprite):
     def __init__(self, world_pos):

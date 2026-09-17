@@ -33,7 +33,7 @@
             }
         }
     },
-    "last.imagePath": "C:/Users/gurve/Gurveen Kapoor/Repository/Ace-Repository/Game Attempts/Images/Courtyard/Enemies/Slimes",
+    "last.imagePath": "C:/Users/gurve/Downloads",
     "openFiles": [
         "Courtyard Map.tmx",
         "C:/Users/gurve/Gurveen Kapoor/Repository/Ace-Repository/Game Attempts/Tiled/tsx/Sand.tsx",
@@ -50,8 +50,8 @@
     "resizeMap.removeObjects": false,
     "tileset.lastUsedFormat": "tsx",
     "tileset.tileSize": {
-        "height": 80,
-        "width": 80
+        "height": 240,
+        "width": 320
     },
     "tileset.transparentColor": "#000000"
 }

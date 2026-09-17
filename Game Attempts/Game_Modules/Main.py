@@ -32,7 +32,7 @@ def pause_display():
     elif type == "Courtyard":
         Courtyard.Screen.fill((0,0,0))
         Courtyard.draw_courtyard(Screen)
-        Courtyard.draw_monk(Screen, Courtyard.monk_npc.sprite)
+        Courtyard.draw_wall_npc(Screen, Courtyard.wall_npc.sprite)
         Courtyard.draw_enemies(Screen, Courtyard.enemies)
         Courtyard.player.draw(Screen)
         Screen.blit(pause_screen, (0,0))
@@ -113,8 +113,6 @@ while True:
         Corridor.corridor_floor.draw(Screen)
         Corridor.player.draw(Screen)
         Corridor.corridor_platforms.draw(Screen)
-        #Screen.blit(Corridor.text, (100,100))
-        #Corridor.king_text.draw(Screen)
         Corridor.corridor_background.update()
         Corridor.corridor_floor.update() 
         Corridor.corridor_door.update()
@@ -133,10 +131,14 @@ while True:
         Courtyard.player.update()
         Courtyard.enemies.update()
         Courtyard.draw_courtyard(Screen)
-        Courtyard.draw_monk(Screen, Courtyard.monk_npc.sprite)
+        Courtyard.draw_wall_npc(Screen, Courtyard.wall_npc.sprite)
         Courtyard.draw_enemies(Screen, Courtyard.enemies)
         #pygame.draw.rect(Screen, "red", (80,320,320,320), 5)
         Courtyard.player.draw(Screen)
+        # if Courtyard.player.sprite.rect.colliderect(Courtyard.wall_npc.sprite.rect):
+        #     pygame.draw.rect(Screen, "black", (80,320,320,320), 5)
+        # pygame.draw.rect(Screen, "red", Courtyard.player.sprite.rect)
+        # pygame.draw.rect(Screen, "red", Courtyard.wall_npc.sprite.rect)
         Screen.blit(Corridor.Royal_Font.render(str(Courtyard.current_time // 1000), False, (0,0,0)),(1280 - 110 ,720 - 170))
         Screen.blit(Corridor.Royal_Font.render(str(Courtyard.get_player_grid_pos(Courtyard.player.sprite)), False, (255,0,255)),(1280 - 110 ,720 - 120))
         type = "Courtyard"

@@ -28,7 +28,6 @@ for x in range(80):
         grid[(x,y)] = {"accessible": True,
                        "cost": 1 }
 
-
 def Extract_Tiles(Class, Layer_Name, Group, Side_length):
     for layer in tmx_data:
         if hasattr(layer, "data") and layer.name == Layer_Name:
@@ -38,7 +37,6 @@ def Extract_Tiles(Class, Layer_Name, Group, Side_length):
                 if Layer_Name == "Wall_Hit":
                     grid[(x, y)] = {"accessible": False,
                                     "cost": 1}
-
 
 def draw_courtyard(surface):
     offset = (round(camera_offset.x),round(camera_offset.y))
@@ -53,7 +51,6 @@ def draw_enemies(surface, enemy_group):
         screen_rect = enemy.world_rect.move(offset)
         if screen_rect.colliderect(surface.get_rect()):
             surface.blit(enemy.image, screen_rect)
-        
 
 def draw_monk(surface, object):
     offset = (round(camera_offset.x),round(camera_offset.y))

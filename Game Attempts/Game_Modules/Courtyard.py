@@ -17,6 +17,8 @@ SCREEN_HEIGHT = 720
 MAP_WIDTH = 80 * 80
 MAP_HEIGHT = 80 * 45
 WALL_NPC_DIALOGUE_1 = ["Pssst..    ","Psssssst..          ","Over here,   ","Come to my wall."]
+WALL_NPC_DIALOGUE_2 = ["Pssst..    ","Psssssst..          ","Over here,   ","Come to my wall."]
+wall_dialogues = (WALL_NPC_DIALOGUE_1, WALL_NPC_DIALOGUE_2)
 
 tmx_data = load_pygame("Game Attempts\\Tiled\\tmx\\Courtyard Map Small.tmx")
 current_time = 0
@@ -320,9 +322,10 @@ class Wall_NPC(pygame.sprite.Sprite):
         self.box_rect = self.text_box.get_rect(bottomleft = ((self.rect.centerx + 30, self.rect.centery - 50)))
         self.world_rect = self.rect
         self.Display_box = False
-        self.current_text_constant = WALL_NPC_DIALOGUE_1
+        self.dialogue_count = 0
+        self.current_text_constant = wall_dialogues[self.dialogue_count]
         self.dialogue = []
-        for lines in range(4):
+        for lines in self.current_text_constant:
             self.dialogue += [""]
         self.text_counter = 0
         self.line_counter = 0
@@ -342,7 +345,12 @@ class Wall_NPC(pygame.sprite.Sprite):
     def update(self):
         global Movement_Stopped
         keys = pygame.key.get_pressed()
+        if self.dialogue_count >= len(wall_dialogues):
+            Movement_Stopped = False
+            self.Display_box = False
+            self.Box_Displayed = True
         if self.Box_Displayed == False:
+            self.current_text_constant = wall_dialogues[self.dialogue_count]
             Mouse_x, Mouse_Y = pygame.mouse.get_pos()
             if self.box_rect.collidepoint((Mouse_x, Mouse_Y)) and self.Display_box == True:
                 self.Mouse_Sprite_Collision = True
@@ -350,15 +358,19 @@ class Wall_NPC(pygame.sprite.Sprite):
                 self.Mouse_Sprite_Collision = False
             if keys[pygame.K_e] and player.sprite.rect.colliderect(self.rect) and self.Remove_display == False:
                 self.Display_box = True
-            if self.pause_timer < 10 and self.Remove_display == False:
+            if self.pause_timer < 15 and self.Remove_display == False:
                 self.Display_Box()
                 if self.text_paused == False:
                     Global_Assets.dialogue_producer(self, self.current_text_constant, 1)
                 Global_Assets.Display_Dialogue(self, 90, 56, 25, Global_Assets.Royal_Font_Small, self.box_rect)
             else:
-                Movement_Stopped = False
-                self.Display_box = False
-                self.Box_Displayed = True
+                self.dialogue_count +=1
+                self.line_counter = 0
+                self.text_counter = 0
+                self.pause_timer = 0
+                self.dialogue.clear()
+                for lines in self.current_text_constant:
+                    self.dialogue += [""]
 
 wall_npc = pygame.sprite.GroupSingle()
 Extract_Tiles(Wall_NPC, "Wall_NPC", wall_npc, 80, "Object")

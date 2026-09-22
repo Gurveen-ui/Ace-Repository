@@ -127,6 +127,12 @@ while True:
         for event in pygame.event.get():
             if Courtyard.wall_npc.sprite.Mouse_Sprite_Collision == True and event.type == pygame.MOUSEBUTTONDOWN:
                 Courtyard.wall_npc.sprite.dialogue_count += 1
+                Courtyard.wall_npc.sprite.line_counter = 0
+                Courtyard.wall_npc.sprite.text_counter = 0
+                Courtyard.wall_npc.sprite.pause_timer = 0
+                Courtyard.wall_npc.sprite.dialogue.clear()
+                for lines in Courtyard.wall_npc.sprite.current_text_constant:
+                    Courtyard.wall_npc.sprite.dialogue += [""]
             if event.type == pygame.QUIT:
                 pygame.quit()
                 exit()

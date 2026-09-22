@@ -30,3 +30,4 @@ def Display_Dialogue(Box_class, X_Distance, Y_Distance, Line_Spacing, Font, Box_
 
 Royal_Font = pygame.font.Font("Game Attempts\\Font\\citadel_of_blackrose\\Citadel of Blackrose.ttf", 30) # text font
 Royal_Font_Small = pygame.font.Font("Game Attempts\\Font\\citadel_of_blackrose\\Citadel of Blackrose.ttf", 20) # text font small
+Royal_Font_X_Small = pygame.font.Font("Game Attempts\\Font\\citadel_of_blackrose\\Citadel of Blackrose.ttf", 15) # text font small

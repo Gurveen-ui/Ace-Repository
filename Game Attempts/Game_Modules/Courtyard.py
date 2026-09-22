@@ -16,9 +16,13 @@ SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
 MAP_WIDTH = 80 * 80
 MAP_HEIGHT = 80 * 45
-WALL_NPC_DIALOGUE_1 = ["Pssst..    ","Psssssst..          ","Over here,   ","Come to my wall."]
-WALL_NPC_DIALOGUE_2 = ["Pssst..    ","Psssssst..          ","Over here,   ","Come to my wall."]
-wall_dialogues = (WALL_NPC_DIALOGUE_1, WALL_NPC_DIALOGUE_2)
+WALL_NPC_DIALOGUE_1 = ["Hey.. Welcome to my wall.  ","Y-You remember me right?","I'm the advice guy for the knights","And boy do I have advice for you."]
+WALL_NPC_DIALOGUE_2 = ["Well as you know, ","The princess is getting married.","And we don't want ANYTHING","Getting in the way."]
+WALL_NPC_DIALOGUE_3 = ["Though in all honestly","And dont tell anyone I said this,","when I last saw her she...","looked somewhat... displeased"]
+WALL_NPC_DIALOGUE_4 = ["But oh well, that has nothing","to do with.... us","We have only one duty as knights,","To follow the kings orders"]
+WALL_NPC_DIALOGUE_5 = ["Enemies are gathering outside,","Any second now they will attack.","You must protect the princess","And her.... lover"]
+
+wall_dialogues = (WALL_NPC_DIALOGUE_1, WALL_NPC_DIALOGUE_2, WALL_NPC_DIALOGUE_3, WALL_NPC_DIALOGUE_4, WALL_NPC_DIALOGUE_5)
 
 tmx_data = load_pygame("Game Attempts\\Tiled\\tmx\\Courtyard Map Small.tmx")
 current_time = 0
@@ -358,16 +362,17 @@ class Wall_NPC(pygame.sprite.Sprite):
                 self.Mouse_Sprite_Collision = False
             if keys[pygame.K_e] and player.sprite.rect.colliderect(self.rect) and self.Remove_display == False:
                 self.Display_box = True
-            if self.pause_timer < 15 and self.Remove_display == False:
+            if self.pause_timer < 20 and self.Remove_display == False:
                 self.Display_Box()
                 if self.text_paused == False:
-                    Global_Assets.dialogue_producer(self, self.current_text_constant, 1)
-                Global_Assets.Display_Dialogue(self, 90, 56, 25, Global_Assets.Royal_Font_Small, self.box_rect)
+                    Global_Assets.dialogue_producer(self, self.current_text_constant, 2.5)
+                Global_Assets.Display_Dialogue(self, 72, 58, 20, Global_Assets.Royal_Font_Small, self.box_rect)
             else:
-                self.dialogue_count +=1
+                self.dialogue_count += 1
                 self.line_counter = 0
                 self.text_counter = 0
                 self.pause_timer = 0
+                self.text_paused = False
                 self.dialogue.clear()
                 for lines in self.current_text_constant:
                     self.dialogue += [""]

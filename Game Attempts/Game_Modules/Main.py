@@ -130,6 +130,7 @@ while True:
                 Courtyard.wall_npc.sprite.line_counter = 0
                 Courtyard.wall_npc.sprite.text_counter = 0
                 Courtyard.wall_npc.sprite.pause_timer = 0
+                Courtyard.wall_npc.sprite.text_paused = False
                 Courtyard.wall_npc.sprite.dialogue.clear()
                 for lines in Courtyard.wall_npc.sprite.current_text_constant:
                     Courtyard.wall_npc.sprite.dialogue += [""]

@@ -1,4 +1,4 @@
-import pygame
+import pygame, Global_Assets
 pygame.init()
 
 Screen = pygame.display.set_mode((1280,720))
@@ -22,8 +22,6 @@ left_forcefield = 0 # border player can never go past
 right_forcefield = 5120 # border player can never go past, 4 floors length
 current_time = 0 # time
 Movement_Stopped = False # if movement is stopped due to speech
-Royal_Font = pygame.font.Font("Game Attempts\\Font\\citadel_of_blackrose\\Citadel of Blackrose.ttf", 30) # text font
-Royal_Font_Small = pygame.font.Font("Game Attempts\\Font\\citadel_of_blackrose\\Citadel of Blackrose.ttf", 20) # text font small
 section = "Corridor" # current section
 start_time = 0 # time this section starts at
 
@@ -66,29 +64,6 @@ def sprite_group_movement(sprite_list, x_value):
     for sprite in sprite_list:
         sprite.rect.x = sprite.rect.x + x_value
 
-def dialogue_producer(Box_class, Text_constant, Letter_Speed):
-    if Box_class.Display_box == True:
-        if Box_class.dialogue_counter % 1 == 0:
-            if Box_class.dialogue[int(Box_class.line_counter)] == Text_constant[int(Box_class.line_counter)]:
-                Box_class.line_counter += 1
-                Box_class.dialogue_counter = 0
-                if Box_class.line_counter >= len(Box_class.dialogue):
-                    Box_class.text_paused = True
-            if Box_class.line_counter <= len(Box_class.dialogue) - 1:
-                Box_class.dialogue[Box_class.line_counter] += Text_constant[Box_class.line_counter][int(Box_class.dialogue_counter)]
-        Box_class.dialogue_counter += Letter_Speed
-
-def Display_Dialogue(Box_class, X_Distance, Y_Distance, Line_Spacing, Font):
-    line_count = 0
-    for line in Box_class.dialogue:
-        text = Font.render(line, False, (0,0,0))
-        for i in Box_class.dialogue:
-            if line != Box_class.dialogue[line_count]:
-                line_count += 1
-        Screen.blit(text,(Box_class.rect.left + X_Distance , Box_class.rect.top + Y_Distance + (line_count* Line_Spacing)))
-        line_count = 0
-    if Box_class.text_paused == True:
-        Box_class.pause_timer += 0.1
 
 def destroy(object,Group,Class):
     if object.rect.right <= 0:
@@ -388,8 +363,8 @@ class King_Text(pygame.sprite.Sprite):
             if self.pause_timer < 10 and self.Remove_display == False:
                 self.Display_Box()
                 if self.text_paused == False:
-                    dialogue_producer(self, KING_TEXT, 0.5)
-                Display_Dialogue(self, 370, 100, 35, Royal_Font)
+                    Global_Assets.dialogue_producer(self, KING_TEXT, 0.5)
+                Global_Assets.Display_Dialogue(self, 370, 100, 35, Global_Assets.Royal_Font)
             else:
                 Movement_Stopped = False
                 self.Display_box = False
@@ -426,8 +401,8 @@ class Player_Thoughts(pygame.sprite.Sprite):
             if self.pause_timer < 15 and self.Remove_display == False:
                 self.Display_Box()
                 if self.text_paused == False:
-                    dialogue_producer(self, PLAYER_THOUGHTS, 0.25)
-                Display_Dialogue(self, 60, 50, 25, Royal_Font_Small)
+                    Global_Assets.dialogue_producer(self, PLAYER_THOUGHTS, 0.25)
+                Global_Assets.Display_Dialogue(self, 60, 50, 25, Global_Assets.Royal_Font_Small)
             else:
                 self.Display_box = False
                 self.Box_Displayed = True

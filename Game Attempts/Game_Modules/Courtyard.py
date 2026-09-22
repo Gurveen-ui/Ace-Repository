@@ -1,5 +1,5 @@
 import pygame
-import math, random
+import math, random, Global_Assets
 from pytmx.util_pygame import load_pygame
 pygame.init()
 
@@ -288,6 +288,13 @@ class Player(pygame.sprite.Sprite):
 player = pygame.sprite.GroupSingle()
 player.add(Player())
 
+class Levels():
+    def __init__(self):
+        self.wave = 0
+        self.wave_completed = False
+
+levels = Levels()
+
 class Courtyard_Tile(pygame.sprite.Sprite):
     def __init__(self, world_pos, grid_pos, surface, Group):
         super().__init__(Group)
@@ -307,7 +314,48 @@ class Wall_NPC(pygame.sprite.Sprite):
         super().__init__(Group)
         self.image = surface
         self.rect = self.image.get_rect(topleft = (world_pos))
+        self.text_box = pygame.image.load("Game Attempts\Images\Text Box\Test Kings Text Box.png").convert_alpha()
+        self.box_rect = self.text_box.get_rect(bottomleft = (10,700))
         self.world_rect = self.rect
+        self.Display_box = False
+        self.dialogue = []
+        for lines in KING_TEXT:
+            self.dialogue += [""]
+        self.dialogue_counter = 0
+        self.line_counter = 0
+        self.text_paused = False
+        self.pause_timer = 0
+        self.Box_Displayed = False
+        self.Remove_display = False
+        self.Mouse_Sprite_Collision = False
+
+    def Display_Box(self):
+        global Movement_Stopped
+        if self.Display_box == True:
+            Movement_Stopped = True
+            self.text_box.draw(Screen)
+        
+
+    def update(self):
+        global Movement_Stopped
+        keys = pygame.key.get_pressed()
+        if self.Box_Displayed == False:
+            Mouse_x, Mouse_Y = pygame.mouse.get_pos()
+            if self.box_rect.collidepoint((Mouse_x, Mouse_Y)) and self.Display_box == True:
+                self.Mouse_Sprite_Collision = True
+            else:
+                self.Mouse_Sprite_Collision = False
+            if keys[pygame.K_e] and player.sprite.rect.colliderect(self.rect) and self.Remove_display == False:
+                self.Display_box = True
+            if self.pause_timer < 10 and self.Remove_display == False:
+                self.Display_Box()
+                if self.text_paused == False:
+                    Global_Assets.dialogue_producer(self, KING_TEXT, 0.5)
+                Global_Assets.Display_Dialogue(self, 370, 100, 35, Global_Assets.Royal_Font)
+            else:
+                Movement_Stopped = False
+                self.Display_box = False
+                self.Box_Displayed = True
 
 wall_npc = pygame.sprite.GroupSingle()
 Extract_Tiles(Wall_NPC, "Wall_NPC", wall_npc, 80, "Object")
@@ -407,15 +455,15 @@ class Courtyard_Enemies(pygame.sprite.Sprite):
     def update(self):
         self.grid_pos = get_grid_pos(self.world_rect)
         self.vector_distance = find_pixel_distance(self.grid_pos, self.current_target)
-        # self.Find_path()
-        # self.Update_Path()
-        # self.Movement()
-        # self.Apply_Movement()
+        self.Find_path()
+        self.Update_Path()
+        self.Movement()
+        self.Apply_Movement()
 
 
 
 
-enemies = pygame.sprite.Group()
-for i in range(20):
-    enemies.add(Courtyard_Enemies(random.choice(enemy_spawns)))
+# enemies = pygame.sprite.Group()
+# for i in range(20):
+#     enemies.add(Courtyard_Enemies(random.choice(enemy_spawns)))
 

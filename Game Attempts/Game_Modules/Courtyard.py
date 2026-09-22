@@ -16,7 +16,7 @@ SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
 MAP_WIDTH = 80 * 80
 MAP_HEIGHT = 80 * 45
-WALL_NPC_DIALOGUE_1 = ["Pssst...","Psssssst...","Hey, over here","Yes, come to my wall"]
+WALL_NPC_DIALOGUE_1 = ["Pssst...","Psssssst...","Hey, over here","Yes you, come to my wall"]
 
 tmx_data = load_pygame("Game Attempts\\Tiled\\tmx\\Courtyard Map Small.tmx")
 current_time = 0
@@ -320,7 +320,7 @@ class Wall_NPC(pygame.sprite.Sprite):
         self.world_rect = self.rect
         self.Display_box = False
         self.dialogue = []
-        for lines in range(5):
+        for lines in range(4):
             self.dialogue += [""]
         self.dialogue_counter = 0
         self.line_counter = 0
@@ -334,7 +334,6 @@ class Wall_NPC(pygame.sprite.Sprite):
         global Movement_Stopped
         if self.Display_box == True:
             Movement_Stopped = True
-            print("hi")
             Screen.blit(self.text_box, self.box_rect)
         
 
@@ -352,7 +351,7 @@ class Wall_NPC(pygame.sprite.Sprite):
             if self.pause_timer < 10 and self.Remove_display == False:
                 self.Display_Box()
                 if self.text_paused == False:
-                    Global_Assets.dialogue_producer(self, WALL_NPC_DIALOGUE_1, 0.25)
+                    Global_Assets.dialogue_producer(self, WALL_NPC_DIALOGUE_1, 0.2)
                 Global_Assets.Display_Dialogue(self, 370, 100, 35, Global_Assets.Royal_Font)
             else:
                 Movement_Stopped = False

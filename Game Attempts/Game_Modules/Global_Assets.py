@@ -1,18 +1,20 @@
-import pygame
+import pygame, math
 pygame.init()
 
 Screen = pygame.display.set_mode((1280,720))
 
 def dialogue_producer(Box_class, Text_constant, Letter_Speed):
     if Box_class.Display_box == True:
-        if Box_class.dialogue_counter % 1 == 0:
-            if Box_class.dialogue[int(Box_class.line_counter)] == Text_constant[int(Box_class.line_counter)]:
-                Box_class.line_counter += 1
-                Box_class.dialogue_counter = 0
-                if Box_class.line_counter >= len(Box_class.dialogue):
-                    Box_class.text_paused = True
-            if Box_class.line_counter <= len(Box_class.dialogue) - 1:
-                Box_class.dialogue[Box_class.line_counter] += Text_constant[Box_class.line_counter][int(Box_class.dialogue_counter)]
+        if Box_class.dialogue[int(Box_class.line_counter)] == Text_constant[int(Box_class.line_counter)]:
+            Box_class.line_counter += 1
+            Box_class.dialogue_counter = 0
+            if Box_class.line_counter >= len(Box_class.dialogue):
+                Box_class.text_paused = True
+                return
+        if math.isclose(Box_class.dialogue_counter % 1, 0):
+            if Box_class.line_counter < len(Text_constant):
+                if int(Box_class.dialogue_counter) < len(Text_constant[Box_class.line_counter]):
+                    Box_class.dialogue[Box_class.line_counter] += Text_constant[Box_class.line_counter][int(Box_class.dialogue_counter)]
         Box_class.dialogue_counter += Letter_Speed
 
 def Display_Dialogue(Box_class, X_Distance, Y_Distance, Line_Spacing, Font):

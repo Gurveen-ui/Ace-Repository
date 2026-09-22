@@ -335,7 +335,7 @@ class King_Text(pygame.sprite.Sprite):
         self.dialogue = []
         for lines in KING_TEXT:
             self.dialogue += [""]
-        self.dialogue_counter = 0
+        self.text_counter = 0
         self.line_counter = 0
         self.text_paused = False
         self.pause_timer = 0
@@ -363,7 +363,7 @@ class King_Text(pygame.sprite.Sprite):
             if self.pause_timer < 10 and self.Remove_display == False:
                 self.Display_Box()
                 if self.text_paused == False:
-                    Global_Assets.dialogue_producer(self, KING_TEXT, 0.5)
+                    Global_Assets.dialogue_producer(self, KING_TEXT, 5)
                 Global_Assets.Display_Dialogue(self, 370, 100, 35, Global_Assets.Royal_Font)
             else:
                 Movement_Stopped = False
@@ -382,7 +382,7 @@ class Player_Thoughts(pygame.sprite.Sprite):
         self.dialogue = []
         for lines in PLAYER_THOUGHTS:
             self.dialogue += [""]
-        self.dialogue_counter = 0
+        self.text_counter = 0
         self.line_counter = 0
         self.text_paused = False
         self.pause_timer = 0
@@ -401,7 +401,7 @@ class Player_Thoughts(pygame.sprite.Sprite):
             if self.pause_timer < 15 and self.Remove_display == False:
                 self.Display_Box()
                 if self.text_paused == False:
-                    Global_Assets.dialogue_producer(self, PLAYER_THOUGHTS, 0.25)
+                    Global_Assets.dialogue_producer(self, PLAYER_THOUGHTS, 2.5)
                 Global_Assets.Display_Dialogue(self, 60, 50, 25, Global_Assets.Royal_Font_Small)
             else:
                 self.Display_box = False

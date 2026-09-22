@@ -16,12 +16,13 @@ SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
 MAP_WIDTH = 80 * 80
 MAP_HEIGHT = 80 * 45
-WALL_NPC_DIALOGUE_1 = ["Pssst...","Psssssst...","Hey, over here","Yes you, come to my wall"]
+WALL_NPC_DIALOGUE_1 = ["Pssst..    ","Psssssst..          ","Over here,   ","Come to my wall."]
 
 tmx_data = load_pygame("Game Attempts\\Tiled\\tmx\\Courtyard Map Small.tmx")
 current_time = 0
 camera_offset = vector(0,0)
 section = "Courtyard"
+Movement_Stopped = False
 enemy_spawns = []
 grid = dict()
 for x in range(80):
@@ -315,14 +316,15 @@ class Wall_NPC(pygame.sprite.Sprite):
         super().__init__(Group)
         self.image = surface
         self.rect = self.image.get_rect(topleft = (world_pos))
-        self.text_box = pygame.image.load("Game Attempts\\Images\\Text Box\\Test Kings Text Box.png").convert_alpha()
-        self.box_rect = self.text_box.get_rect(bottomleft = (10,700))
+        self.text_box = pygame.image.load("Game Attempts\\Images\\Courtyard\\Wall NPC\\Text Box Pixel.png").convert_alpha()
+        self.box_rect = self.text_box.get_rect(bottomleft = ((self.rect.centerx + 30, self.rect.centery - 50)))
         self.world_rect = self.rect
         self.Display_box = False
+        self.current_text_constant = WALL_NPC_DIALOGUE_1
         self.dialogue = []
         for lines in range(4):
             self.dialogue += [""]
-        self.dialogue_counter = 0
+        self.text_counter = 0
         self.line_counter = 0
         self.text_paused = False
         self.pause_timer = 0
@@ -351,8 +353,8 @@ class Wall_NPC(pygame.sprite.Sprite):
             if self.pause_timer < 10 and self.Remove_display == False:
                 self.Display_Box()
                 if self.text_paused == False:
-                    Global_Assets.dialogue_producer(self, WALL_NPC_DIALOGUE_1, 0.2)
-                Global_Assets.Display_Dialogue(self, 370, 100, 35, Global_Assets.Royal_Font)
+                    Global_Assets.dialogue_producer(self, self.current_text_constant, 1)
+                Global_Assets.Display_Dialogue(self, 90, 56, 25, Global_Assets.Royal_Font_Small, self.box_rect)
             else:
                 Movement_Stopped = False
                 self.Display_box = False

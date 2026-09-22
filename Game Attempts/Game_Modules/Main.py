@@ -4,6 +4,7 @@ from sys import exit
 pygame.init()
 Screen = pygame.display.set_mode((1280,720))
 
+import Global_Assets
 import Pause
 import Start_Menu
 import Corridor
@@ -28,7 +29,7 @@ def pause_display():
         Corridor.corridor_signs.draw(Screen)
         Corridor.player.draw(Screen)
         Screen.blit(pause_screen, (0,0))
-        Screen.blit(Corridor.Royal_Font.render(str(round(clock.get_fps())), False, (255,0,0)), (1280 - 90,720 - 50))
+        Screen.blit(Global_Assets.Royal_Font.render(str(round(clock.get_fps())), False, (255,0,0)), (1280 - 90,720 - 50))
     elif type == "Courtyard":
         Courtyard.Screen.fill((0,0,0))
         Courtyard.draw_courtyard(Screen)
@@ -36,8 +37,8 @@ def pause_display():
         Courtyard.draw_enemies(Screen, Courtyard.enemies)
         Courtyard.player.draw(Screen)
         Screen.blit(pause_screen, (0,0))
-        Screen.blit(Corridor.Royal_Font.render(str(Courtyard.get_player_grid_pos(Courtyard.player.sprite)), False, (255,0,255)),(1280 - 110 ,720 - 120))
-        Screen.blit(Corridor.Royal_Font.render(str(round(clock.get_fps())), False, (255,0,0)), (1280 - 90,720 - 50))
+        Screen.blit(Global_Assets.Royal_Font.render(str(Courtyard.get_player_grid_pos(Courtyard.player.sprite)), False, (255,0,255)),(1280 - 110 ,720 - 120))
+        Screen.blit(Global_Assets.Royal_Font.render(str(round(clock.get_fps())), False, (255,0,0)), (1280 - 90,720 - 50))
 clock = pygame.time.Clock()
 
 while True:
@@ -135,14 +136,15 @@ while True:
         Courtyard.draw_enemies(Screen, Courtyard.enemies)
         #pygame.draw.rect(Screen, "red", (80,320,320,320), 5)
         Courtyard.player.draw(Screen)
+        Courtyard.wall_npc.update()
         # if Courtyard.player.sprite.rect.colliderect(Courtyard.wall_npc.sprite.rect):
         #     pygame.draw.rect(Screen, "black", (80,320,320,320), 5)
         # pygame.draw.rect(Screen, "red", Courtyard.player.sprite.rect)
         # pygame.draw.rect(Screen, "red", Courtyard.wall_npc.sprite.rect)
-        Screen.blit(Corridor.Royal_Font.render(str(Courtyard.current_time // 1000), False, (0,0,0)),(1280 - 110 ,720 - 170))
-        Screen.blit(Corridor.Royal_Font.render(str(Courtyard.get_player_grid_pos(Courtyard.player.sprite)), False, (255,0,255)),(1280 - 110 ,720 - 120))
+        Screen.blit(Global_Assets.Royal_Font.render(str(Courtyard.current_time // 1000), False, (0,0,0)),(1280 - 110 ,720 - 170))
+        Screen.blit(Global_Assets.Royal_Font.render(str(Courtyard.get_player_grid_pos(Courtyard.player.sprite)), False, (255,0,255)),(1280 - 110 ,720 - 120))
         type = "Courtyard"
-    Screen.blit(Corridor.Royal_Font.render(str(round(clock.get_fps())), False, (255,0,0)), (1280 - 90,720 - 50))
+    Screen.blit(Global_Assets.Royal_Font.render(str(round(clock.get_fps())), False, (255,0,0)), (1280 - 90,720 - 50))
     pygame.display.update()
     clock.tick(60)
 

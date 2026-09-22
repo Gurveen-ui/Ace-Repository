@@ -16,6 +16,7 @@ SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
 MAP_WIDTH = 80 * 80
 MAP_HEIGHT = 80 * 45
+WALL_NPC_DIALOGUE_1 = ["Pssst...","Psssssst...","Hey, over here","Yes, come to my wall"]
 
 tmx_data = load_pygame("Game Attempts\\Tiled\\tmx\\Courtyard Map Small.tmx")
 current_time = 0
@@ -314,12 +315,12 @@ class Wall_NPC(pygame.sprite.Sprite):
         super().__init__(Group)
         self.image = surface
         self.rect = self.image.get_rect(topleft = (world_pos))
-        self.text_box = pygame.image.load("Game Attempts\Images\Text Box\Test Kings Text Box.png").convert_alpha()
+        self.text_box = pygame.image.load("Game Attempts\\Images\\Text Box\\Test Kings Text Box.png").convert_alpha()
         self.box_rect = self.text_box.get_rect(bottomleft = (10,700))
         self.world_rect = self.rect
         self.Display_box = False
         self.dialogue = []
-        for lines in KING_TEXT:
+        for lines in range(5):
             self.dialogue += [""]
         self.dialogue_counter = 0
         self.line_counter = 0
@@ -333,7 +334,8 @@ class Wall_NPC(pygame.sprite.Sprite):
         global Movement_Stopped
         if self.Display_box == True:
             Movement_Stopped = True
-            self.text_box.draw(Screen)
+            print("hi")
+            Screen.blit(self.text_box, self.box_rect)
         
 
     def update(self):
@@ -350,7 +352,7 @@ class Wall_NPC(pygame.sprite.Sprite):
             if self.pause_timer < 10 and self.Remove_display == False:
                 self.Display_Box()
                 if self.text_paused == False:
-                    Global_Assets.dialogue_producer(self, KING_TEXT, 0.5)
+                    Global_Assets.dialogue_producer(self, WALL_NPC_DIALOGUE_1, 0.25)
                 Global_Assets.Display_Dialogue(self, 370, 100, 35, Global_Assets.Royal_Font)
             else:
                 Movement_Stopped = False
@@ -463,7 +465,7 @@ class Courtyard_Enemies(pygame.sprite.Sprite):
 
 
 
-# enemies = pygame.sprite.Group()
-# for i in range(20):
-#     enemies.add(Courtyard_Enemies(random.choice(enemy_spawns)))
+enemies = pygame.sprite.Group()
+for i in range(20):
+    enemies.add(Courtyard_Enemies(random.choice(enemy_spawns)))
 

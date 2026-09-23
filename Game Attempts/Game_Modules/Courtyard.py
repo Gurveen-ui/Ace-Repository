@@ -18,11 +18,12 @@ MAP_WIDTH = 80 * 80
 MAP_HEIGHT = 80 * 45
 WALL_NPC_DIALOGUE_1 = ["Hey.. Welcome to my wall.  ","Y-You remember me right?","I'm the advice guy for the knights","And boy do I have advice for you."]
 WALL_NPC_DIALOGUE_2 = ["Well as you know, ","The princess is getting married.","And we don't want ANYTHING","Getting in the way."]
-WALL_NPC_DIALOGUE_3 = ["Though in all honestly","And dont tell anyone I said this,","when I last saw her she...","looked somewhat... displeased"]
+WALL_NPC_DIALOGUE_3 = ["Though in all honestly","And dont tell anyone I said this,","when I last saw her, she...","looked somewhat... displeased"]
 WALL_NPC_DIALOGUE_4 = ["But oh well, that has nothing","to do with.... us","We have only one duty as knights,","To follow the kings orders."]
 WALL_NPC_DIALOGUE_5 = ["Enemies are gathering outside,","Any second now they will attack.","You must protect the princess","And her.... lover"]
+WALL_NPC_DIALOGUE_6 = ["Here they come!!"]
 
-wall_dialogues = [WALL_NPC_DIALOGUE_1, WALL_NPC_DIALOGUE_2, WALL_NPC_DIALOGUE_3, WALL_NPC_DIALOGUE_4, WALL_NPC_DIALOGUE_5]
+wall_dialogues = [WALL_NPC_DIALOGUE_1, WALL_NPC_DIALOGUE_2, WALL_NPC_DIALOGUE_3, WALL_NPC_DIALOGUE_4, WALL_NPC_DIALOGUE_5, WALL_NPC_DIALOGUE_6]
 tmx_data = load_pygame("Game Attempts\\Tiled\\tmx\\Courtyard Map Small.tmx")
 current_time = 0
 camera_offset = vector(0,0)

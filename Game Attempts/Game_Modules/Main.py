@@ -125,6 +125,10 @@ while True:
         type = "Corridor"
     elif Courtyard.section == "Courtyard":
         for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_j:
+                    # print(len(Courtyard.enemies))
+                    pass
             if Courtyard.wall_npc.sprite.Mouse_Sprite_Collision == True and event.type == pygame.MOUSEBUTTONDOWN:
                 if Courtyard.wall_npc.sprite.text_paused == False: 
                     Courtyard.wall_npc.sprite.dialogue = list(Courtyard.wall_npc.sprite.current_text_constant)
@@ -143,8 +147,10 @@ while True:
                 exit()
         Screen.fill((0,0,0))
         if Courtyard.Movement_Stopped == False:
+            Courtyard.levels.update()
             Courtyard.player.update()
-            Courtyard.enemies.update()
+            if Courtyard.levels.wave_completed == False:
+                Courtyard.enemies.update()
         Courtyard.draw_courtyard(Screen)
         Courtyard.draw_wall_npc(Screen, Courtyard.wall_npc.sprite)
         Courtyard.draw_enemies(Screen, Courtyard.enemies)

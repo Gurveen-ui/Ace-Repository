@@ -159,6 +159,8 @@ class Player(pygame.sprite.Sprite):
         self.image = pygame.image.load("Game Attempts\\Images\\Courtyard\\Player\\Knight Top Down Test.png").convert_alpha()
         self.Pre_rotation_image = self.image
         self.rect = self.image.get_rect(bottomleft = (90, 220))
+        self.max_health = 100
+        self.health = 100
         self.position = vector(self.rect.center)
         self.velocity = vector(0,0)
         self.prior_velocity_x = 0
@@ -299,6 +301,23 @@ class Levels():
     def __init__(self):
         self.wave = 0
         self.wave_completed = False
+        self.total_enemies = 10 + (self.wave * 2)
+        self.completed_time = 0
+        self.enemy_count = 0
+
+    def update(self):
+        self.enemy_count = len(enemies)
+        if self.enemy_count == 0 and self.wave != 0:
+            self.completed_time += 1
+            if self.completed_time > 20:
+                self.wave += 1
+                self.total_enemies = 10 + (self.wave * 2)
+                for i in range(0, levels.total_enemies):
+                    enemies.add(Courtyard_Enemies(random.choice(enemy_spawns)))
+                self.completed_time = 0
+        
+
+
 
 levels = Levels()
 
@@ -347,11 +366,15 @@ class Wall_NPC(pygame.sprite.Sprite):
 
     def update(self):
         global Movement_Stopped
+        self.box_rect.bottomleft = ((self.rect.centerx + 30 + camera_offset.x, self.rect.centery - 50 + camera_offset.y))
         keys = pygame.key.get_pressed()
-        if self.dialogue_count >= len(wall_dialogues):
+        if self.dialogue_count >= len(wall_dialogues) and self.Box_Displayed == False:
             Movement_Stopped = False
             self.Display_box = False
             self.Box_Displayed = True
+            levels.wave = 1
+            for i in range(0, levels.enemy_count):
+                enemies.add(Courtyard_Enemies(random.choice(enemy_spawns)))
         if self.Box_Displayed == False:
             self.current_text_constant = wall_dialogues[self.dialogue_count]
             Mouse_x, Mouse_Y = pygame.mouse.get_pos()
@@ -483,6 +506,5 @@ class Courtyard_Enemies(pygame.sprite.Sprite):
 
 
 enemies = pygame.sprite.Group()
-for i in range(20):
-    enemies.add(Courtyard_Enemies(random.choice(enemy_spawns)))
+
 

@@ -36,6 +36,18 @@ for x in range(80):
         grid[(x,y)] = {"accessible": True,
                        "cost": 1 }
 
+def initialise():
+    global camera_offset, player, levels, wall_npc, gui, enemies
+    camera_offset = vector(0,0)
+    player = pygame.sprite.GroupSingle()
+    player.add(Player())
+    levels = Levels()
+    wall_npc = pygame.sprite.GroupSingle()
+    Extract_Tiles(Wall_NPC, "Wall_NPC", wall_npc, 80, "Object")
+    gui = pygame.sprite.GroupSingle()
+    gui.add(Gui())
+    enemies = pygame.sprite.Group()
+
 
 def Extract_Tiles(Class, Layer_Name, Group, Side_length, Type = None, List = None):
     if Type == "Object":
@@ -343,6 +355,7 @@ Extract_Tiles(Courtyard_Tile, "Sand", courtyard_tiles, 80)
 Extract_Tiles(Courtyard_Tile, "Walls", courtyard_tiles, 80)
 Extract_Tiles(Courtyard_Tile, "Wall_Hit", collision_tiles, 80)
 
+
 class Wall_NPC(pygame.sprite.Sprite):
     def __init__(self, world_pos, surface, Group):
         super().__init__(Group)
@@ -410,6 +423,7 @@ class Wall_NPC(pygame.sprite.Sprite):
 wall_npc = pygame.sprite.GroupSingle()
 Extract_Tiles(Wall_NPC, "Wall_NPC", wall_npc, 80, "Object")
 
+
 class Gui(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
@@ -441,7 +455,7 @@ class Courtyard_Enemies(pygame.sprite.Sprite):
         self.path = [self.grid_pos]
         self.current_target = self.grid_pos
         self.vector_distance = vector(0)
-        self.damage = 3
+        self.damage = 30
         self.hit_cooldown = 0
 
     def Movement(self):
@@ -540,9 +554,5 @@ class Courtyard_Enemies(pygame.sprite.Sprite):
         self.Apply_Movement()
         self.Apply_Damage()
 
-
-
-
 enemies = pygame.sprite.Group()
-
 

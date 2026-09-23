@@ -59,11 +59,31 @@ player_backward_running_animation_list = get_image_from_sheet(player_backward_ru
 left_wall = pygame.image.load("Game Attempts\\Images\\Wall\\Side Walls\\Left Wall Pixel.png").convert_alpha()
 right_wall = pygame.image.load("Game Attempts\\Images\\Wall\\Side Walls\\Right Wall Pixel.png").convert_alpha()
 
+def initialise():
+    global player, corridor_background, corridor_floor, corridor_platforms, corridor_door, king_text, thought_bubble, corridor_signs, corridor_side_walls
+    player = pygame.sprite.GroupSingle()
+    player.add(Player())    
+    corridor_background = pygame.sprite.Group()
+    corridor_background.add(Corridor_Background(0),Corridor_Background(SCREEN_WIDTH))
+    corridor_floor = pygame.sprite.Group()
+    corridor_floor.add(Corridor_Floor(0),Corridor_Floor(SCREEN_WIDTH))
+    corridor_platforms = pygame.sprite.Group()
+    corridor_platforms.add(Corridor_Platform(400,400), Corridor_Platform(800,325), Corridor_Platform(1200,250), Corridor_Platform(1800,375),
+                       Corridor_Platform(2500,275), Corridor_Platform(2900,150), Corridor_Platform(3000,400), Corridor_Platform(3500,200), Corridor_Platform(4000,350))
+    corridor_door = pygame.sprite.GroupSingle()
+    corridor_door.add(Corridor_Door())
+    king_text = pygame.sprite.GroupSingle()
+    king_text.add(King_Text())
+    thought_bubble = pygame.sprite.GroupSingle()
+    thought_bubble.add(Player_Thoughts())
+    corridor_signs = pygame.sprite.Group()
+    corridor_signs.add(Corridor_Sign("A_D", 70, 100), Corridor_Sign("E", right_forcefield - 750, 40))
+    corridor_side_walls = pygame.sprite.Group()
+    corridor_side_walls.add(Corridor_Side_Wall(left_wall, left_forcefield - 80, 0), Corridor_Side_Wall(right_wall, right_forcefield, 0))
 
 def sprite_group_movement(sprite_list, x_value):
     for sprite in sprite_list:
         sprite.rect.x = sprite.rect.x + x_value
-
 
 def destroy(object,Group,Class):
     if object.rect.right <= 0:
@@ -429,3 +449,4 @@ class Corridor_Side_Wall(pygame.sprite.Sprite):
 
 corridor_side_walls = pygame.sprite.Group()
 corridor_side_walls.add(Corridor_Side_Wall(left_wall, left_forcefield - 80, 0), Corridor_Side_Wall(right_wall, right_forcefield, 0))
+

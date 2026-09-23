@@ -36,14 +36,26 @@ def pause_display():
         Courtyard.draw_wall_npc(Screen, Courtyard.wall_npc.sprite)
         Courtyard.draw_enemies(Screen, Courtyard.enemies)
         Courtyard.player.draw(Screen)
+        Courtyard.draw_gui(Screen)
         Screen.blit(overlay_screen, (0,0))
         Screen.blit(Global_Assets.Royal_Font.render(str(Courtyard.get_player_grid_pos(Courtyard.player.sprite)), False, (255,0,255)),(1280 - 110 ,720 - 120))
         Screen.blit(Global_Assets.Royal_Font.render(str(round(clock.get_fps())), False, (255,0,0)), (1280 - 90,720 - 50))
 clock = pygame.time.Clock()
 
+def reset_all():
+    global paused, type
+    paused = False
+    Start_Menu.section = "Start_Menu"
+    Corridor.section = "Corridor"
+    Courtyard.section = "Courtyard"
+    type = "Start_Menu"
+    Corridor.initialise()
+    Courtyard.initialise()
+
+
 while True:
     keys = pygame.key.get_pressed()  
-    if keys[pygame.K_ESCAPE] and (type == "Corridor" or type == "Courtyard"):
+    if keys[pygame.K_ESCAPE] and (type == "Corridor" or type == "Courtyard") and Courtyard.player.sprite.player_dead == False:
         if paused == False:
             paused = True
             
@@ -125,23 +137,30 @@ while True:
         type = "Corridor"
     elif Courtyard.section == "Courtyard":
         for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_j:
-                    # print(len(Courtyard.enemies))
-                    pass
-            if Courtyard.wall_npc.sprite.Mouse_Sprite_Collision == True and event.type == pygame.MOUSEBUTTONDOWN:
-                if Courtyard.wall_npc.sprite.text_paused == False: 
-                    Courtyard.wall_npc.sprite.dialogue = list(Courtyard.wall_npc.sprite.current_text_constant)
-                    Courtyard.wall_npc.sprite.text_paused = True
-                else:
-                    Courtyard.wall_npc.sprite.dialogue_count += 1
-                    Courtyard.wall_npc.sprite.line_counter = 0
-                    Courtyard.wall_npc.sprite.text_counter = 0
-                    Courtyard.wall_npc.sprite.pause_timer = 0
-                    Courtyard.wall_npc.sprite.text_paused = False
-                    Courtyard.wall_npc.sprite.dialogue.clear()
-                    for lines in Courtyard.wall_npc.sprite.current_text_constant:
-                        Courtyard.wall_npc.sprite.dialogue += [""]
+            if Courtyard.player.sprite.player_dead == True:
+                    if Overlay_Screen.start_button.sprite.Mouse_Sprite_Collision == True  and event.type == pygame.MOUSEBUTTONDOWN:
+                        reset_all()
+                    elif Overlay_Screen.exit_button.sprite.Mouse_Sprite_Collision == True  and event.type == pygame.MOUSEBUTTONDOWN:
+                        pygame.quit()
+                        exit()
+            else:
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_j:
+                        # print(len(Courtyard.enemies))
+                        pass
+                if Courtyard.wall_npc.sprite.Mouse_Sprite_Collision == True and event.type == pygame.MOUSEBUTTONDOWN:
+                    if Courtyard.wall_npc.sprite.text_paused == False: 
+                        Courtyard.wall_npc.sprite.dialogue = list(Courtyard.wall_npc.sprite.current_text_constant)
+                        Courtyard.wall_npc.sprite.text_paused = True
+                    else:
+                        Courtyard.wall_npc.sprite.dialogue_count += 1
+                        Courtyard.wall_npc.sprite.line_counter = 0
+                        Courtyard.wall_npc.sprite.text_counter = 0
+                        Courtyard.wall_npc.sprite.pause_timer = 0
+                        Courtyard.wall_npc.sprite.text_paused = False
+                        Courtyard.wall_npc.sprite.dialogue.clear()
+                        for lines in Courtyard.wall_npc.sprite.current_text_constant:
+                            Courtyard.wall_npc.sprite.dialogue += [""]
             if event.type == pygame.QUIT:
                 pygame.quit()
                 exit()
@@ -160,20 +179,25 @@ while True:
             Courtyard.player.draw(Screen)
             Courtyard.draw_gui(Screen)
             Courtyard.wall_npc.update()
+            type = "Courtyard"
         else:
             Courtyard.draw_courtyard(Screen)
             Courtyard.draw_wall_npc(Screen, Courtyard.wall_npc.sprite)
             Courtyard.draw_enemies(Screen, Courtyard.enemies)
             Courtyard.player.draw(Screen)
             Courtyard.draw_gui(Screen)
+            Screen.blit(Global_Assets.Royal_Font.render(str(Courtyard.current_time // 1000), False, (0,0,0)),(1280 - 110 ,720 - 170))
+            Screen.blit(Global_Assets.Royal_Font.render(str(Courtyard.get_player_grid_pos(Courtyard.player.sprite)), False, (255,0,255)),(1280 - 110 ,720 - 120))
             Screen.blit(overlay_screen, (0,0))
+            Overlay_Screen.start_button.draw(Screen)
+            Overlay_Screen.exit_button.draw(Screen)
+            Overlay_Screen.start_button.update()
+            Overlay_Screen.exit_button.update()
+            pygame.display.update()
         # if Courtyard.player.sprite.rect.colliderect(Courtyard.wall_npc.sprite.rect):
         #     pygame.draw.rect(Screen, "black", (80,320,320,320), 5)
         # pygame.draw.rect(Screen, "red", Courtyard.player.sprite.rect)
         # pygame.draw.rect(Screen, "red", Courtyard.wall_npc.sprite.rect)
-        Screen.blit(Global_Assets.Royal_Font.render(str(Courtyard.current_time // 1000), False, (0,0,0)),(1280 - 110 ,720 - 170))
-        Screen.blit(Global_Assets.Royal_Font.render(str(Courtyard.get_player_grid_pos(Courtyard.player.sprite)), False, (255,0,255)),(1280 - 110 ,720 - 120))
-        type = "Courtyard"
     Screen.blit(Global_Assets.Royal_Font.render(str(round(clock.get_fps())), False, (255,0,0)), (1280 - 90,720 - 50))
     pygame.display.update()
     clock.tick(60)

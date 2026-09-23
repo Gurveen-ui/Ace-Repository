@@ -5,7 +5,7 @@ pygame.init()
 Screen = pygame.display.set_mode((1280,720))
 
 import Global_Assets
-import Pause
+import Overlay_Screen
 import Start_Menu
 import Corridor
 import Courtyard
@@ -14,9 +14,9 @@ import Courtyard
 
 type = "Start_Menu"
 paused = False
-pause_screen = pygame.surface.Surface((1280,720))
-pause_screen.fill((0,0,0))
-pause_screen.set_alpha(180)
+overlay_screen = pygame.surface.Surface((1280,720))
+overlay_screen.fill((0,0,0))
+overlay_screen.set_alpha(180)
 
 def pause_display():
     if type == "Corridor":
@@ -28,7 +28,7 @@ def pause_display():
         Corridor.corridor_platforms.draw(Screen)
         Corridor.corridor_signs.draw(Screen)
         Corridor.player.draw(Screen)
-        Screen.blit(pause_screen, (0,0))
+        Screen.blit(overlay_screen, (0,0))
         Screen.blit(Global_Assets.Royal_Font.render(str(round(clock.get_fps())), False, (255,0,0)), (1280 - 90,720 - 50))
     elif type == "Courtyard":
         Courtyard.Screen.fill((0,0,0))
@@ -36,7 +36,7 @@ def pause_display():
         Courtyard.draw_wall_npc(Screen, Courtyard.wall_npc.sprite)
         Courtyard.draw_enemies(Screen, Courtyard.enemies)
         Courtyard.player.draw(Screen)
-        Screen.blit(pause_screen, (0,0))
+        Screen.blit(overlay_screen, (0,0))
         Screen.blit(Global_Assets.Royal_Font.render(str(Courtyard.get_player_grid_pos(Courtyard.player.sprite)), False, (255,0,255)),(1280 - 110 ,720 - 120))
         Screen.blit(Global_Assets.Royal_Font.render(str(round(clock.get_fps())), False, (255,0,0)), (1280 - 90,720 - 50))
 clock = pygame.time.Clock()
@@ -49,9 +49,9 @@ while True:
             
     if paused == True:
         for event in pygame.event.get():
-            if Pause.start_button.sprite.Mouse_Sprite_Collision == True  and event.type == pygame.MOUSEBUTTONDOWN:
+            if Overlay_Screen.start_button.sprite.Mouse_Sprite_Collision == True  and event.type == pygame.MOUSEBUTTONDOWN:
                 paused = False
-            elif Pause.exit_button.sprite.Mouse_Sprite_Collision == True  and event.type == pygame.MOUSEBUTTONDOWN:
+            elif Overlay_Screen.exit_button.sprite.Mouse_Sprite_Collision == True  and event.type == pygame.MOUSEBUTTONDOWN:
                 pygame.quit()
                 exit()
             if event.type == pygame.QUIT:
@@ -59,10 +59,10 @@ while True:
                 exit()
         
         pause_display()
-        Pause.start_button.draw(Screen)
-        Pause.exit_button.draw(Screen)
-        Pause.start_button.update()
-        Pause.exit_button.update()
+        Overlay_Screen.start_button.draw(Screen)
+        Overlay_Screen.exit_button.draw(Screen)
+        Overlay_Screen.start_button.update()
+        Overlay_Screen.exit_button.update()
         pygame.display.update()
         clock.tick(60)  
         continue
@@ -146,17 +146,27 @@ while True:
                 pygame.quit()
                 exit()
         Screen.fill((0,0,0))
-        if Courtyard.Movement_Stopped == False:
-            Courtyard.levels.update()
-            Courtyard.player.update()
-            if Courtyard.levels.wave_completed == False:
-                Courtyard.enemies.update()
-        Courtyard.draw_courtyard(Screen)
-        Courtyard.draw_wall_npc(Screen, Courtyard.wall_npc.sprite)
-        Courtyard.draw_enemies(Screen, Courtyard.enemies)
-        #pygame.draw.rect(Screen, "red", (80,320,320,320), 5)
-        Courtyard.player.draw(Screen)
-        Courtyard.wall_npc.update()
+        if Courtyard.player.sprite.player_dead == False:
+            if Courtyard.Movement_Stopped == False:
+                Courtyard.levels.update()
+                Courtyard.player.update()
+                if Courtyard.levels.wave_completed == False:
+                    Courtyard.enemies.update()
+            Courtyard.gui.update()
+            Courtyard.draw_courtyard(Screen)
+            Courtyard.draw_wall_npc(Screen, Courtyard.wall_npc.sprite)
+            Courtyard.draw_enemies(Screen, Courtyard.enemies)
+            #pygame.draw.rect(Screen, "red", (80,320,320,320), 5)
+            Courtyard.player.draw(Screen)
+            Courtyard.draw_gui(Screen)
+            Courtyard.wall_npc.update()
+        else:
+            Courtyard.draw_courtyard(Screen)
+            Courtyard.draw_wall_npc(Screen, Courtyard.wall_npc.sprite)
+            Courtyard.draw_enemies(Screen, Courtyard.enemies)
+            Courtyard.player.draw(Screen)
+            Courtyard.draw_gui(Screen)
+            Screen.blit(overlay_screen, (0,0))
         # if Courtyard.player.sprite.rect.colliderect(Courtyard.wall_npc.sprite.rect):
         #     pygame.draw.rect(Screen, "black", (80,320,320,320), 5)
         # pygame.draw.rect(Screen, "red", Courtyard.player.sprite.rect)

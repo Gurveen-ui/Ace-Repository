@@ -68,6 +68,12 @@ def draw_courtyard(surface):
         if screen_rect.colliderect(surface.get_rect()):
             surface.blit(tile.image, screen_rect)
 
+def draw_gui(Surface):
+    pygame.draw.rect(Surface, (45,45,45), gui.sprite.total_health_rect)
+    pygame.draw.rect(Surface, "black", gui.sprite.total_health_rect, 5)
+    pygame.draw.rect(Surface, "red", gui.sprite.health_rect)
+    pygame.draw.rect(Surface, "black", gui.sprite.health_rect, 5)
+
 def draw_enemies(surface, enemy_group):
     offset = (round(camera_offset.x),round(camera_offset.y))
     for enemy in enemy_group:
@@ -162,6 +168,7 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(bottomleft = (90, 220))
         self.max_health = 100
         self.health = 100
+        self.player_dead = False
         self.position = vector(self.rect.center)
         self.velocity = vector(0,0)
         self.prior_velocity_x = 0
@@ -255,7 +262,6 @@ class Player(pygame.sprite.Sprite):
 
             rotated_image = pygame.transform.rotate(self.Pre_rotation_image, self.current_angle)
             self.image = rotated_image
-            #self.rect = pygame.rect.Rect()
             self.rect = self.image.get_rect(center= self.position, size = PLAYER_SIZE)
 
     def Collision_Check(self, type, tiles):
@@ -288,6 +294,7 @@ class Player(pygame.sprite.Sprite):
                     
     def update(self):
         global current_time
+        if self.health <= 0: self.player_dead = True
         current_time = pygame.time.get_ticks()
         self.Movement()
         self.Apply_Movement()
@@ -403,6 +410,21 @@ class Wall_NPC(pygame.sprite.Sprite):
 wall_npc = pygame.sprite.GroupSingle()
 Extract_Tiles(Wall_NPC, "Wall_NPC", wall_npc, 80, "Object")
 
+class Gui(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        self.total_health_rect = pygame.rect.Rect(100,10,player.sprite.max_health *3,60)
+        self.health_rect = pygame.rect.Rect(100,10,player.sprite.health *3,60)
+
+    def update(self):
+        self.total_health_rect = pygame.rect.Rect(100,10,player.sprite.max_health *3,60)
+        self.health_rect = pygame.rect.Rect(100,10,player.sprite.health *3,60)
+
+
+gui = pygame.sprite.GroupSingle()
+gui.add(Gui())
+
+
 class Courtyard_Enemies(pygame.sprite.Sprite):
     def __init__(self, world_pos):
         super().__init__()
@@ -419,6 +441,8 @@ class Courtyard_Enemies(pygame.sprite.Sprite):
         self.path = [self.grid_pos]
         self.current_target = self.grid_pos
         self.vector_distance = vector(0)
+        self.damage = 3
+        self.hit_cooldown = 0
 
     def Movement(self):
         self.acceleration = vector(0,0)
@@ -495,6 +519,18 @@ class Courtyard_Enemies(pygame.sprite.Sprite):
             self.path.remove(self.path[0])
         self.current_target = vector(self.path[0])
 
+    def Apply_Damage(self):
+        screen_rect = self.world_rect.move(round(camera_offset.x),round(camera_offset.y))
+        if self.hit_cooldown > 0:
+            self.hit_cooldown -= 1
+            if self.hit_cooldown <= 0:
+                self.hit_cooldown = 0
+        if screen_rect.colliderect(player.sprite.rect) and self.hit_cooldown == 0:
+            player.sprite.health -= self.damage
+            self.hit_cooldown = 300
+
+
+
     def update(self):
         self.grid_pos = get_grid_pos(self.world_rect)
         self.vector_distance = find_pixel_distance(self.grid_pos, self.current_target)
@@ -502,6 +538,7 @@ class Courtyard_Enemies(pygame.sprite.Sprite):
         self.Update_Path()
         self.Movement()
         self.Apply_Movement()
+        self.Apply_Damage()
 
 
 

@@ -148,7 +148,7 @@ while True:
                     if event.key == pygame.K_j:
                         # print(len(Courtyard.enemies))
                         pass
-                if Courtyard.wall_npc.sprite.Mouse_Sprite_Collision == True and event.type == pygame.MOUSEBUTTONDOWN:
+                if event.type == pygame.MOUSEBUTTONDOWN:
                     if Courtyard.wall_npc.sprite.text_paused == False: 
                         Courtyard.wall_npc.sprite.dialogue = list(Courtyard.wall_npc.sprite.current_text_constant)
                         Courtyard.wall_npc.sprite.text_paused = True
@@ -177,6 +177,7 @@ while True:
             Courtyard.draw_enemies(Screen, Courtyard.enemies)
             #pygame.draw.rect(Screen, "red", (80,320,320,320), 5)
             Courtyard.player.draw(Screen)
+            Courtyard.draw_flashes(Screen)
             Courtyard.draw_gui(Screen)
             Courtyard.wall_npc.update()
             type = "Courtyard"
@@ -189,6 +190,8 @@ while True:
             Screen.blit(Global_Assets.Royal_Font.render(str(Courtyard.current_time // 1000), False, (0,0,0)),(1280 - 110 ,720 - 170))
             Screen.blit(Global_Assets.Royal_Font.render(str(Courtyard.get_player_grid_pos(Courtyard.player.sprite)), False, (255,0,255)),(1280 - 110 ,720 - 120))
             Screen.blit(overlay_screen, (0,0))
+            Screen.blit(Overlay_Screen.death_message, Overlay_Screen.death_message.get_rect(center = (620, 160)))
+            Screen.blit(Global_Assets.Royal_Font.render("Now she is gone..", False, (80,30,30)),(10, 685))
             Overlay_Screen.start_button.draw(Screen)
             Overlay_Screen.exit_button.draw(Screen)
             Overlay_Screen.start_button.update()

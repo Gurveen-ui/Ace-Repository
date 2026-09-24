@@ -99,6 +99,10 @@ def draw_wall_npc(surface, object):
     if screen_rect.colliderect(surface.get_rect()):
         surface.blit(object.image, screen_rect)
 
+def draw_flashes(surface):
+    if player.sprite.hit_flash == True:
+                    pygame.draw.rect(surface, "red", player.sprite.rect)
+
 def get_player_grid_pos(object):
     world_rect = object.rect.center - camera_offset
     grid_x = int(world_rect.x / 80)
@@ -191,6 +195,9 @@ class Player(pygame.sprite.Sprite):
         self.current_angle = 0
         self.rotation_speed = 10
         self.grid_pos = get_player_grid_pos(self)
+        self.hit_flash = False
+        self.got_hit = False
+        self.got_hit_time = 0
 
     def Movement(self):
         self.acceleration = vector(0,0)
@@ -303,16 +310,23 @@ class Player(pygame.sprite.Sprite):
         self.rect.topleft = (self.world_rect.left + round(camera_offset.x),
                              self.world_rect.top + round(camera_offset.y))
         self.position = vector(self.rect.center)
-                    
+
+    def damage(self):
+        if self.got_hit == True and self.got_hit_time + 500 < current_time:
+            self.got_hit = False
+
+
     def update(self):
         global current_time
+        self.hit_flash = False
         if self.health <= 0: self.player_dead = True
         current_time = pygame.time.get_ticks()
         self.Movement()
         self.Apply_Movement()
         self.Check_Boundaries()
         self.Rotate()
-        #pygame.draw.rect(Screen, "red", self.rect)
+        self.damage()
+        pygame.draw.rect(Screen, "red", self.rect)
 
 player = pygame.sprite.GroupSingle()
 player.add(Player())
@@ -398,11 +412,6 @@ class Wall_NPC(pygame.sprite.Sprite):
                 enemies.add(Courtyard_Enemies(random.choice(enemy_spawns)))
         if self.Box_Displayed == False:
             self.current_text_constant = wall_dialogues[self.dialogue_count]
-            Mouse_x, Mouse_Y = pygame.mouse.get_pos()
-            if self.box_rect.collidepoint((Mouse_x, Mouse_Y)) and self.Display_box == True:
-                self.Mouse_Sprite_Collision = True
-            else:
-                self.Mouse_Sprite_Collision = False
             if keys[pygame.K_e] and player.sprite.rect.colliderect(self.rect) and self.Remove_display == False:
                 self.Display_box = True
             if self.pause_timer < 20 and self.Remove_display == False:
@@ -455,8 +464,8 @@ class Courtyard_Enemies(pygame.sprite.Sprite):
         self.path = [self.grid_pos]
         self.current_target = self.grid_pos
         self.vector_distance = vector(0)
-        self.damage = 30
-        self.hit_cooldown = 0
+        self.damage = 300
+        self.last_hit = 0
 
     def Movement(self):
         self.acceleration = vector(0,0)
@@ -535,13 +544,12 @@ class Courtyard_Enemies(pygame.sprite.Sprite):
 
     def Apply_Damage(self):
         screen_rect = self.world_rect.move(round(camera_offset.x),round(camera_offset.y))
-        if self.hit_cooldown > 0:
-            self.hit_cooldown -= 1
-            if self.hit_cooldown <= 0:
-                self.hit_cooldown = 0
-        if screen_rect.colliderect(player.sprite.rect) and self.hit_cooldown == 0:
+        if screen_rect.colliderect(player.sprite.rect) and self.last_hit + 5000 <= current_time and player.sprite.got_hit == False:
             player.sprite.health -= self.damage
-            self.hit_cooldown = 300
+            player.sprite.hit_flash = True
+            player.sprite.got_hit = True
+            player.sprite.got_hit_time = current_time
+            self.last_hit = current_time
 
 
 

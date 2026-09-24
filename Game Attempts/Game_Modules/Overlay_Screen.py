@@ -4,6 +4,8 @@ pygame.init()
 Screen = pygame.display.set_mode((1280,720))
 pygame.display.set_caption("paused")
 
+death_message = pygame.image.load("Game Attempts\\Images\\Death Message Pixel.png").convert_alpha()
+
 def Button_Hover(Button):
         Mouse_x, Mouse_Y = pygame.mouse.get_pos()
         if Button.sprite.rect.collidepoint((Mouse_x, Mouse_Y)):

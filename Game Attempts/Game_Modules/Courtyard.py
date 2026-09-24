@@ -464,7 +464,7 @@ class Courtyard_Enemies(pygame.sprite.Sprite):
         self.path = [self.grid_pos]
         self.current_target = self.grid_pos
         self.vector_distance = vector(0)
-        self.damage = 300
+        self.damage = 5
         self.last_hit = 0
 
     def Movement(self):

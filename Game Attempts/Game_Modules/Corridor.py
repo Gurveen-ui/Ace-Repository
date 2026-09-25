@@ -60,7 +60,9 @@ left_wall = pygame.image.load("Game Attempts\\Images\\Wall\\Side Walls\\Left Wal
 right_wall = pygame.image.load("Game Attempts\\Images\\Wall\\Side Walls\\Right Wall Pixel.png").convert_alpha()
 
 def initialise():
-    global player, corridor_background, corridor_floor, corridor_platforms, corridor_door, king_text, thought_bubble, corridor_signs, corridor_side_walls
+    global left_forcefield, right_forcefield, player, corridor_background, corridor_floor, corridor_platforms, corridor_door, king_text, thought_bubble, corridor_signs, corridor_side_walls
+    left_forcefield = 0
+    right_forcefield = 5120
     player = pygame.sprite.GroupSingle()
     player.add(Player())    
     corridor_background = pygame.sprite.Group()
@@ -351,7 +353,7 @@ class King_Text(pygame.sprite.Sprite):
         super().__init__()
         self.image = pygame.image.load("Game Attempts\\Images\\Text Box\\Kings Text Box Large.png").convert_alpha()
         self.rect = self.image.get_rect(bottomleft = (10,700))
-        self.Display_box = False
+        self.display_box = False
         self.dialogue = []
         for lines in KING_TEXT:
             self.dialogue += [""]
@@ -365,7 +367,7 @@ class King_Text(pygame.sprite.Sprite):
     
     def Display_Box(self):
         global Movement_Stopped
-        if self.Display_box == True:
+        if self.display_box == True:
             Movement_Stopped = True
             king_text.draw(Screen)
         
@@ -374,12 +376,12 @@ class King_Text(pygame.sprite.Sprite):
         global Movement_Stopped
         if self.Box_Displayed == False:
             Mouse_x, Mouse_Y = pygame.mouse.get_pos()
-            if self.rect.collidepoint((Mouse_x, Mouse_Y)) and self.Display_box == True:
+            if self.rect.collidepoint((Mouse_x, Mouse_Y)) and self.display_box == True:
                 self.Mouse_Sprite_Collision = True
             else:
                 self.Mouse_Sprite_Collision = False
             if current_time >= start_time + 5000 and self.Remove_display == False:
-                self.Display_box = True
+                self.display_box = True
             if self.pause_timer < 10 and self.Remove_display == False:
                 self.Display_Box()
                 if self.text_paused == False:
@@ -387,7 +389,7 @@ class King_Text(pygame.sprite.Sprite):
                 Global_Assets.Display_Dialogue(self, 370, 100, 35, Global_Assets.Royal_Font)
             else:
                 Movement_Stopped = False
-                self.Display_box = False
+                self.display_box = False
                 self.Box_Displayed = True
 
 king_text = pygame.sprite.GroupSingle()
@@ -398,7 +400,7 @@ class Player_Thoughts(pygame.sprite.Sprite):
         super().__init__()
         self.image = pygame.image.load("Game Attempts\\Images\\Player Thoughts\\Thought Pixel.png").convert_alpha()
         self.rect = self.image.get_rect(bottomright = (player.sprite.rect.x,player.sprite.rect.y))
-        self.Display_box = False
+        self.display_box = False
         self.dialogue = []
         for lines in PLAYER_THOUGHTS:
             self.dialogue += [""]
@@ -410,21 +412,21 @@ class Player_Thoughts(pygame.sprite.Sprite):
         self.Remove_display = False
     
     def Display_Box(self):
-        if self.Display_box == True and self.Box_Displayed == False:
+        if self.display_box == True and self.Box_Displayed == False:
             self.rect.bottomright = ((player.sprite.rect.x + 30,player.sprite.rect.y + 30))
             thought_bubble.draw(Screen)
     
     def update(self):
         if self.Box_Displayed == False:
             if king_text.sprite.Box_Displayed == True and self.Remove_display == False:
-                self.Display_box = True
+                self.display_box = True
             if self.pause_timer < 15 and self.Remove_display == False:
                 self.Display_Box()
                 if self.text_paused == False:
                     Global_Assets.dialogue_producer(self, PLAYER_THOUGHTS, 2.5)
                 Global_Assets.Display_Dialogue(self, 60, 50, 25, Global_Assets.Royal_Font_Small)
             else:
-                self.Display_box = False
+                self.display_box = False
                 self.Box_Displayed = True
 
 thought_bubble = pygame.sprite.GroupSingle()

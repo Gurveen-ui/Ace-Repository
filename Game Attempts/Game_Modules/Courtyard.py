@@ -79,6 +79,9 @@ def draw_courtyard(surface):
         screen_rect = tile.world_rect.move(offset)
         if screen_rect.colliderect(surface.get_rect()):
             surface.blit(tile.image, screen_rect)
+    
+def draw_attacks(surface):
+    player.sprite.swirl()
 
 def draw_gui(Surface):
     pygame.draw.rect(Surface, (45,45,45), gui.sprite.total_health_rect)
@@ -87,11 +90,9 @@ def draw_gui(Surface):
     pygame.draw.rect(Surface, "black", gui.sprite.health_rect, 5)
 
 def draw_enemies(surface, enemy_group):
-    offset = (round(camera_offset.x),round(camera_offset.y))
     for enemy in enemy_group:
-        screen_rect = enemy.world_rect.move(offset)
-        if screen_rect.colliderect(surface.get_rect()):
-            surface.blit(enemy.image, screen_rect)
+        if enemy.rect.colliderect(surface.get_rect()):
+            surface.blit(enemy.image, enemy.rect)
 
 def draw_wall_npc(surface, object):
     offset = (round(camera_offset.x),round(camera_offset.y))
@@ -198,6 +199,10 @@ class Player(pygame.sprite.Sprite):
         self.hit_flash = False
         self.got_hit = False
         self.got_hit_time = 0
+
+        self.swirl_image = pygame.image.load("Game Attempts\\Images\\Courtyard\\Player\\Swirl Large.png").convert_alpha()
+        self.swirl_rect = self.swirl_image.get_rect(center = self.rect.center)
+        self.swirl_attributes = {"active": False, "last_used": -10000, "damage": 20}
 
     def Movement(self):
         self.acceleration = vector(0,0)
@@ -311,9 +316,22 @@ class Player(pygame.sprite.Sprite):
                              self.world_rect.top + round(camera_offset.y))
         self.position = vector(self.rect.center)
 
-    def damage(self):
+    def apply_damage(self):
         if self.got_hit == True and self.got_hit_time + 500 < current_time:
             self.got_hit = False
+
+    def swirl(self):
+        if self.swirl_attributes["active"] == True:
+            self.swirl_rect.center = self.rect.center
+            if self.swirl_attributes["last_used"] + 250 > current_time:
+                Screen.blit(self.swirl_image, self.swirl_image.get_rect(center = self.rect.center))
+                for enemy in enemies:
+                    if self.swirl_rect.colliderect(enemy.rect) and enemy.last_got_hit + 500 <= current_time:
+                        enemy.health -= self.swirl_attributes["damage"]
+                        enemy.last_got_hit = current_time
+            if self.swirl_attributes["last_used"] + 2000 < current_time:
+                self.swirl_attributes["active"] = False
+        
 
 
     def update(self):
@@ -325,7 +343,7 @@ class Player(pygame.sprite.Sprite):
         self.Apply_Movement()
         self.Check_Boundaries()
         self.Rotate()
-        self.damage()
+        self.apply_damage()
         pygame.draw.rect(Screen, "red", self.rect)
 
 player = pygame.sprite.GroupSingle()
@@ -341,7 +359,7 @@ class Levels():
 
     def update(self):
         self.enemy_count = len(enemies)
-        if self.enemy_count == 0 and self.wave != 0:
+        if self.enemy_count <= 0 and self.wave != 0:
             self.completed_time += 1
             if self.completed_time > 20:
                 self.wave += 1
@@ -378,7 +396,7 @@ class Wall_NPC(pygame.sprite.Sprite):
         self.text_box = pygame.image.load("Game Attempts\\Images\\Courtyard\\Wall NPC\\Text Box Pixel.png").convert_alpha()
         self.box_rect = self.text_box.get_rect(bottomleft = ((self.rect.centerx + 30, self.rect.centery - 50)))
         self.world_rect = self.rect
-        self.Display_box = False
+        self.display_box = False
         self.dialogue_count = 0
         self.current_text_constant = wall_dialogues[self.dialogue_count]
         self.dialogue = []
@@ -394,7 +412,7 @@ class Wall_NPC(pygame.sprite.Sprite):
 
     def Display_Box(self):
         global Movement_Stopped
-        if self.Display_box == True:
+        if self.display_box == True:
             Movement_Stopped = True
             Screen.blit(self.text_box, self.box_rect)
         
@@ -405,7 +423,7 @@ class Wall_NPC(pygame.sprite.Sprite):
         keys = pygame.key.get_pressed()
         if self.dialogue_count >= len(wall_dialogues) and self.Box_Displayed == False:
             Movement_Stopped = False
-            self.Display_box = False
+            self.display_box = False
             self.Box_Displayed = True
             levels.wave = 1
             for i in range(0, levels.enemy_count):
@@ -413,7 +431,7 @@ class Wall_NPC(pygame.sprite.Sprite):
         if self.Box_Displayed == False:
             self.current_text_constant = wall_dialogues[self.dialogue_count]
             if keys[pygame.K_e] and player.sprite.rect.colliderect(self.rect) and self.Remove_display == False:
-                self.Display_box = True
+                self.display_box = True
             if self.pause_timer < 20 and self.Remove_display == False:
                 self.Display_Box()
                 if self.text_paused == False:
@@ -456,6 +474,8 @@ class Courtyard_Enemies(pygame.sprite.Sprite):
         self.world_rect = self.rect.copy()
         self.position = vector(self.rect.center)
         self.grid_pos = get_grid_pos(self.world_rect)
+        self.max_health = 100
+        self.health = 100
         self.velocity = vector(0,0)
         self.acceleration = vector(0,0)
         self.ACCELERATION = 0.3
@@ -466,6 +486,7 @@ class Courtyard_Enemies(pygame.sprite.Sprite):
         self.vector_distance = vector(0)
         self.damage = 5
         self.last_hit = 0
+        self.last_got_hit = 0
 
     def Movement(self):
         self.acceleration = vector(0,0)
@@ -551,15 +572,21 @@ class Courtyard_Enemies(pygame.sprite.Sprite):
             player.sprite.got_hit_time = current_time
             self.last_hit = current_time
 
-
+    def death(self):
+        if self.health <= 0:
+            levels.enemy_count -= 1
+            self.kill()
 
     def update(self):
+        offset = (round(camera_offset.x),round(camera_offset.y))
+        self.rect = self.world_rect.move(offset)
         self.grid_pos = get_grid_pos(self.world_rect)
         self.vector_distance = find_pixel_distance(self.grid_pos, self.current_target)
         self.Find_path()
         self.Update_Path()
         self.Movement()
         self.Apply_Movement()
+        self.death()
         self.Apply_Damage()
 
 enemies = pygame.sprite.Group()

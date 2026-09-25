@@ -4,7 +4,7 @@ pygame.init()
 Screen = pygame.display.set_mode((1280,720))
 
 def dialogue_producer(Box_class, Text_constant, Letter_Speed):
-    if Box_class.Display_box == True:
+    if Box_class.display_box == True:
         if Box_class.dialogue[int(Box_class.line_counter)] == Text_constant[int(Box_class.line_counter)]:
             Box_class.line_counter += 1
             Box_class.text_counter = 0

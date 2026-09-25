@@ -34,6 +34,7 @@ def pause_display():
         Courtyard.Screen.fill((0,0,0))
         Courtyard.draw_courtyard(Screen)
         Courtyard.draw_wall_npc(Screen, Courtyard.wall_npc.sprite)
+        Courtyard.draw_attacks(Screen)
         Courtyard.draw_enemies(Screen, Courtyard.enemies)
         Courtyard.player.draw(Screen)
         Courtyard.draw_gui(Screen)
@@ -143,11 +144,7 @@ while True:
                     elif Overlay_Screen.exit_button.sprite.Mouse_Sprite_Collision == True  and event.type == pygame.MOUSEBUTTONDOWN:
                         pygame.quit()
                         exit()
-            else:
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_j:
-                        # print(len(Courtyard.enemies))
-                        pass
+            elif Courtyard.wall_npc.sprite.display_box == True:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if Courtyard.wall_npc.sprite.text_paused == False: 
                         Courtyard.wall_npc.sprite.dialogue = list(Courtyard.wall_npc.sprite.current_text_constant)
@@ -161,6 +158,12 @@ while True:
                         Courtyard.wall_npc.sprite.dialogue.clear()
                         for lines in Courtyard.wall_npc.sprite.current_text_constant:
                             Courtyard.wall_npc.sprite.dialogue += [""]
+            else:
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_SPACE:
+                        if Courtyard.player.sprite.swirl_attributes["active"] == False:
+                            Courtyard.player.sprite.swirl_attributes["active"] = True
+                            Courtyard.player.sprite.swirl_attributes["last_used"] = Courtyard.current_time
             if event.type == pygame.QUIT:
                 pygame.quit()
                 exit()
@@ -174,9 +177,10 @@ while True:
             Courtyard.gui.update()
             Courtyard.draw_courtyard(Screen)
             Courtyard.draw_wall_npc(Screen, Courtyard.wall_npc.sprite)
+            Courtyard.draw_attacks(Screen)
             Courtyard.draw_enemies(Screen, Courtyard.enemies)
-            #pygame.draw.rect(Screen, "red", (80,320,320,320), 5)
             Courtyard.player.draw(Screen)
+            #pygame.draw.rect(Screen, "red", (80,320,320,320), 5)
             Courtyard.draw_flashes(Screen)
             Courtyard.draw_gui(Screen)
             Courtyard.wall_npc.update()
@@ -184,6 +188,7 @@ while True:
         else:
             Courtyard.draw_courtyard(Screen)
             Courtyard.draw_wall_npc(Screen, Courtyard.wall_npc.sprite)
+            Courtyard.draw_attacks(Screen)
             Courtyard.draw_enemies(Screen, Courtyard.enemies)
             Courtyard.player.draw(Screen)
             Courtyard.draw_gui(Screen)

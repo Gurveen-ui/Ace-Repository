@@ -38,6 +38,8 @@ def pause_display():
         Courtyard.draw_enemies(Screen, Courtyard.enemies)
         Courtyard.player.draw(Screen)
         Courtyard.draw_gui(Screen)
+        Screen.blit(Global_Assets.Royal_Font.render("current wave " + str(Courtyard.levels.wave), False, (0,0,0)),(640 - 40, 20))
+        Screen.blit(Global_Assets.Royal_Font.render("time till next wave " + str( 1200 - Courtyard.levels.completed_time), False, (0,0,0)),(640 - 40, 50))
         Screen.blit(overlay_screen, (0,0))
         Screen.blit(Global_Assets.Royal_Font.render(str(Courtyard.get_player_grid_pos(Courtyard.player.sprite)), False, (255,0,255)),(1280 - 110 ,720 - 120))
         Screen.blit(Global_Assets.Royal_Font.render(str(round(clock.get_fps())), False, (255,0,0)), (1280 - 90,720 - 50))
@@ -164,6 +166,7 @@ while True:
                         if Courtyard.player.sprite.swirl_attributes["active"] == False:
                             Courtyard.player.sprite.swirl_attributes["active"] = True
                             Courtyard.player.sprite.swirl_attributes["last_used"] = Courtyard.current_time
+                            Courtyard.player.sprite.swirl_attributes["pos"] = Courtyard.player.sprite.rect.center - Courtyard.camera_offset
             if event.type == pygame.QUIT:
                 pygame.quit()
                 exit()
@@ -183,6 +186,10 @@ while True:
             #pygame.draw.rect(Screen, "red", (80,320,320,320), 5)
             Courtyard.draw_flashes(Screen)
             Courtyard.draw_gui(Screen)
+            Screen.blit(Global_Assets.Royal_Font.render("current wave " + str(Courtyard.levels.wave), False, (0,0,0)),(640 - 40, 20))
+            Screen.blit(Global_Assets.Royal_Font.render("time till next wave " + str( 1200 - Courtyard.levels.completed_time), False, (0,0,0)),(640 - 40, 50))
+            # Screen.blit(Global_Assets.Royal_Font.render(str(Courtyard.current_time // 1000), False, (0,0,0)),(1280 - 110 ,720 - 170))
+            # Screen.blit(Global_Assets.Royal_Font.render(str(Courtyard.get_player_grid_pos(Courtyard.player.sprite)), False, (255,0,255)),(1280 - 110 ,720 - 120))
             Courtyard.wall_npc.update()
             type = "Courtyard"
         else:
@@ -192,8 +199,10 @@ while True:
             Courtyard.draw_enemies(Screen, Courtyard.enemies)
             Courtyard.player.draw(Screen)
             Courtyard.draw_gui(Screen)
-            Screen.blit(Global_Assets.Royal_Font.render(str(Courtyard.current_time // 1000), False, (0,0,0)),(1280 - 110 ,720 - 170))
-            Screen.blit(Global_Assets.Royal_Font.render(str(Courtyard.get_player_grid_pos(Courtyard.player.sprite)), False, (255,0,255)),(1280 - 110 ,720 - 120))
+            Screen.blit(Global_Assets.Royal_Font.render("current wave " + str(Courtyard.levels.wave), False, (0,0,0)),(640 - 40, 20))
+            Screen.blit(Global_Assets.Royal_Font.render("time till next wave " + str( 1200 - Courtyard.levels.completed_time), False, (0,0,0)),(640 - 40, 50))
+            # Screen.blit(Global_Assets.Royal_Font.render(str(Courtyard.current_time // 1000), False, (0,0,0)),(1280 - 110 ,720 - 170))
+            # Screen.blit(Global_Assets.Royal_Font.render(str(Courtyard.get_player_grid_pos(Courtyard.player.sprite)), False, (255,0,255)),(1280 - 110 ,720 - 120))
             Screen.blit(overlay_screen, (0,0))
             Screen.blit(Overlay_Screen.death_message, Overlay_Screen.death_message.get_rect(center = (620, 160)))
             Screen.blit(Global_Assets.Royal_Font.render("Now she is gone..", False, (80,30,30)),(10, 685))

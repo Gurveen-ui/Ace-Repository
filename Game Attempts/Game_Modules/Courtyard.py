@@ -200,9 +200,9 @@ class Player(pygame.sprite.Sprite):
         self.got_hit = False
         self.got_hit_time = 0
 
-        self.swirl_image = pygame.image.load("Game Attempts\\Images\\Courtyard\\Player\\Swirl Large.png").convert_alpha()
+        self.swirl_image = pygame.image.load("Game Attempts\\Images\\Courtyard\\Player\\Swirl Pixel.png").convert_alpha()
         self.swirl_rect = self.swirl_image.get_rect(center = self.rect.center)
-        self.swirl_attributes = {"active": False, "last_used": -10000, "damage": 20}
+        self.swirl_attributes = {"active": False, "last_used": -10000, "damage": 20, "pos": (0,0)}
 
     def Movement(self):
         self.acceleration = vector(0,0)
@@ -322,9 +322,9 @@ class Player(pygame.sprite.Sprite):
 
     def swirl(self):
         if self.swirl_attributes["active"] == True:
-            self.swirl_rect.center = self.rect.center
-            if self.swirl_attributes["last_used"] + 250 > current_time:
-                Screen.blit(self.swirl_image, self.swirl_image.get_rect(center = self.rect.center))
+            if self.swirl_attributes["last_used"] + 500 > current_time:
+                self.swirl_rect.center = self.swirl_attributes["pos"] + camera_offset
+                Screen.blit(self.swirl_image, self.swirl_rect)
                 for enemy in enemies:
                     if self.swirl_rect.colliderect(enemy.rect) and enemy.last_got_hit + 500 <= current_time:
                         enemy.health -= self.swirl_attributes["damage"]
@@ -344,7 +344,6 @@ class Player(pygame.sprite.Sprite):
         self.Check_Boundaries()
         self.Rotate()
         self.apply_damage()
-        pygame.draw.rect(Screen, "red", self.rect)
 
 player = pygame.sprite.GroupSingle()
 player.add(Player())
@@ -358,15 +357,16 @@ class Levels():
         self.enemy_count = 0
 
     def update(self):
-        self.enemy_count = len(enemies)
-        if self.enemy_count <= 0 and self.wave != 0:
-            self.completed_time += 1
-            if self.completed_time > 20:
-                self.wave += 1
-                self.total_enemies = 10 + (self.wave * 2)
-                for i in range(0, levels.total_enemies):
-                    enemies.add(Courtyard_Enemies(random.choice(enemy_spawns)))
-                self.completed_time = 0
+        if self.wave > 0:
+            self.enemy_count = len(enemies)
+            if self.enemy_count <= 0:
+                self.completed_time += 1
+                if self.completed_time > 1200:
+                    self.wave += 1
+                    self.total_enemies = 10 + (self.wave * 2)
+                    for i in range(0, levels.total_enemies):
+                        enemies.add(Courtyard_Enemies(random.choice(enemy_spawns)))
+                    self.completed_time = 0
         
 
 
@@ -426,7 +426,7 @@ class Wall_NPC(pygame.sprite.Sprite):
             self.display_box = False
             self.Box_Displayed = True
             levels.wave = 1
-            for i in range(0, levels.enemy_count):
+            for i in range(0, levels.total_enemies):
                 enemies.add(Courtyard_Enemies(random.choice(enemy_spawns)))
         if self.Box_Displayed == False:
             self.current_text_constant = wall_dialogues[self.dialogue_count]

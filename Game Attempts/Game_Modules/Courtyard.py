@@ -80,14 +80,17 @@ def draw_courtyard(surface):
         if screen_rect.colliderect(surface.get_rect()):
             surface.blit(tile.image, screen_rect)
     
-def draw_attacks(surface):
-    player.sprite.swirl()
+def player_attacks(type):
+    player.sprite.swirl(type)
 
 def draw_gui(Surface):
-    pygame.draw.rect(Surface, (45,45,45), gui.sprite.total_health_rect)
-    pygame.draw.rect(Surface, "black", gui.sprite.total_health_rect, 5)
-    pygame.draw.rect(Surface, "red", gui.sprite.health_rect)
-    pygame.draw.rect(Surface, "black", gui.sprite.health_rect, 5)
+    pygame.draw.rect(Surface, (45,45,45), gui.sprite.total_health_rect, 0, 10)
+    pygame.draw.rect(Surface, "black", gui.sprite.total_health_rect, 5, 10)
+    pygame.draw.rect(Surface, "red", gui.sprite.health_rect, 0, 10)
+    pygame.draw.rect(Surface, "black", gui.sprite.health_rect, 5, 10)
+    Screen.blit(Global_Assets.Royal_Font.render("Current Wave: " + str(levels.wave), False, (0,0,0)),(640 - 40, 20))
+    if levels.wave_completed == True: Screen.blit(Global_Assets.Royal_Font.render("Next Wave In: " + str( 1200 - levels.completed_time), False, (0,0,0)),(640 - 40, 50))
+    if levels.wave > 0 and levels.wave_completed == False : Screen.blit(Global_Assets.Royal_Font.render(("Enemies Remaining: " + str(levels.enemy_count)), False, (0,0,0)),(640 - 40, 50))
 
 def draw_enemies(surface, enemy_group):
     for enemy in enemy_group:
@@ -320,17 +323,21 @@ class Player(pygame.sprite.Sprite):
         if self.got_hit == True and self.got_hit_time + 500 < current_time:
             self.got_hit = False
 
-    def swirl(self):
+    def swirl(self, type):
         if self.swirl_attributes["active"] == True:
-            if self.swirl_attributes["last_used"] + 500 > current_time:
-                self.swirl_rect.center = self.swirl_attributes["pos"] + camera_offset
-                Screen.blit(self.swirl_image, self.swirl_rect)
-                for enemy in enemies:
-                    if self.swirl_rect.colliderect(enemy.rect) and enemy.last_got_hit + 500 <= current_time:
-                        enemy.health -= self.swirl_attributes["damage"]
-                        enemy.last_got_hit = current_time
-            if self.swirl_attributes["last_used"] + 2000 < current_time:
-                self.swirl_attributes["active"] = False
+            if type == "functional":
+                if self.swirl_attributes["last_used"] + 500 > current_time:
+                    self.swirl_rect.center = self.swirl_attributes["pos"] + camera_offset
+                    Screen.blit(self.swirl_image, self.swirl_rect)
+                    for enemy in enemies:
+                        if self.swirl_rect.colliderect(enemy.rect) and enemy.last_got_hit + 500 <= current_time:
+                            enemy.health -= self.swirl_attributes["damage"]
+                            enemy.last_got_hit = current_time
+                if self.swirl_attributes["last_used"] + 2000 < current_time:
+                    self.swirl_attributes["active"] = False
+            else: 
+                if self.swirl_attributes["last_used"] + 500 > current_time:
+                    Screen.blit(self.swirl_image, self.swirl_rect)
         
 
 
@@ -544,7 +551,7 @@ class Courtyard_Enemies(pygame.sprite.Sprite):
 
     def Find_path(self):
         global current_time
-        if h_value(player.sprite.grid_pos, self.grid_pos) < 10 and self.last_target_check + 500 < current_time:
+        if h_value(player.sprite.grid_pos, self.grid_pos) < 15 and self.last_target_check + 500 < current_time:
             if not player.sprite.grid_pos == self.grid_pos:
                 self.path = A_Star((self.grid_pos), (player.sprite.grid_pos))
                 self.last_target_check = current_time

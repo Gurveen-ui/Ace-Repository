@@ -466,12 +466,12 @@ Extract_Tiles(Wall_NPC, "Wall_NPC", wall_npc, 80, "Object")
 class Gui(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.total_health_rect = pygame.rect.Rect(100,10,player.sprite.max_health *3,60)
-        self.health_rect = pygame.rect.Rect(100,10,player.sprite.health *3,60)
+        self.total_health_rect = pygame.rect.Rect(100,10,player.sprite.max_health *3,40)
+        self.health_rect = pygame.rect.Rect(100,10,player.sprite.health *3,40)
 
     def update(self):
-        self.total_health_rect = pygame.rect.Rect(100,10,player.sprite.max_health *3,60)
-        self.health_rect = pygame.rect.Rect(100,10,player.sprite.health *3,60)
+        self.total_health_rect = pygame.rect.Rect(100,10,player.sprite.max_health *3,40)
+        self.health_rect = pygame.rect.Rect(100,10,player.sprite.health *3,40)
 
 
 gui = pygame.sprite.GroupSingle()

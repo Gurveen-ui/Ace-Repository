@@ -89,7 +89,7 @@ def draw_gui(Surface):
     pygame.draw.rect(Surface, "red", gui.sprite.health_rect, 0, 10)
     pygame.draw.rect(Surface, "black", gui.sprite.health_rect, 5, 10)
     Screen.blit(Global_Assets.Royal_Font.render("Current Wave: " + str(levels.wave), False, (0,0,0)),(640 - 40, 20))
-    if levels.wave_completed == True: Screen.blit(Global_Assets.Royal_Font.render("Next Wave In: " + str( 1200 - levels.completed_time), False, (0,0,0)),(640 - 40, 50))
+    if levels.wave_completed == True: Screen.blit(Global_Assets.Royal_Font.render("Next Wave In: " + str(int((1200 - levels.completed_time) / 1000)), False, (0,0,0)),(640 - 40, 50))
     if levels.wave > 0 and levels.wave_completed == False : Screen.blit(Global_Assets.Royal_Font.render(("Enemies Remaining: " + str(levels.enemy_count)), False, (0,0,0)),(640 - 40, 50))
 
 def draw_enemies(surface, enemy_group):
@@ -367,13 +367,16 @@ class Levels():
         if self.wave > 0:
             self.enemy_count = len(enemies)
             if self.enemy_count <= 0:
-                self.completed_time += 1
-                if self.completed_time > 1200:
-                    self.wave += 1
-                    self.total_enemies = 10 + (self.wave * 2)
-                    for i in range(0, levels.total_enemies):
-                        enemies.add(Courtyard_Enemies(random.choice(enemy_spawns)))
-                    self.completed_time = 0
+                self.wave_completed = True
+        if self.wave_completed == True:
+            self.completed_time += 1
+            if self.completed_time > 1200:
+                self.wave_completed = False
+                self.wave += 1  
+                self.total_enemies = 10 + (self.wave * 2)
+                for i in range(0, levels.total_enemies):
+                    enemies.add(Courtyard_Enemies(random.choice(enemy_spawns)))
+                self.completed_time = 0
         
 
 
@@ -450,6 +453,8 @@ class Wall_NPC(pygame.sprite.Sprite):
                 self.text_counter = 0
                 self.pause_timer = 0
                 self.text_paused = False
+                if self.dialogue_count < len(wall_dialogues):
+                    self.current_text_constant = wall_dialogues[self.dialogue_count]
                 self.dialogue.clear()
                 for lines in self.current_text_constant:
                     self.dialogue += [""]

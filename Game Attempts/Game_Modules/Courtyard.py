@@ -396,16 +396,19 @@ class Levels():
 
     # update method, all functional aspects for the wave system (levels)
     def update(self):
+        global section
         if self.wave > 0:
             self.enemy_count = len(enemies)
             if self.enemy_count <= 0:
                 self.wave_completed = True
         if self.wave_completed == True:
             self.completed_time += 1
+            if self.wave == 5:
+                section = "End_Menu"
             if self.completed_time > 1200:
                 self.wave_completed = False
-                self.wave += 1  
-                self.total_enemies = 10 + (self.wave * 2)
+                self.wave += 1 
+                self.total_enemies = 0 + (self.wave * 2)
                 for i in range(0, levels.total_enemies):
                     enemies.add(Courtyard_Enemies(random.choice(enemy_spawns)))
                 self.completed_time = 0

@@ -178,10 +178,8 @@ while True:
             if event.type == pygame.QUIT:
                 pygame.quit()
                 exit()
-
-    
         Screen.fill((0,0,0))
-
+        
         # normal courtyard loop, while player is alive
         if Courtyard.player.sprite.player_dead == False:
             if Courtyard.Movement_Stopped == False:
@@ -226,6 +224,15 @@ while True:
         # pygame.draw.rect(Screen, "red", Courtyard.player.sprite.rect)
         # pygame.draw.rect(Screen, "red", Courtyard.wall_npc.sprite.rect)
     
+    # end menu section, currently an else statement as end module is yet to be made
+    else:
+        # event loop
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                exit()
+        Screen.fill((0,0,0))
+        
     Screen.blit(Global_Assets.Royal_Font.render(str(round(clock.get_fps())), False, (255,0,0)), (1280 - 90,720 - 50))
     pygame.display.update()
     clock.tick(60)

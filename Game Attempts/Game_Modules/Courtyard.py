@@ -1,12 +1,15 @@
+# import and initialise all modules
 import pygame
 import math, random, Global_Assets
 from pytmx.util_pygame import load_pygame
 pygame.init()
 
+# create display and vector variables
 Screen = pygame.display.set_mode((1280,720))
 pygame.display.set_caption("Courtyard")
 vector = pygame.math.Vector2
 
+# create all constants
 TOP_BOUND = 80
 BOTTOM_BOUND = 640
 RIGHT_BOUND = 1200
@@ -23,6 +26,7 @@ WALL_NPC_DIALOGUE_4 = ["But oh well, that has nothing","to do with.... us","We h
 WALL_NPC_DIALOGUE_5 = ["Enemies are gathering outside,","Any second now they will attack.","You must protect the princess","And her.... lover"]
 WALL_NPC_DIALOGUE_6 = ["Here they come!!"]
 
+# create all variables
 wall_dialogues = [WALL_NPC_DIALOGUE_1, WALL_NPC_DIALOGUE_2, WALL_NPC_DIALOGUE_3, WALL_NPC_DIALOGUE_4, WALL_NPC_DIALOGUE_5, WALL_NPC_DIALOGUE_6]
 tmx_data = load_pygame("Game Attempts\\Tiled\\tmx\\Courtyard Map Small.tmx")
 current_time = 0
@@ -36,6 +40,7 @@ for x in range(80):
         grid[(x,y)] = {"accessible": True,
                        "cost": 1 }
 
+# initialise function for death game reset
 def initialise():
     global camera_offset, player, levels, wall_npc, gui, enemies
     camera_offset = vector(0,0)
@@ -48,7 +53,7 @@ def initialise():
     gui.add(Gui())
     enemies = pygame.sprite.Group()
 
-
+# extract tiles function for tiled extraction
 def Extract_Tiles(Class, Layer_Name, Group, Side_length, Type = None, List = None):
     if Type == "Object":
         for layer in tmx_data:
@@ -73,16 +78,21 @@ def Extract_Tiles(Class, Layer_Name, Group, Side_length, Type = None, List = Non
 
 Extract_Tiles(None,"Spawnpoints", None, 80, "Object", enemy_spawns)
 
+# draw functions
+
+# draws all map tiles while on display
 def draw_courtyard(surface):
     offset = (round(camera_offset.x),round(camera_offset.y))
     for tile in courtyard_tiles:
         screen_rect = tile.world_rect.move(offset)
         if screen_rect.colliderect(surface.get_rect()):
             surface.blit(tile.image, screen_rect)
-    
+
+# calls player attack methods, which draw or update depending on what is wanted
 def player_attacks(type):
     player.sprite.swirl(type)
 
+# draws gui
 def draw_gui(Surface):
     pygame.draw.rect(Surface, (45,45,45), gui.sprite.total_health_rect, 0, 10)
     pygame.draw.rect(Surface, "black", gui.sprite.total_health_rect, 5, 10)
@@ -92,43 +102,53 @@ def draw_gui(Surface):
     if levels.wave_completed == True: Screen.blit(Global_Assets.Royal_Font.render("Next Wave In: " + str(int((1200 - levels.completed_time) / 1000)), False, (0,0,0)),(640 - 40, 50))
     if levels.wave > 0 and levels.wave_completed == False : Screen.blit(Global_Assets.Royal_Font.render(("Enemies Remaining: " + str(levels.enemy_count)), False, (0,0,0)),(640 - 40, 50))
 
+# draws all enemies if they are on screen
 def draw_enemies(surface, enemy_group):
     for enemy in enemy_group:
         if enemy.rect.colliderect(surface.get_rect()):
             surface.blit(enemy.image, enemy.rect)
 
+# draws wall npc if on screen
 def draw_wall_npc(surface, object):
     offset = (round(camera_offset.x),round(camera_offset.y))
     screen_rect = object.world_rect.move(offset)
     if screen_rect.colliderect(surface.get_rect()):
         surface.blit(object.image, screen_rect)
 
+# draws damage flashes, currently only player
 def draw_flashes(surface):
     if player.sprite.hit_flash == True:
                     pygame.draw.rect(surface, "red", player.sprite.rect)
 
+# a* algorithm functions
+
+# returns the player's grid position when called
 def get_player_grid_pos(object):
     world_rect = object.rect.center - camera_offset
     grid_x = int(world_rect.x / 80)
     grid_y = int((world_rect.y + 2880) / 80)
     return vector(grid_x, grid_y)
 
+# returns grid positions of non player objects when called
 def get_grid_pos(world_rect):
     grid_x = int(vector(world_rect.center).x / 80)
     grid_y = int((vector(world_rect.center).y + 2880) / 80)
     return vector(grid_x, grid_y)
 
+# returns hueristic value of distance between 2 grid value
 def h_value(start, target):
     start = vector(start)
     target = vector(target)
     h = math.sqrt((target.x - start.x)**2 + (target.y - start.y)**2)
     return h
 
+# finds distance in pixels between 2 grid values
 def find_pixel_distance(start, target):
     x_distance = target.x * 80 - start.x * 80
     y_distance =  ((target.y * 80) + 2880) - ((start.y * 80) + 2880)
     return vector(x_distance, y_distance)
 
+# function for entire a* pathfinding algorithm
 def A_Star(start, target):
     start = tuple((int(start.x),int(start.y)))
     target = tuple((int(target.x),int(target.y)))
@@ -177,10 +197,10 @@ def A_Star(start, target):
         closed.add(q)
     return[]
 
-
-
-
+# player class
 class Player(pygame.sprite.Sprite):
+
+    # initialising method
     def __init__(self):
         super().__init__()
         self.image = pygame.image.load("Game Attempts\\Images\\Courtyard\\Player\\Knight Top Down Test.png").convert_alpha()
@@ -207,6 +227,7 @@ class Player(pygame.sprite.Sprite):
         self.swirl_rect = self.swirl_image.get_rect(center = self.rect.center)
         self.swirl_attributes = {"active": False, "last_used": -10000, "damage": 20, "pos": (0,0)}
 
+    # movement method, checks player inputs and affects acceleration
     def Movement(self):
         self.acceleration = vector(0,0)
         keys = pygame.key.get_pressed()
@@ -227,6 +248,8 @@ class Player(pygame.sprite.Sprite):
         else:
             self.acceleration.x = 0
 
+    # apply movement method, affects player velocity and position sin gcurrent acceleration, 
+    # calls collision check immediately after to prevent wall phasing
     def Apply_Movement(self):
         self.velocity.x *= (1 + self.FRICTION)
         self.velocity.x += self.acceleration.x
@@ -247,7 +270,8 @@ class Player(pygame.sprite.Sprite):
         self.position.y += self.velocity.y
         self.rect.center = self.position
         self.Collision_Check("Vertical",collision_tiles)
-    
+
+    # check boundaries method, changes camera offset if player moves past bounds
     def Check_Boundaries(self):
         global camera_offset
         if self.rect.right > RIGHT_BOUND:
@@ -272,6 +296,7 @@ class Player(pygame.sprite.Sprite):
         self.position = vector(self.rect.center)
         self.grid_pos = get_player_grid_pos(self)
 
+    # rotate method, points player image towards movement direction and reinitialises rect
     def Rotate(self):
         if self.acceleration.length_squared() == 0 or self.velocity.length_squared() == 0: pass
         else:
@@ -291,6 +316,7 @@ class Player(pygame.sprite.Sprite):
             self.image = rotated_image
             self.rect = self.image.get_rect(center= self.position, size = PLAYER_SIZE)
 
+    # collision check, prevents player from moving into walls (collision tiles)
     def Collision_Check(self, type, tiles):
         if type == "Horizontal": self.prior_velocity_x = self.velocity.x
         else: self.prior_velocity_y = self.velocity.y
@@ -319,10 +345,13 @@ class Player(pygame.sprite.Sprite):
                              self.world_rect.top + round(camera_offset.y))
         self.position = vector(self.rect.center)
 
+    # apply damage functions, currently functions as hit immunity after taking damage
     def apply_damage(self):
         if self.got_hit == True and self.got_hit_time + 500 < current_time:
             self.got_hit = False
 
+    # player swirl attack, handles all functionality and drawing of the attack
+    # new method for each attack
     def swirl(self, type):
         if self.swirl_attributes["active"] == True:
             if type == "functional":
@@ -338,9 +367,8 @@ class Player(pygame.sprite.Sprite):
             else: 
                 if self.swirl_attributes["last_used"] + 500 > current_time:
                     Screen.blit(self.swirl_image, self.swirl_rect)
-        
 
-
+    # update method, updates nessesary variables and calls player methods
     def update(self):
         global current_time
         self.hit_flash = False
@@ -355,7 +383,10 @@ class Player(pygame.sprite.Sprite):
 player = pygame.sprite.GroupSingle()
 player.add(Player())
 
+# levels class
 class Levels():
+
+    # initialising method
     def __init__(self):
         self.wave = 0
         self.wave_completed = False
@@ -363,6 +394,7 @@ class Levels():
         self.completed_time = 0
         self.enemy_count = 0
 
+    # update method, all functional aspects for the wave system (levels)
     def update(self):
         if self.wave > 0:
             self.enemy_count = len(enemies)
@@ -378,12 +410,12 @@ class Levels():
                     enemies.add(Courtyard_Enemies(random.choice(enemy_spawns)))
                 self.completed_time = 0
         
-
-
-
 levels = Levels()
 
+# courtyard tile class
 class Courtyard_Tile(pygame.sprite.Sprite):
+
+    # initialising method
     def __init__(self, world_pos, grid_pos, surface, Group):
         super().__init__(Group)
         self.image = surface
@@ -397,8 +429,10 @@ Extract_Tiles(Courtyard_Tile, "Sand", courtyard_tiles, 80)
 Extract_Tiles(Courtyard_Tile, "Walls", courtyard_tiles, 80)
 Extract_Tiles(Courtyard_Tile, "Wall_Hit", collision_tiles, 80)
 
-
+# wall npc class
 class Wall_NPC(pygame.sprite.Sprite):
+
+    # initialising method
     def __init__(self, world_pos, surface, Group):
         super().__init__(Group)
         self.image = surface
@@ -420,13 +454,14 @@ class Wall_NPC(pygame.sprite.Sprite):
         self.Remove_display = False
         self.Mouse_Sprite_Collision = False
 
+    # display box method, blits text box nto screen if conditions met
     def Display_Box(self):
         global Movement_Stopped
         if self.display_box == True:
             Movement_Stopped = True
             Screen.blit(self.text_box, self.box_rect)
         
-
+    # update method, calls all functions related to dialogue depending on conditions
     def update(self):
         global Movement_Stopped
         self.box_rect.bottomleft = ((self.rect.centerx + 30 + camera_offset.x, self.rect.centery - 50 + camera_offset.y))
@@ -462,23 +497,27 @@ class Wall_NPC(pygame.sprite.Sprite):
 wall_npc = pygame.sprite.GroupSingle()
 Extract_Tiles(Wall_NPC, "Wall_NPC", wall_npc, 80, "Object")
 
-
+# gui class
 class Gui(pygame.sprite.Sprite):
+
+    # initialising method
     def __init__(self):
         super().__init__()
         self.total_health_rect = pygame.rect.Rect(100,10,player.sprite.max_health *3,40)
         self.health_rect = pygame.rect.Rect(100,10,player.sprite.health *3,40)
 
+    # update method for gui
     def update(self):
         self.total_health_rect = pygame.rect.Rect(100,10,player.sprite.max_health *3,40)
         self.health_rect = pygame.rect.Rect(100,10,player.sprite.health *3,40)
 
-
 gui = pygame.sprite.GroupSingle()
 gui.add(Gui())
 
-
+# enemies class
 class Courtyard_Enemies(pygame.sprite.Sprite):
+
+    # initialising class
     def __init__(self, world_pos):
         super().__init__()
         self.image = pygame.image.load("Game Attempts\\Images\\Courtyard\\Enemies\\Slimes\\Goof_Slime.png").convert_alpha()
@@ -500,6 +539,7 @@ class Courtyard_Enemies(pygame.sprite.Sprite):
         self.last_hit = 0
         self.last_got_hit = 0
 
+    # movement method, adds acceleration depending on enemy distance from target
     def Movement(self):
         self.acceleration = vector(0,0)
         if self.vector_distance.y < -10:
@@ -512,6 +552,7 @@ class Courtyard_Enemies(pygame.sprite.Sprite):
         elif self.vector_distance.x > 10:
             self.acceleration.x = self.ACCELERATION
 
+    # apply movement method, affects velocity and position using acceleration, calls collision check to prevent wall phasing
     def Apply_Movement(self):
         self.velocity.x *= (1 + self.FRICTION)
         self.velocity.x += self.acceleration.x
@@ -533,6 +574,7 @@ class Courtyard_Enemies(pygame.sprite.Sprite):
         self.world_rect.center = self.position
         self.Collision_Check("Vertical", collision_tiles)
 
+    # collision check method, prevent enemies from clipping into walls (collision checks)
     def Collision_Check(self, type, tiles):
         for tile in tiles:
             if not self.world_rect.colliderect(tile.world_rect):
@@ -554,6 +596,7 @@ class Courtyard_Enemies(pygame.sprite.Sprite):
         self.position = vector(self.world_rect.center)
         self.world_rect.center = self.position
 
+    # uses a* algorithm to find target in regular intervals, wanders but finds player when in range
     def Find_path(self):
         global current_time
         if h_value(player.sprite.grid_pos, self.grid_pos) < 15 and self.last_target_check + 500 < current_time:
@@ -569,12 +612,13 @@ class Courtyard_Enemies(pygame.sprite.Sprite):
                     self.path = new_path
                     self.last_target_check = current_time
                 
-
+    # removes current target grid if enemy has arrived
     def Update_Path(self):
         if vector.length(self.vector_distance) < 2 and len(self.path) > 1:
             self.path.remove(self.path[0])
         self.current_target = vector(self.path[0])
 
+    # apply damage method, applies damage to player when in contact with player object
     def Apply_Damage(self):
         screen_rect = self.world_rect.move(round(camera_offset.x),round(camera_offset.y))
         if screen_rect.colliderect(player.sprite.rect) and self.last_hit + 5000 <= current_time and player.sprite.got_hit == False:
@@ -584,11 +628,13 @@ class Courtyard_Enemies(pygame.sprite.Sprite):
             player.sprite.got_hit_time = current_time
             self.last_hit = current_time
 
+    # deletes enemy object after depleting health
     def death(self):
         if self.health <= 0:
             levels.enemy_count -= 1
             self.kill()
 
+    # update method, updates nessesary variables and calls enemy methods
     def update(self):
         offset = (round(camera_offset.x),round(camera_offset.y))
         self.rect = self.world_rect.move(offset)
@@ -602,4 +648,3 @@ class Courtyard_Enemies(pygame.sprite.Sprite):
         self.Apply_Damage()
 
 enemies = pygame.sprite.Group()
-

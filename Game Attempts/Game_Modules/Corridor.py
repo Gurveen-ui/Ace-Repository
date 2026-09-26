@@ -1,11 +1,13 @@
+# import and initialise all modules
 import pygame, Global_Assets
 pygame.init()
 
+# creates display
 Screen = pygame.display.set_mode((1280,720))
 pygame.display.set_caption("Corridor")
 
+# sets all constants for future use
 FLOOR_HEIGHT = 38
-
 GROUND_LEVEL = 592 # point at which gravity cant pull player below
 LEFT_BOUND = 80 # x value player cant go past and moves background instead
 RIGHT_BOUND = 1200 # x value player cant go past and moves background instead
@@ -17,7 +19,10 @@ BACKGROUND_MOVEMENT_SPEED = 7 # movement speed of background
 SCREEN_WIDTH = 1280 # width of screen
 KING_TEXT = ["My Knight!!"," The princess is getting married today,"," you must put your life on the line"," to ensure nothing goes wrong."," Continue on to the courtyard!"] # texts that the king will speak
 PLAYER_THOUGHTS = ["The princess...                  ","I- I should go."] # texts that the player will think
+LEFT_WALL = pygame.image.load("Game Attempts\\Images\\Wall\\Side Walls\\Left Wall Pixel.png").convert_alpha()
+RIGHT_WALL = pygame.image.load("Game Attempts\\Images\\Wall\\Side Walls\\Right Wall Pixel.png").convert_alpha()
 
+# creates all variables
 left_forcefield = 0 # border player can never go past
 right_forcefield = 5120 # border player can never go past, 4 floors length
 current_time = 0 # time
@@ -25,6 +30,7 @@ Movement_Stopped = False # if movement is stopped due to speech
 section = "Corridor" # current section
 start_time = 0 # time this section starts at
 
+# creates all animation variables
 player_still_image = pygame.image.load("Game Attempts\\Images\\Player\\Test Player Still.png").convert_alpha()
 player_forward_spritesheet = pygame.image.load("Game Attempts\\Images\\Player\\Player Forward Animation.png").convert_alpha()
 player_forward_animation_list = []
@@ -39,6 +45,7 @@ player_forward_running_animation_list = []
 player_backward_running_spritesheet = pygame.image.load("Game Attempts\\Images\\Player\\Player Backward Running Animation.png").convert_alpha()
 player_backward_running_animation_list = []
 
+# extraction function for sprite sheets
 def get_image_from_sheet(list,sheet,width,height):
     sprite_count = 0
     spritesheet_width = sheet.get_rect().width
@@ -49,6 +56,7 @@ def get_image_from_sheet(list,sheet,width,height):
         sprite_count += 1
     return list
 
+# updating animation lists with extracted images
 player_forward_animation_list = get_image_from_sheet(player_forward_animation_list, player_forward_spritesheet, 128, 128)
 player_backward_animation_list = get_image_from_sheet(player_backward_animation_list, player_backward_spritesheet, 128, 128)
 player_upward_animation_list = get_image_from_sheet(player_upward_animation_list, player_upward_spritesheet, 128, 128)
@@ -56,9 +64,7 @@ player_downward_animation_list = get_image_from_sheet(player_downward_animation_
 player_forward_running_animation_list = get_image_from_sheet(player_forward_running_animation_list, player_forward_running_spritesheet, 128, 128)
 player_backward_running_animation_list = get_image_from_sheet(player_backward_running_animation_list, player_backward_running_spritesheet, 128, 128)
 
-left_wall = pygame.image.load("Game Attempts\\Images\\Wall\\Side Walls\\Left Wall Pixel.png").convert_alpha()
-right_wall = pygame.image.load("Game Attempts\\Images\\Wall\\Side Walls\\Right Wall Pixel.png").convert_alpha()
-
+# initialise function for after player death in courtyard section
 def initialise():
     global left_forcefield, right_forcefield, player, corridor_background, corridor_floor, corridor_platforms, corridor_door, king_text, thought_bubble, corridor_signs, corridor_side_walls
     left_forcefield = 0
@@ -81,12 +87,14 @@ def initialise():
     corridor_signs = pygame.sprite.Group()
     corridor_signs.add(Corridor_Sign("A_D", 70, 100), Corridor_Sign("E", right_forcefield - 750, 40))
     corridor_side_walls = pygame.sprite.Group()
-    corridor_side_walls.add(Corridor_Side_Wall(left_wall, left_forcefield - 80, 0), Corridor_Side_Wall(right_wall, right_forcefield, 0))
+    corridor_side_walls.add(Corridor_Side_Wall(LEFT_WALL, left_forcefield - 80, 0), Corridor_Side_Wall(RIGHT_WALL, right_forcefield, 0))
 
+# group movement function
 def sprite_group_movement(sprite_list, x_value):
     for sprite in sprite_list:
         sprite.rect.x = sprite.rect.x + x_value
 
+# destroy and create method for corridor objects after they have left display
 def destroy(object,Group,Class):
     if object.rect.right <= 0:
         rightmost = max([obj.rect.right for obj in Group])
@@ -97,7 +105,10 @@ def destroy(object,Group,Class):
         Group.add(Class(leftmost - object.rect.width))
         object.kill()
 
+# player class
 class Player(pygame.sprite.Sprite):
+
+    # initialising method
     def __init__(self):
         super().__init__()
         self.image = player_still_image
@@ -113,9 +124,7 @@ class Player(pygame.sprite.Sprite):
         self.on_platform_name = self
         self.running = False
 
-
-
-
+    # movement method, check splayer input and calls movement method
     def Movement(self):
         self.previous_frame_bottom = self.rect.bottom
         keys = pygame.key.get_pressed()
@@ -127,7 +136,7 @@ class Player(pygame.sprite.Sprite):
             self.Normal_Movement("Backward")
         self.Check_Boundaries(None)
 
-    
+    # gravity method, creates functional gravity for player
     def Apply_Gravity(self):
         self.rect.y += self.gravity
         self.gravity += 1
@@ -139,6 +148,7 @@ class Player(pygame.sprite.Sprite):
         else:
             self.on_ground = False
 
+    # platform collision method, stops player on top of platforms when conditions are met
     def Platform_Collisions(self, platforms):
         keys = pygame.key.get_pressed()
         for sprite in platforms:
@@ -155,7 +165,10 @@ class Player(pygame.sprite.Sprite):
         if self.rect.bottom != self.on_platform_name.rect.top:
             self.on_platform = False
             
-                
+    # check boundaries method
+    # if player at forcefields, stops them there
+    # if player moves past side bounds, moves corridor instead and returns player to bound
+    # if player not at forcefield and forcefield is on screen moves player, and also corridor if player moves past central bound
     def Check_Boundaries(self, type):
         global left_forcefield, right_forcefield
         if self.rect.left <= left_forcefield:
@@ -189,7 +202,8 @@ class Player(pygame.sprite.Sprite):
                     sprite_group_movement(corridor_background, int(depth / 3))
                     self.Foreground_Movement(depth)
                     self.rect.left = LEFT_BOUND
-    
+
+    # normal movement method, moves player or corridor depending on movement mode
     def Normal_Movement(self, type):
         global left_forcefield, right_forcefield
         if left_forcefield < 0 and right_forcefield > 1280:
@@ -214,7 +228,7 @@ class Player(pygame.sprite.Sprite):
                 self.rect.x -= NORMAL_MOVEMENT_SPEED
                 self.Check_Boundaries("Left")
             
-    
+    # update animation function, calls correct movement animation method depending on movement direction
     def Update_Animation(self):
         keys = pygame.key.get_pressed()
         if self.on_ground == False and self.on_platform == False:
@@ -242,7 +256,8 @@ class Player(pygame.sprite.Sprite):
                 self.horizontal_animation_count = 0
                 self.vertical_animation_count = 0
                 self.image = player_still_image
-    
+
+    # changes player image using animation list (horizontal)
     def Horizontal_Movement_Animation(self, list, running_list):
         if self.image != list[(len(list) - 1)] and self.running == False:
             self.horizontal_animation_count += 0.2
@@ -255,14 +270,16 @@ class Player(pygame.sprite.Sprite):
             self.image = running_list[int(self.horizontal_animation_count)]
             if self.horizontal_animation_count >= (len(running_list) - 1):
                 self.horizontal_animation_count = 0
-    
+
+    # changes player image using animation list (vertical)
     def Vertical_Movement_Animation(self, list):
         if self.image != list[(len(list) - 1)]:
             self.vertical_animation_count += 0.25
             self.image = list[int(self.vertical_animation_count)]
             if self.vertical_animation_count >= (len(list) - 1):
                 self.vertical_animation_count = 0
-        
+
+    # gate check, starts courtyard section if player interacts with gate
     def Gate_Check(self, Gates):
         global section
         keys = pygame.key.get_pressed()
@@ -270,7 +287,7 @@ class Player(pygame.sprite.Sprite):
             if self.rect.colliderect(gate.rect) and keys[pygame.K_e]:
                 section = "Courtyard" 
 
-
+    # moves all sprite groups when called
     def Foreground_Movement(self, speed):
         global left_forcefield, right_forcefield
         sprite_group_movement(corridor_floor, speed)
@@ -281,7 +298,7 @@ class Player(pygame.sprite.Sprite):
         left_forcefield += speed
         right_forcefield += speed
 
-
+    # update method, calls all player methods, movement only when movement varaible not false
     def update(self):
         global current_time
         current_time = pygame.time.get_ticks()
@@ -292,54 +309,60 @@ class Player(pygame.sprite.Sprite):
         self.Platform_Collisions(corridor_platforms)
         self.Gate_Check(corridor_door)
 
-
-
-
 player = pygame.sprite.GroupSingle()
 player.add(Player())
 
+# background class
 class Corridor_Background(pygame.sprite.Sprite):
+
+    # initialising method
     def __init__(self, left_x_pos):
         super().__init__()
         self.left_x_pos = left_x_pos #-1280, 0, 1280
         self.image = pygame.image.load("Game Attempts\\Images\\Wall\\New Walls\\Wall Pixel.png").convert_alpha()
         self.rect = self.image.get_rect(topleft = (left_x_pos,0))
 
+    # update method, calls destroy function for each background object
     def update(self):
         destroy(self,corridor_background,Corridor_Background)
-
 
 corridor_background = pygame.sprite.Group()
 corridor_background.add(Corridor_Background(0),Corridor_Background(SCREEN_WIDTH))
 
-
+# corridor floor class
 class Corridor_Floor(pygame.sprite.Sprite):
+
+     # initialising method
     def __init__(self, left_x_pos):
         super().__init__()
         self.left_x_pos = left_x_pos #-1280, 0, 1280
         self.image = pygame.image.load("Game Attempts\\Images\\Floor\\New Floor\\Floor Pixel.png").convert_alpha()
         self.rect = self.image.get_rect(bottomleft = (left_x_pos,720))
 
+    # update method, calls dstroy function fo each floor object
     def update(self):
         destroy(self,corridor_floor,Corridor_Floor)
-
-
 
 corridor_floor = pygame.sprite.Group()
 corridor_floor.add(Corridor_Floor(0),Corridor_Floor(SCREEN_WIDTH))
 
+# corridor platform class
 class Corridor_Platform(pygame.sprite.Sprite):
+
+    # initialising method
     def __init__(self, topleft_x, topleft_y):
         super().__init__()
         self.image = pygame.image.load("Game Attempts\\Images\\Platform\\Platform.png").convert_alpha()
         self.rect = self.image.get_rect(topleft = (topleft_x, topleft_y))
 
-
 corridor_platforms = pygame.sprite.Group()
 corridor_platforms.add(Corridor_Platform(400,400), Corridor_Platform(800,325), Corridor_Platform(1200,250), Corridor_Platform(1800,375),
                        Corridor_Platform(2500,275), Corridor_Platform(2900,150), Corridor_Platform(3000,400), Corridor_Platform(3500,200), Corridor_Platform(4000,350))
 
+# corridor door class
 class Corridor_Door(pygame.sprite.Sprite):
+
+    # initialising method
     def __init__(self):
         super().__init__()
         self.image = pygame.image.load("Game Attempts\\Images\\Gate\\Gate Pixel.png").convert_alpha()
@@ -348,7 +371,10 @@ class Corridor_Door(pygame.sprite.Sprite):
 corridor_door = pygame.sprite.GroupSingle()
 corridor_door.add(Corridor_Door())
 
+# king text class
 class King_Text(pygame.sprite.Sprite):
+
+    # initialising method
     def __init__(self):
         super().__init__()
         self.image = pygame.image.load("Game Attempts\\Images\\Text Box\\Kings Text Box Large.png").convert_alpha()
@@ -364,14 +390,15 @@ class King_Text(pygame.sprite.Sprite):
         self.Box_Displayed = False
         self.Remove_display = False
         self.Mouse_Sprite_Collision = False
-    
+
+    # display box method , displays text box when conditions met
     def Display_Box(self):
         global Movement_Stopped
         if self.display_box == True:
             Movement_Stopped = True
             king_text.draw(Screen)
         
-
+    # update method, calls all functions related to dialogue depending on conditions
     def update(self):
         global Movement_Stopped
         if self.Box_Displayed == False:
@@ -395,7 +422,10 @@ class King_Text(pygame.sprite.Sprite):
 king_text = pygame.sprite.GroupSingle()
 king_text.add(King_Text())
 
+# player thoughts class
 class Player_Thoughts(pygame.sprite.Sprite):
+
+    # initialising method
     def __init__(self):
         super().__init__()
         self.image = pygame.image.load("Game Attempts\\Images\\Player Thoughts\\Thought Pixel.png").convert_alpha()
@@ -410,12 +440,14 @@ class Player_Thoughts(pygame.sprite.Sprite):
         self.pause_timer = 0
         self.Box_Displayed = False
         self.Remove_display = False
-    
+
+    # display box method , displays text box when conditions met
     def Display_Box(self):
         if self.display_box == True and self.Box_Displayed == False:
             self.rect.bottomright = ((player.sprite.rect.x + 30,player.sprite.rect.y + 30))
             thought_bubble.draw(Screen)
-    
+
+    # update method, calls all functions related to dialogue depending on conditions
     def update(self):
         if self.Box_Displayed == False:
             if king_text.sprite.Box_Displayed == True and self.Remove_display == False:
@@ -432,7 +464,10 @@ class Player_Thoughts(pygame.sprite.Sprite):
 thought_bubble = pygame.sprite.GroupSingle()
 thought_bubble.add(Player_Thoughts())
 
+# corridor sign class
 class Corridor_Sign(pygame.sprite.Sprite):
+
+    # initialising class
     def __init__(self, sign, topleft_x, topleft_y):
         super().__init__()
         if sign == "A_D":
@@ -440,15 +475,18 @@ class Corridor_Sign(pygame.sprite.Sprite):
         elif sign == "E":
             self.image = pygame.image.load("Game Attempts\\Images\\Signs\\E Sign Pixel.png").convert_alpha()
         self.rect = self.image.get_rect(topleft = (topleft_x, topleft_y))
+
 corridor_signs = pygame.sprite.Group()
 corridor_signs.add(Corridor_Sign("A_D", 70, 100), Corridor_Sign("E", right_forcefield - 750, 40))
 
+# corridor side wall class
 class Corridor_Side_Wall(pygame.sprite.Sprite):
+
+    # initilising method
     def __init__(self, image, topleft_x, topleft_y):
         super().__init__()
         self.image = image
         self.rect = self.image.get_rect(topleft = (topleft_x, topleft_y))
 
 corridor_side_walls = pygame.sprite.Group()
-corridor_side_walls.add(Corridor_Side_Wall(left_wall, left_forcefield - 80, 0), Corridor_Side_Wall(right_wall, right_forcefield, 0))
-
+corridor_side_walls.add(Corridor_Side_Wall(LEFT_WALL, left_forcefield - 80, 0), Corridor_Side_Wall(RIGHT_WALL, right_forcefield, 0))

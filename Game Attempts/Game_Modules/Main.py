@@ -1,3 +1,4 @@
+# import all nessesary things
 import pygame
 from sys import exit
 
@@ -11,13 +12,15 @@ import Corridor
 import Courtyard
 
 
-
+# create needed variables
 type = "Start_Menu"
 paused = False
 overlay_screen = pygame.surface.Surface((1280,720))
 overlay_screen.fill((0,0,0))
 overlay_screen.set_alpha(180)
+clock = pygame.time.Clock()
 
+# pause display background function
 def pause_display():
     if type == "Corridor":
         Screen.fill((0,0,0))
@@ -41,8 +44,8 @@ def pause_display():
         Screen.blit(overlay_screen, (0,0))
         Screen.blit(Global_Assets.Royal_Font.render(str(Courtyard.get_player_grid_pos(Courtyard.player.sprite)), False, (255,0,255)),(1280 - 110 ,720 - 120))
         Screen.blit(Global_Assets.Royal_Font.render(str(round(clock.get_fps())), False, (255,0,0)), (1280 - 90,720 - 50))
-clock = pygame.time.Clock()
 
+# reset all things after death
 def reset_all():
     global paused, type
     paused = False
@@ -53,13 +56,15 @@ def reset_all():
     Corridor.initialise()
     Courtyard.initialise()
 
-
+# main while loop
 while True:
+    # pause button (esc)
     keys = pygame.key.get_pressed()  
     if keys[pygame.K_ESCAPE] and (type == "Corridor" or type == "Courtyard") and Courtyard.player.sprite.player_dead == False:
         if paused == False:
             paused = True
-            
+
+    # paused section, higher priority than others      
     if paused == True:
         for event in pygame.event.get():
             if Overlay_Screen.start_button.sprite.Mouse_Sprite_Collision == True  and event.type == pygame.MOUSEBUTTONDOWN:
@@ -80,6 +85,7 @@ while True:
         clock.tick(60)  
         continue
 
+    # start menu section, 1st priority
     if Start_Menu.section == "Start_Menu":
         for event in pygame.event.get():
             if Start_Menu.start_button.sprite.Mouse_Sprite_Collision == True  and event.type == pygame.MOUSEBUTTONDOWN:
@@ -102,7 +108,7 @@ while True:
         Start_Menu.exit_button.update()
         type = "Start_Menu"
 
-
+    # corridor section, 2nd priority
     elif Corridor.section == "Corridor":
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN and Corridor.Movement_Stopped == False:
@@ -136,7 +142,11 @@ while True:
         #pygame.draw.rect(Corridor.Screen, "red", (70, 100, 400, 150))
         #pygame.draw.line(Corridor.Screen, "red", (640, 0), (640, 720), 5) # center line
         type = "Corridor"
+
+    # courtyard section, 3rd priority
     elif Courtyard.section == "Courtyard":
+
+        # event loop
         for event in pygame.event.get():
             if Courtyard.player.sprite.player_dead == True:
                     if Overlay_Screen.start_button.sprite.Mouse_Sprite_Collision == True  and event.type == pygame.MOUSEBUTTONDOWN:
@@ -168,7 +178,11 @@ while True:
             if event.type == pygame.QUIT:
                 pygame.quit()
                 exit()
+
+    
         Screen.fill((0,0,0))
+
+        # normal courtyard loop, while player is alive
         if Courtyard.player.sprite.player_dead == False:
             if Courtyard.Movement_Stopped == False:
                 Courtyard.levels.update()
@@ -188,6 +202,8 @@ while True:
             # Screen.blit(Global_Assets.Royal_Font.render(str(Courtyard.get_player_grid_pos(Courtyard.player.sprite)), False, (255,0,255)),(1280 - 110 ,720 - 120))
             Courtyard.wall_npc.update()
             type = "Courtyard"
+
+        # death display loop, displays only, doesnt call update functions
         else:
             Courtyard.draw_courtyard(Screen)
             Courtyard.draw_wall_npc(Screen, Courtyard.wall_npc.sprite)
@@ -209,7 +225,7 @@ while True:
         #     pygame.draw.rect(Screen, "black", (80,320,320,320), 5)
         # pygame.draw.rect(Screen, "red", Courtyard.player.sprite.rect)
         # pygame.draw.rect(Screen, "red", Courtyard.wall_npc.sprite.rect)
+    
     Screen.blit(Global_Assets.Royal_Font.render(str(round(clock.get_fps())), False, (255,0,0)), (1280 - 90,720 - 50))
     pygame.display.update()
     clock.tick(60)
-

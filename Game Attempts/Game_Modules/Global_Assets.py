@@ -1,8 +1,9 @@
+# importing modules and creating display
 import pygame
 pygame.init()
-
 Screen = pygame.display.set_mode((1280,720))
 
+# dialogue producing method, adds letters and lines to a dilogue list over time
 def dialogue_producer(Box_class, Text_constant, Letter_Speed):
     if Box_class.display_box == True:
         if Box_class.dialogue[int(Box_class.line_counter)] == Text_constant[int(Box_class.line_counter)]:
@@ -15,6 +16,7 @@ def dialogue_producer(Box_class, Text_constant, Letter_Speed):
                 Box_class.dialogue[Box_class.line_counter] += Text_constant[Box_class.line_counter][int(Box_class.text_counter // 10)]
         Box_class.text_counter += Letter_Speed
 
+# display dialogue method, displays a dialogue list with gaps between lines
 def Display_Dialogue(Box_class, X_Distance, Y_Distance, Line_Spacing, Font, Box_Rect_Seperate = None):
     line_count = 0
     for line in Box_class.dialogue:
@@ -28,6 +30,7 @@ def Display_Dialogue(Box_class, X_Distance, Y_Distance, Line_Spacing, Font, Box_
     if Box_class.text_paused == True:
         Box_class.pause_timer += 0.1
 
-Royal_Font = pygame.font.Font("Game Attempts\\Font\\citadel_of_blackrose\\Citadel of Blackrose.ttf", 30) # text font
-Royal_Font_Small = pygame.font.Font("Game Attempts\\Font\\citadel_of_blackrose\\Citadel of Blackrose.ttf", 20) # text font small
-Royal_Font_X_Small = pygame.font.Font("Game Attempts\\Font\\citadel_of_blackrose\\Citadel of Blackrose.ttf", 15) # text font small
+# fonts
+Royal_Font = pygame.font.Font("Game Attempts\\Font\\citadel_of_blackrose\\Citadel of Blackrose.ttf", 30)
+Royal_Font_Small = pygame.font.Font("Game Attempts\\Font\\citadel_of_blackrose\\Citadel of Blackrose.ttf", 20)
+Royal_Font_X_Small = pygame.font.Font("Game Attempts\\Font\\citadel_of_blackrose\\Citadel of Blackrose.ttf", 15)

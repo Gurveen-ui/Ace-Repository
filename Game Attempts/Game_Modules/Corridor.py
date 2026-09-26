@@ -482,7 +482,7 @@ corridor_signs.add(Corridor_Sign("A_D", 70, 100), Corridor_Sign("E", right_force
 # corridor side wall class
 class Corridor_Side_Wall(pygame.sprite.Sprite):
 
-    # initilising method
+    # initialising method
     def __init__(self, image, topleft_x, topleft_y):
         super().__init__()
         self.image = image

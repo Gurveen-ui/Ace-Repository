@@ -150,20 +150,26 @@ def find_pixel_distance(start, target):
 
 # function for entire a* pathfinding algorithm
 def A_Star(start, target):
+    # ensures inputed values are tuples with integers
     start = tuple((int(start.x),int(start.y)))
     target = tuple((int(target.x),int(target.y)))
+    # prevents contnueing with function if inputted values arent in the map grid or accessible
     if start not in grid or target not in grid:
         return[]
     if not grid[start]["accessible"] or not grid[target]["accessible"]:
         return []
+    # defines dictionaries for different values of the nodes, such as cost and parent
+    # also defines start and closed arrays
     open = [start]
     g_cost = {start: 0}
     f_cost = {start: h_value(start, target)}
     parent = {start: None}
     closed = set()
     while open:
+        # finds open node with smallest cost
         q = min(open, key=lambda pos: f_cost[pos])
         open.remove(q)
+        # checks all valid neighbors to the "q" node
         for i in range(-1,2):
             for j in range(-1,2):
                 child = (q[0] + i, q[1] + j)
@@ -172,15 +178,18 @@ def A_Star(start, target):
                 if i != 0 and j != 0:
                         continue
                 else: movement_cost = 1
-
+                # sets the attributes of the neightbors of q (if accessible) 
+                # such as distance from target and cost to move whre
                 child_g = g_cost[q] + movement_cost
                 child_h = h_value(child, target)
                 child_cost = child_g + child_h
-
+                # checks if current child node's path is larger than a past path 
+                # or if it already in closed and skips if true
                 if child in closed:
                     continue
                 if child in g_cost and child_g >= g_cost[child]:
                     continue
+                # ends while loop if target found (in child node)
                 if child == target:
                     parent[child] = q
                     path = []
@@ -189,11 +198,14 @@ def A_Star(start, target):
                         path.insert(0,current)
                         current = parent[current]
                     return path
+                # if all past things are false, new fastest path found to child and it is set in the dictionaries
                 parent[child] = q
                 g_cost[child] = child_g
                 f_cost[child] = child_cost
+                # adds child to open list if not already there
                 if child not in open:
                     open.append(child)
+        # adds q to closed list (explored nodes)
         closed.add(q)
     return[]
 
@@ -408,7 +420,7 @@ class Levels():
             if self.completed_time > 1200:
                 self.wave_completed = False
                 self.wave += 1 
-                self.total_enemies = 0 + (self.wave * 2)
+                self.total_enemies = 10 + (self.wave * 2)
                 for i in range(0, levels.total_enemies):
                     enemies.add(Courtyard_Enemies(random.choice(enemy_spawns)))
                 self.completed_time = 0

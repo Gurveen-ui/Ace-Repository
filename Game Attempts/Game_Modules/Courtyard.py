@@ -81,6 +81,7 @@ Extract_Tiles(None,"Spawnpoints", None, 80, "Object", enemy_spawns)
 # draw functions
 
 # draws all map tiles while on display
+# make wall and sand layer seperate and put wall at top
 def draw_courtyard(surface):
     offset = (round(camera_offset.x),round(camera_offset.y))
     for tile in courtyard_tiles:

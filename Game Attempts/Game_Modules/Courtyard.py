@@ -17,7 +17,7 @@ LEFT_BOUND = 80
 PLAYER_SIZE = (67,67)
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
-MAP_WIDTH = 80 * 80
+MAP_WIDTH = 80 * 45
 MAP_HEIGHT = 80 * 45
 WALL_NPC_DIALOGUE_1 = ["Hey.. Welcome to my wall.  ","Y-You remember me right?","I'm the advice guy for the knights","And boy do I have advice for you."]
 WALL_NPC_DIALOGUE_2 = ["Well as you know, ","The princess is getting married.","And we don't want ANYTHING","Getting in the way."]
@@ -35,7 +35,7 @@ section = "Courtyard"
 Movement_Stopped = False
 enemy_spawns = []
 grid = dict()
-for x in range(80):
+for x in range(45):
     for y in range(45):
         grid[(x,y)] = {"accessible": True,
                        "cost": 1 }
@@ -179,7 +179,7 @@ def A_Star(start, target):
                         continue
                 else: movement_cost = 1
                 # sets the attributes of the neightbors of q (if accessible) 
-                # such as distance from target and cost to move whre
+                # such as distance from target and cost to move there
                 child_g = g_cost[q] + movement_cost
                 child_h = h_value(child, target)
                 child_cost = child_g + child_h

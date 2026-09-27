@@ -1,5 +1,5 @@
 {
-    "activeFile": "C:/Users/gurve/Gurveen Kapoor/Repository/Ace-Repository/Game Attempts/Tiled/tsx/Wall_NPC.tsx",
+    "activeFile": "Courtyard Map Small.tmx",
     "expandedProjectPaths": [
     ],
     "file.lastUsedOpenFilter": "All Files (*)",
@@ -32,11 +32,11 @@
             }
         },
         "Courtyard Map Small.tmx": {
-            "scale": 0.19,
-            "selectedLayer": 0,
+            "scale": 0.33,
+            "selectedLayer": 2,
             "viewCenter": {
-                "x": 1610.5263157894738,
-                "y": 1802.6315789473686
+                "x": 863.6363636363637,
+                "y": 1083.3333333333333
             }
         },
         "Courtyard Map.tmx": {
@@ -61,8 +61,8 @@
         "Courtyard Map.tmx",
         "C:/Users/gurve/Gurveen Kapoor/Repository/Ace-Repository/Game Attempts/Tiled/tsx/Sand.tsx",
         "C:/Users/gurve/Gurveen Kapoor/Repository/Ace-Repository/Game Attempts/Tiled/tsx/Walls.tsx",
-        "Courtyard Map Small.tmx",
         "C:/Users/gurve/Gurveen Kapoor/Repository/Ace-Repository/Game Attempts/Tiled/tsx/Wall_NPC.tsx",
+        "Courtyard Map Small.tmx",
         "Courtyard Map Big.tmx",
         "C:/Users/gurve/Gurveen Kapoor/Repository/Ace-Repository/Game Attempts/Tiled/tsx/Courtyard Sand.tsx"
     ],

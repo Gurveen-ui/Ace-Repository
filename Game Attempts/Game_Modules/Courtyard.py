@@ -81,10 +81,9 @@ Extract_Tiles(None,"Spawnpoints", None, 80, "Object", enemy_spawns)
 # draw functions
 
 # draws all map tiles while on display
-# make wall and sand layer seperate and put wall at top
-def draw_courtyard(surface):
+def draw_courtyard(surface, layer):
     offset = (round(camera_offset.x),round(camera_offset.y))
-    for tile in courtyard_tiles:
+    for tile in layer:
         screen_rect = tile.world_rect.move(offset)
         if screen_rect.colliderect(surface.get_rect()):
             surface.blit(tile.image, screen_rect)
@@ -439,10 +438,11 @@ class Courtyard_Tile(pygame.sprite.Sprite):
         self.grid_pos = grid_pos
         self.world_rect = self.image.get_rect(topleft = (round(world_pos.x), round(world_pos.y)))
 
-courtyard_tiles = pygame.sprite.Group()
+sand_tiles = pygame.sprite.Group()
+wall_tiles = pygame.sprite.Group()
 collision_tiles = pygame.sprite.Group()
-Extract_Tiles(Courtyard_Tile, "Sand", courtyard_tiles, 80)
-Extract_Tiles(Courtyard_Tile, "Walls", courtyard_tiles, 80)
+Extract_Tiles(Courtyard_Tile, "Sand", sand_tiles, 80)
+Extract_Tiles(Courtyard_Tile, "Walls", wall_tiles, 80)
 Extract_Tiles(Courtyard_Tile, "Wall_Hit", collision_tiles, 80)
 
 # wall npc class

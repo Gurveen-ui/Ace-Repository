@@ -421,7 +421,7 @@ class Levels():
             if self.completed_time + 8000 < current_time:
                 self.wave_completed = False
                 self.wave += 1 
-                self.total_enemies = 10 + (self.wave * 2)
+                self.total_enemies = 5 + (self.wave * 5)
                 player.sprite.health += 20
                 if player.sprite.health > player.sprite.max_health:
                     player.sprite.health = player.sprite.max_health

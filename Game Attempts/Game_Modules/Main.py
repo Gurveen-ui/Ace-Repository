@@ -43,7 +43,7 @@ def pause_display():
         Courtyard.draw_wall_npc(Screen, Courtyard.wall_npc.sprite)
         Courtyard.draw_gui(Screen)
         Screen.blit(overlay_screen, (0,0))
-        Screen.blit(Global_Assets.Royal_Font.render(str(Courtyard.get_player_grid_pos(Courtyard.player.sprite)), False, (255,0,255)),(1280 - 110 ,720 - 120))
+        #Screen.blit(Global_Assets.Royal_Font.render(str(Courtyard.get_player_grid_pos(Courtyard.player.sprite)), False, (255,0,255)),(1280 - 110 ,720 - 120))
         Screen.blit(Global_Assets.Royal_Font.render(str(round(clock.get_fps())), False, (255,0,0)), (1280 - 90,720 - 50))
 
 # reset all things after death
@@ -59,7 +59,7 @@ def reset_all():
 
 # main while loop
 while True:
-    # pause button (esc)
+    # checks for pause button (esc)
     keys = pygame.key.get_pressed()  
     if keys[pygame.K_ESCAPE] and (type == "Corridor" or type == "Courtyard") and Courtyard.player.sprite.player_dead == False:
         if paused == False:
@@ -144,17 +144,21 @@ while True:
         #pygame.draw.line(Corridor.Screen, "red", (640, 0), (640, 720), 5) # center line
         type = "Corridor"
 
-    # courtyard section, 3rd priority
+    # courtyard section, 3rd priorityd
     elif Courtyard.section == "Courtyard":
 
         # event loop
         for event in pygame.event.get():
+
+            # if the player is dead
             if Courtyard.player.sprite.player_dead == True:
                     if Overlay_Screen.start_button.sprite.Mouse_Sprite_Collision == True  and event.type == pygame.MOUSEBUTTONDOWN:
                         reset_all()
                     elif Overlay_Screen.exit_button.sprite.Mouse_Sprite_Collision == True  and event.type == pygame.MOUSEBUTTONDOWN:
                         pygame.quit()
                         exit()
+
+            # if the wall npc is talking
             elif Courtyard.wall_npc.sprite.display_box == True:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if Courtyard.wall_npc.sprite.text_paused == False: 
@@ -169,6 +173,8 @@ while True:
                         Courtyard.wall_npc.sprite.dialogue.clear()
                         for lines in Courtyard.wall_npc.sprite.current_text_constant:
                             Courtyard.wall_npc.sprite.dialogue += [""]
+            
+            # if the game is running as normal
             else:
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_SPACE:

@@ -81,6 +81,7 @@ Extract_Tiles(None,"Spawnpoints", None, 80, "Object", enemy_spawns)
 # draw functions
 
 # draws all map tiles while on display
+
 def draw_courtyard(surface, layer):
     offset = (round(camera_offset.x),round(camera_offset.y))
     for tile in layer:
@@ -99,7 +100,7 @@ def draw_gui(Surface):
     pygame.draw.rect(Surface, "red", gui.sprite.health_rect, 0, 10)
     pygame.draw.rect(Surface, "black", gui.sprite.health_rect, 5, 10)
     Screen.blit(Global_Assets.Royal_Font.render("Current Wave: " + str(levels.wave), False, (0,0,0)),(640 - 40, 20))
-    if levels.wave_completed == True: Screen.blit(Global_Assets.Royal_Font.render("Next Wave In: " + str(int((1200 - levels.completed_time) / 1000)), False, (0,0,0)),(640 - 40, 50))
+    if levels.wave_completed == True: Screen.blit(Global_Assets.Royal_Font.render("Next Wave In: " + str(int((levels.completed_time + 8000 - current_time) / 1000)), False, (0,0,0)),(640 - 40, 50))
     if levels.wave > 0 and levels.wave_completed == False : Screen.blit(Global_Assets.Royal_Font.render(("Enemies Remaining: " + str(levels.enemy_count)), False, (0,0,0)),(640 - 40, 50))
 
 # draws all enemies if they are on screen
@@ -237,7 +238,7 @@ class Player(pygame.sprite.Sprite):
 
         self.swirl_image = pygame.image.load("Game Attempts\\Images\\Courtyard\\Player\\Swirl Pixel.png").convert_alpha()
         self.swirl_rect = self.swirl_image.get_rect(center = self.rect.center)
-        self.swirl_attributes = {"active": False, "last_used": -10000, "damage": 20, "pos": (0,0)}
+        self.swirl_attributes = {"active": False, "last_used": -10000, "damage": 25, "pos": (0,0)}
 
     # movement method, checks player inputs and affects acceleration
     def Movement(self):
@@ -359,7 +360,7 @@ class Player(pygame.sprite.Sprite):
 
     # apply damage functions, currently functions as hit immunity after taking damage
     def apply_damage(self):
-        if self.got_hit == True and self.got_hit_time + 500 < current_time:
+        if self.got_hit == True and self.got_hit_time + 350 < current_time:
             self.got_hit = False
 
     # player swirl attack, handles all functionality and drawing of the attack
@@ -367,17 +368,17 @@ class Player(pygame.sprite.Sprite):
     def swirl(self, type):
         if self.swirl_attributes["active"] == True:
             if type == "functional":
-                if self.swirl_attributes["last_used"] + 500 > current_time:
+                if self.swirl_attributes["last_used"] + 200 > current_time:
                     self.swirl_rect.center = self.swirl_attributes["pos"] + camera_offset
                     Screen.blit(self.swirl_image, self.swirl_rect)
                     for enemy in enemies:
                         if self.swirl_rect.colliderect(enemy.rect) and enemy.last_got_hit + 500 <= current_time:
                             enemy.health -= self.swirl_attributes["damage"]
                             enemy.last_got_hit = current_time
-                if self.swirl_attributes["last_used"] + 2000 < current_time:
+                if self.swirl_attributes["last_used"] + 1500 < current_time:
                     self.swirl_attributes["active"] = False
             else: 
-                if self.swirl_attributes["last_used"] + 500 > current_time:
+                if self.swirl_attributes["last_used"] + 200 > current_time:
                     Screen.blit(self.swirl_image, self.swirl_rect)
 
     # update method, updates nessesary variables and calls player methods
@@ -411,19 +412,21 @@ class Levels():
         global section
         if self.wave > 0:
             self.enemy_count = len(enemies)
-            if self.enemy_count <= 0:
+            if self.enemy_count == 0 and self.wave_completed != True:
                 self.wave_completed = True
+                self.completed_time = current_time
         if self.wave_completed == True:
-            self.completed_time += 1
             if self.wave == 5:
                 section = "End_Menu"
-            if self.completed_time > 1200:
+            if self.completed_time + 8000 < current_time:
                 self.wave_completed = False
                 self.wave += 1 
                 self.total_enemies = 10 + (self.wave * 2)
+                player.sprite.health += 20
+                if player.sprite.health > player.sprite.max_health:
+                    player.sprite.health = player.sprite.max_health
                 for i in range(0, levels.total_enemies):
                     enemies.add(Courtyard_Enemies(random.choice(enemy_spawns)))
-                self.completed_time = 0
         
 levels = Levels()
 
@@ -468,7 +471,6 @@ class Wall_NPC(pygame.sprite.Sprite):
         self.pause_timer = 0
         self.Box_Displayed = False
         self.Remove_display = False
-        self.Mouse_Sprite_Collision = False
 
     # display box method, blits text box nto screen if conditions met
     def Display_Box(self):
@@ -487,6 +489,7 @@ class Wall_NPC(pygame.sprite.Sprite):
             self.display_box = False
             self.Box_Displayed = True
             levels.wave = 1
+            levels.total_enemies = 10 + (levels.wave * 2)
             for i in range(0, levels.total_enemies):
                 enemies.add(Courtyard_Enemies(random.choice(enemy_spawns)))
         if self.Box_Displayed == False:
@@ -545,13 +548,13 @@ class Courtyard_Enemies(pygame.sprite.Sprite):
         self.health = 100
         self.velocity = vector(0,0)
         self.acceleration = vector(0,0)
-        self.ACCELERATION = 0.3
-        self.FRICTION = -0.05
+        self.ACCELERATION = 1.5
+        self.FRICTION = -0.15
         self.last_target_check = 0
         self.path = [self.grid_pos]
         self.current_target = self.grid_pos
         self.vector_distance = vector(0)
-        self.damage = 5
+        self.damage = 8
         self.last_hit = 0
         self.last_got_hit = 0
 
@@ -630,14 +633,14 @@ class Courtyard_Enemies(pygame.sprite.Sprite):
                 
     # removes current target grid if enemy has arrived
     def Update_Path(self):
-        if vector.length(self.vector_distance) < 2 and len(self.path) > 1:
+        if vector.length(self.vector_distance) < 8 and len(self.path) > 1:
             self.path.remove(self.path[0])
         self.current_target = vector(self.path[0])
 
     # apply damage method, applies damage to player when in contact with player object
     def Apply_Damage(self):
         screen_rect = self.world_rect.move(round(camera_offset.x),round(camera_offset.y))
-        if screen_rect.colliderect(player.sprite.rect) and self.last_hit + 5000 <= current_time and player.sprite.got_hit == False:
+        if screen_rect.colliderect(player.sprite.rect) and self.last_hit + 2500 <= current_time and player.sprite.got_hit == False:
             player.sprite.health -= self.damage
             player.sprite.hit_flash = True
             player.sprite.got_hit = True

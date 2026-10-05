@@ -489,7 +489,7 @@ class Wall_NPC(pygame.sprite.Sprite):
             self.display_box = False
             self.Box_Displayed = True
             levels.wave = 1
-            levels.total_enemies = 10 + (levels.wave * 2)
+            levels.total_enemies = 5 + (levels.wave * 5)
             for i in range(0, levels.total_enemies):
                 enemies.add(Courtyard_Enemies(random.choice(enemy_spawns)))
         if self.Box_Displayed == False:

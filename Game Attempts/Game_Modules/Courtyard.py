@@ -640,7 +640,7 @@ class Courtyard_Enemies(pygame.sprite.Sprite):
     # apply damage method, applies damage to player when in contact with player object
     def Apply_Damage(self):
         screen_rect = self.world_rect.move(round(camera_offset.x),round(camera_offset.y))
-        if screen_rect.colliderect(player.sprite.rect) and self.last_hit + 2500 <= current_time and player.sprite.got_hit == False:
+        if screen_rect.colliderect(player.sprite.rect) and self.last_hit + 1500 <= current_time and player.sprite.got_hit == False:
             player.sprite.health -= self.damage
             player.sprite.hit_flash = True
             player.sprite.got_hit = True

@@ -426,7 +426,7 @@ class Levels():
                 if player.sprite.health > player.sprite.max_health:
                     player.sprite.health = player.sprite.max_health
                 for i in range(0, levels.total_enemies):
-                    enemies.add(Courtyard_Enemies(random.choice(enemy_spawns)))
+                    enemies.add(Slimes(random.choice(enemy_spawns)))
         
 levels = Levels()
 
@@ -491,7 +491,7 @@ class Wall_NPC(pygame.sprite.Sprite):
             levels.wave = 1
             levels.total_enemies = 5 + (levels.wave * 5)
             for i in range(0, levels.total_enemies):
-                enemies.add(Courtyard_Enemies(random.choice(enemy_spawns)))
+                enemies.add(Slimes(random.choice(enemy_spawns)))
         if self.Box_Displayed == False:
             self.current_text_constant = wall_dialogues[self.dialogue_count]
             if keys[pygame.K_e] and player.sprite.rect.colliderect(self.rect) and self.Remove_display == False:
@@ -667,3 +667,75 @@ class Courtyard_Enemies(pygame.sprite.Sprite):
         self.Apply_Damage()
 
 enemies = pygame.sprite.Group()
+
+class Slimes(Courtyard_Enemies):
+    def __init__(self,world_pos):
+        super().__init__(world_pos)
+
+
+class Dash_Slimes(Courtyard_Enemies):
+
+    def __init__(self, world_pos):
+        super().__init__(world_pos)
+        self.image = pygame.image.load("Game Attempts\\Images\\Courtyard\\Enemies\\Slimes\\Goof_Slime.png").convert_alpha()
+        self.rect = self.image.get_rect(center = world_pos)
+        self.world_rect = self.rect.copy()
+        self.position = vector(self.rect.center)
+        self.grid_pos = get_grid_pos(self.world_rect)
+        self.ACCELERATION = 0.35
+        self.FRICTION = -0.05
+        self.damage = 5
+        self.dash = False
+        self.dash_damage = 25
+        self.dash_time = 0
+
+    def Dash_attack(self):
+        if self.dash_time + 7000 <= current_time:
+            self.dash = True
+            self.velocity = (find_pixel_distance(self.grid_pos, player.sprite.grid_pos)).normalize() * 16
+            self.dash_time = current_time
+        if self.dash == True:
+            screen_rect = self.world_rect.move(round(camera_offset.x),round(camera_offset.y))
+            if screen_rect.colliderect(player.sprite.rect) and self.last_hit + 1500 <= current_time and player.sprite.got_hit == False:
+                player.sprite.health -= self.dash_damage
+                player.sprite.hit_flash = True
+                player.sprite.got_hit = True
+                player.sprite.got_hit_time = current_time
+                self.last_hit = current_time
+                self.dash = False
+            if self.dash_time + 1000 < current_time:
+                self.dash = False
+            
+
+    def Find_path(self):
+        global current_time
+        if h_value(player.sprite.grid_pos, self.grid_pos) <= 3 and self.dash_time + 7000 <= current_time:
+            self.path = [self.grid_pos]
+            self.Dash_attack()
+        elif h_value(player.sprite.grid_pos, self.grid_pos) < 15 and (h_value(player.sprite.grid_pos, self.grid_pos) > 3 or self.dash_time + 7000 > current_time) and self.last_target_check + 500 < current_time:
+            if not player.sprite.grid_pos == self.grid_pos:
+                self.path = A_Star((self.grid_pos), (player.sprite.grid_pos))
+                self.last_target_check = current_time
+        else:
+            if vector.length(self.vector_distance) < 2 and self.last_target_check + 10000 < current_time :
+                target_x = self.grid_pos.x + random.randint(-10, 10)
+                target_y = self.grid_pos.y + random.randint(-10, 10)
+                new_path = A_Star((self.grid_pos), vector(target_x, target_y))
+                if new_path:
+                    self.path = new_path
+                    self.last_target_check = current_time
+
+    def update(self):
+        offset = (round(camera_offset.x),round(camera_offset.y))
+        self.rect = self.world_rect.move(offset)
+        self.grid_pos = get_grid_pos(self.world_rect)
+        self.vector_distance = find_pixel_distance(self.grid_pos, self.current_target)
+        self.Find_path()
+        self.Update_Path()
+        self.Movement()
+        self.Apply_Movement()
+        self.death()
+        self.Apply_Damage()
+
+difficulty1 = [Slimes]
+difficulty2 = [Dash_Slimes]

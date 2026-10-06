@@ -38,6 +38,7 @@ def pause_display():
         Courtyard.player_attacks("paused")
         Courtyard.draw_enemies(Screen, Courtyard.enemies)
         Courtyard.player.draw(Screen)
+        Courtyard.draw_enemy_attacks()
         Courtyard.draw_courtyard(Screen, Courtyard.wall_tiles)
         Courtyard.draw_wall_npc(Screen, Courtyard.wall_npc.sprite)
         Courtyard.draw_gui(Screen)
@@ -172,7 +173,7 @@ while True:
                         Courtyard.wall_npc.sprite.dialogue.clear()
                         for lines in Courtyard.wall_npc.sprite.current_text_constant:
                             Courtyard.wall_npc.sprite.dialogue += [""]
-            
+
             # if the game is running as normal
             else:
                 if event.type == pygame.KEYDOWN:
@@ -200,6 +201,7 @@ while True:
             Courtyard.player.draw(Screen)
             #pygame.draw.rect(Screen, "red", (80,320,320,320), 5)
             Courtyard.draw_flashes(Screen)
+            Courtyard.draw_enemy_attacks("functional")
             Courtyard.draw_courtyard(Screen, Courtyard.wall_tiles)
             Courtyard.draw_wall_npc(Screen, Courtyard.wall_npc.sprite)
             Courtyard.draw_gui(Screen)
@@ -214,6 +216,7 @@ while True:
             Courtyard.player_attacks("dead")
             Courtyard.draw_enemies(Screen, Courtyard.enemies)
             Courtyard.player.draw(Screen)
+            Courtyard.draw_enemy_attacks()
             Courtyard.draw_courtyard(Screen, Courtyard.wall_tiles)
             Courtyard.draw_wall_npc(Screen, Courtyard.wall_npc.sprite)
             Courtyard.draw_gui(Screen)
@@ -243,4 +246,4 @@ while True:
         
     Screen.blit(Global_Assets.Royal_Font.render(str(round(clock.get_fps())), False, (255,0,0)), (1280 - 90,720 - 50))
     pygame.display.update()
-    clock.tick(600)
+    clock.tick(60)

@@ -121,8 +121,8 @@ def draw_flashes(surface):
     if player.sprite.hit_flash == True:
                     pygame.draw.rect(surface, "red", player.sprite.rect)
 
-def draw_enemy_attacks(type):
-    for sprite in enemies.sprites:
+def draw_enemy_attacks(type = None):
+    for sprite in enemies.sprites():
         if sprite.type == "Ninja_Slime":
             sprite.Shuriken_blit(type)
 
@@ -232,7 +232,7 @@ class Player(pygame.sprite.Sprite):
         self.prior_velocity_x = 0
         self.prior_velocity_y = 0
         self.acceleration = vector(0,0)
-        self.ACCELERATION = 1
+        self.ACCELERATION = 1.4
         self.FRICTION = -0.15
         self.current_angle = 0
         self.rotation_speed = 10
@@ -365,7 +365,7 @@ class Player(pygame.sprite.Sprite):
 
     # apply damage functions, currently functions as hit immunity after taking damage
     def apply_damage(self):
-        if self.got_hit == True and self.got_hit_time + 350 < current_time:
+        if self.got_hit == True and self.got_hit_time + 200 < current_time:
             self.got_hit = False
 
     # player swirl attack, handles all functionality and drawing of the attack
@@ -400,7 +400,6 @@ class Player(pygame.sprite.Sprite):
 
 player = pygame.sprite.GroupSingle()
 player.add(Player())
-
 # levels class
 class Levels():
 
@@ -408,7 +407,7 @@ class Levels():
     def __init__(self):
         self.wave = 0
         self.wave_completed = False
-        self.total_enemies = 3 + (self.wave * 2)
+        self.total_enemies = 0
         self.completed_time = 0
         self.enemy_count = 0
         self.waves = {1: [0.8, 0.2, 0, 0],
@@ -420,7 +419,7 @@ class Levels():
     def Choose_Enemies(self):
         self.wave_completed = False
         self.wave += 1 
-        self.total_enemies = 3 + (self.wave * 3)
+        self.total_enemies = 5 + (self.wave * 3)
         enemy_list = self.waves[self.wave]
         difficulty_counter = 0
         for i in enemy_list:
@@ -438,7 +437,7 @@ class Levels():
             if self.enemy_count == 0 and self.wave_completed != True:
                 self.wave_completed = True
                 self.completed_time = current_time
-                player.sprite.health += 20
+                player.sprite.health += 10
                 if player.sprite.health > player.sprite.max_health:
                     player.sprite.health = player.sprite.max_health
         if self.wave_completed == True:
@@ -657,7 +656,7 @@ class Courtyard_Enemies(pygame.sprite.Sprite):
     # apply damage method, applies damage to player when in contact with player object
     def Apply_Damage(self):
         screen_rect = self.world_rect.move(round(camera_offset.x),round(camera_offset.y))
-        if screen_rect.colliderect(player.sprite.rect) and self.last_hit + 1500 <= current_time and player.sprite.got_hit == False:
+        if screen_rect.colliderect(player.sprite.rect) and self.last_hit + 800 <= current_time and player.sprite.got_hit == False:
             player.sprite.health -= self.damage
             player.sprite.hit_flash = True
             player.sprite.got_hit = True
@@ -668,6 +667,8 @@ class Courtyard_Enemies(pygame.sprite.Sprite):
     def death(self):
         if self.health <= 0:
             levels.enemy_count -= 1
+            player.sprite.health += 2
+            if player.sprite.health > player.sprite.max_health: player.sprite.health = player.sprite.max_health
             self.kill()
 
     # update method, updates nessesary variables and calls enemy methods
@@ -689,50 +690,64 @@ class Goofy_Slimes(Courtyard_Enemies):
     def __init__(self,world_pos):
         super().__init__(world_pos)
         self.type = "Goofy_Slime"
-
+        self.damage = 10
 
 class Ninja_Slimes(Courtyard_Enemies):
     def __init__(self,world_pos):
         super().__init__(world_pos)
         self.type = "Ninja_Slime"
         self.image = pygame.image.load("Game Attempts\\Images\\Courtyard\\Enemies\\Slimes\\Ninja_Slime.png").convert_alpha()
-        self.NODE_ARRIVAL_RANGE = 30
+        self.max_health = 90
+        self.health = 90
+        self.NODE_ARRIVAL_RANGE = 15
         self.damage = 5
         self.throw = False
-        self.projectile_damage = 25
+        self.projectile_damage = 10
         self.throw_time = 0
         self.projectiles = []
 
-    def Shuriken_attack(self):
-        if self.throw_time + 4000 <= current_time:
+    def Use_shuriken(self):
+        if self.throw_time + 500 <= current_time:
             pixel_distance = find_pixel_distance(self.grid_pos, player.sprite.grid_pos)
             velocity = vector(5, 5)
-            if pixel_distance.x != 0 or pixel_distance.y != 0: velocity = (pixel_distance).normalize() * 5
-            self.projectiles.append({"Surface": pygame.image.load("Game Attempts\\Images\\Courtyard\\Enemies\\Slimes\\Projectiles\\Yin And Yang").convert_alpha(), 
-                                     "rect": pygame.image.load("Game Attempts\\Images\\Courtyard\\Enemies\\Slimes\\Projectiles\\Yin And Yang").get_rect(center = self.rect.center), 
-                                     "velocity": velocity})
+            if pixel_distance.x != 0 or pixel_distance.y != 0: velocity = (pixel_distance).normalize() * 10
+            self.projectiles.append({"surface": pygame.image.load("Game Attempts\\Images\\Courtyard\\Enemies\\Slimes\\Projectiles\\Yin And Yang.png").convert_alpha(), 
+                                     "rect": pygame.image.load("Game Attempts\\Images\\Courtyard\\Enemies\\Slimes\\Projectiles\\Yin And Yang.png").get_rect(center = self.rect.center - camera_offset), 
+                                     "velocity": velocity,
+                                     "pos": self.rect.center - camera_offset})
+            self.throw_time = current_time
 
-    def Shuriken_blit(self, type = None):
+    def Shuriken_blit(self, type):
         if type == None:
-            if self.pojectiles:
+            if self.projectiles:
                 for projectile in self.projectiles:
                     Screen.blit(projectile["surface"], projectile["rect"])
-        elif type == "Functional":
-            if self.pojectiles:
+        elif type == "functional":
+            if self.projectiles:
                 for projectile in self.projectiles:
-                    projectile["rect"].center += projectile["velocity"]
+                    projectile["pos"] += projectile["velocity"]
+                    projectile["rect"].center = projectile["pos"] + camera_offset
                     Screen.blit(projectile["surface"], projectile["rect"])
+                    if projectile["rect"].colliderect(player.sprite.rect) and self.last_hit + 500 <= current_time and player.sprite.got_hit == False:
+                        player.sprite.health -= self.projectile_damage
+                        player.sprite.hit_flash = True
+                        player.sprite.got_hit = True
+                        player.sprite.got_hit_time = current_time
+                        self.last_hit = current_time
+                        self.projectiles.remove(projectile)
+                    elif projectile["rect"].colliderect(Screen.get_rect()) != True:
+                        self.projectiles.remove(projectile)
 
 
     def Find_path(self):
         global current_time
         if h_value(player.sprite.grid_pos, self.grid_pos) <= 6 and h_value(player.sprite.grid_pos, self.grid_pos) >= 4:
             self.path = [self.grid_pos]
-            #self.Shuriken_attack()
+            self.Use_shuriken()
         elif h_value(player.sprite.grid_pos, self.grid_pos) < 4:
             self.path = [self.grid_pos] 
             pixel_distance = find_pixel_distance(self.grid_pos, player.sprite.grid_pos)
-            if pixel_distance.x != 0 or pixel_distance.y != 0: self.velocity = (pixel_distance).normalize() * -6
+            if pixel_distance.x != 0 or pixel_distance.y != 0: self.velocity = (pixel_distance).normalize() * -4
             else:
                 target_x = self.grid_pos.x + random.randint(-10, 10)
                 target_y = self.grid_pos.y + random.randint(-10, 10)
@@ -740,6 +755,7 @@ class Ninja_Slimes(Courtyard_Enemies):
                 if new_path:
                     self.path = new_path
                     self.last_target_check = current_time
+            self.Use_shuriken()
         elif h_value(player.sprite.grid_pos, self.grid_pos) < 15 and h_value(player.sprite.grid_pos, self.grid_pos) > 5 and self.last_target_check + 500 < current_time:
             if not player.sprite.grid_pos == self.grid_pos:
                 self.path = A_Star((self.grid_pos), (player.sprite.grid_pos))
@@ -770,16 +786,16 @@ class Dash_Slimes(Courtyard_Enemies):
         # self.ACCELERATION = 0.4
         # self.FRICTION = -0.05
         self.NODE_ARRIVAL_RANGE = 15
-        self.damage = 5
+        self.damage = 10
         self.dash = False
         self.dash_damage = 25
         self.dash_time = 0
 
     def Dash_attack(self):
-        if self.dash_time + 4000 <= current_time:
+        if self.dash_time + 3500 <= current_time:
             self.dash = True
             pixel_distance = find_pixel_distance(self.grid_pos, player.sprite.grid_pos)
-            if pixel_distance.x != 0 or pixel_distance.y != 0: self.velocity = (pixel_distance).normalize() * 30
+            if pixel_distance.x != 0 or pixel_distance.y != 0: self.velocity = (pixel_distance).normalize() * 40
             self.dash_time = current_time
         if self.dash == True:
             screen_rect = self.world_rect.move(round(camera_offset.x),round(camera_offset.y))
@@ -813,5 +829,5 @@ class Dash_Slimes(Courtyard_Enemies):
                     self.last_target_check = current_time
 
 
-difficulties = {1: [Ninja_Slimes], 
-                2: [Ninja_Slimes]}#Goofy_Slimes, Dash_Slimes
+difficulties = {1: [Goofy_Slimes, Dash_Slimes], 
+                2: [Ninja_Slimes]}

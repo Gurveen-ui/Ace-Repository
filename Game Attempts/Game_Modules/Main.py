@@ -19,7 +19,6 @@ overlay_screen = pygame.surface.Surface((1280,720))
 overlay_screen.fill((0,0,0))
 overlay_screen.set_alpha(180)
 clock = pygame.time.Clock()
-
 # pause display background function
 def pause_display():
     if type == "Corridor":
@@ -244,4 +243,4 @@ while True:
         
     Screen.blit(Global_Assets.Royal_Font.render(str(round(clock.get_fps())), False, (255,0,0)), (1280 - 90,720 - 50))
     pygame.display.update()
-    clock.tick(60)
+    clock.tick(600)

@@ -695,7 +695,7 @@ class Goofy_Slimes(Courtyard_Enemies):
     def __init__(self,world_pos):
         super().__init__(world_pos)
         self.type = "Goofy_Slime"
-        self.damage = 10
+        self.damage = 7
 
 class Ninja_Slimes(Courtyard_Enemies):
     def __init__(self,world_pos):
@@ -707,7 +707,7 @@ class Ninja_Slimes(Courtyard_Enemies):
         self.NODE_ARRIVAL_RANGE = 15
         self.damage = 5
         self.throw = False
-        self.projectile_damage = 10
+        self.projectile_damage = 8
         self.throw_time = 0
         self.projectiles = []
 
@@ -790,9 +790,9 @@ class Dash_Slimes(Courtyard_Enemies):
         # self.ACCELERATION = 0.4
         # self.FRICTION = -0.05
         self.NODE_ARRIVAL_RANGE = 15
-        self.damage = 10
+        self.damage = 5
         self.dash = False
-        self.dash_damage = 25
+        self.dash_damage = 12
         self.dash_time = 0
 
     def Dash_attack(self):
@@ -843,18 +843,18 @@ class Wizard(Courtyard_Enemies):
         self.grid_pos = get_grid_pos(self.world_rect)
         self.max_health = 90
         self.health = 90
-        self.ACCELERATION = 0.5
+        self.ACCELERATION = 0.6
         self.FRICTION = -0.25
         self.NODE_ARRIVAL_RANGE = 15
         self.damage = 5
         self.throw = False
-        self.projectile_damage = 15
+        self.projectile_damage = 8
         self.throw_time = 0
         self.projectiles = []
 
         self.swirl_image = pygame.image.load("Game Attempts\\Images\\Courtyard\\Player\\Swirl Pixel.png").convert_alpha()
         self.swirl_rect = self.swirl_image.get_rect(center = self.rect.center)
-        self.swirl_attributes = {"active": False, "last_used": -10000, "damage": 15, "pos": (0,0)}
+        self.swirl_attributes = {"active": False, "last_used": -10000, "damage": 10, "pos": (0,0)}
 
     def Use_fireball(self):
         if self.throw_time + 1500 <= current_time:

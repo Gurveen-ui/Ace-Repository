@@ -1,5 +1,5 @@
 {
-    "activeFile": "Courtyard Map Small.tmx",
+    "activeFile": "C:/Users/gurve/Gurveen Kapoor/Repository/Ace-Repository/Game Attempts/Tiled/tsx/Spawnpoint_Placeholder.tsx",
     "expandedProjectPaths": [
     ],
     "file.lastUsedOpenFilter": "All Files (*)",
@@ -13,7 +13,8 @@
             "scaleInEditor": 1
         },
         "C:/Users/gurve/Gurveen Kapoor/Repository/Ace-Repository/Game Attempts/Tiled/tsx/Spawnpoint_Placeholder.tsx": {
-            "scaleInDock": 1
+            "scaleInDock": 1,
+            "scaleInEditor": 1
         },
         "C:/Users/gurve/Gurveen Kapoor/Repository/Ace-Repository/Game Attempts/Tiled/tsx/Wall_NPC.tsx": {
             "scaleInDock": 1,
@@ -54,15 +55,17 @@
         "C:/Users/gurve/Gurveen Kapoor/Repository/Ace-Repository/Game Attempts/Tiled/tsx/Sand.tsx",
         "C:/Users/gurve/Gurveen Kapoor/Repository/Ace-Repository/Game Attempts/Tiled/tsx/Walls.tsx",
         "Courtyard Map Small.tmx",
-        "C:/Users/gurve/Gurveen Kapoor/Repository/Ace-Repository/Game Attempts/Tiled/tsx/Wall_NPC.tsx"
+        "C:/Users/gurve/Gurveen Kapoor/Repository/Ace-Repository/Game Attempts/Tiled/tsx/Wall_NPC.tsx",
+        "C:/Users/gurve/Gurveen Kapoor/Repository/Ace-Repository/Game Attempts/Tiled/tsx/Spawnpoint_Placeholder.tsx"
     ],
     "project": "",
     "recentFiles": [
         "Courtyard Map.tmx",
         "C:/Users/gurve/Gurveen Kapoor/Repository/Ace-Repository/Game Attempts/Tiled/tsx/Sand.tsx",
         "C:/Users/gurve/Gurveen Kapoor/Repository/Ace-Repository/Game Attempts/Tiled/tsx/Walls.tsx",
-        "C:/Users/gurve/Gurveen Kapoor/Repository/Ace-Repository/Game Attempts/Tiled/tsx/Wall_NPC.tsx",
         "Courtyard Map Small.tmx",
+        "C:/Users/gurve/Gurveen Kapoor/Repository/Ace-Repository/Game Attempts/Tiled/tsx/Wall_NPC.tsx",
+        "C:/Users/gurve/Gurveen Kapoor/Repository/Ace-Repository/Game Attempts/Tiled/tsx/Spawnpoint_Placeholder.tsx",
         "Courtyard Map Big.tmx",
         "C:/Users/gurve/Gurveen Kapoor/Repository/Ace-Repository/Game Attempts/Tiled/tsx/Courtyard Sand.tsx"
     ],

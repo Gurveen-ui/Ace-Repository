@@ -705,14 +705,14 @@ class Ninja_Slimes(Courtyard_Enemies):
         self.max_health = 90
         self.health = 90
         self.NODE_ARRIVAL_RANGE = 15
-        self.damage = 5
+        self.damage = 4
         self.throw = False
-        self.projectile_damage = 8
+        self.projectile_damage = 6
         self.throw_time = 0
         self.projectiles = []
 
     def Use_shuriken(self):
-        if self.throw_time + 1000 <= current_time:
+        if self.throw_time + 800 <= current_time:
             pixel_distance = find_pixel_distance(self.grid_pos, player.sprite.grid_pos)
             velocity = vector(5, 5)
             if pixel_distance.x != 0 or pixel_distance.y != 0: velocity = (pixel_distance).normalize() * 10

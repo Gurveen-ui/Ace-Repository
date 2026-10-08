@@ -230,7 +230,7 @@ class Player(pygame.sprite.Sprite):
         self.image = pygame.image.load("Game Attempts\\Images\\Courtyard\\Player\\Knight Top Down.png").convert_alpha()
         # self.image = pygame.transform.rotozoom(self.image, 0, 0.5)
         self.Pre_rotation_image = self.image
-        self.rect = self.image.get_rect(bottomleft = (90, 460))
+        self.rect = self.image.get_rect(bottomleft = (90, 220))
         self.max_health = 100
         self.health = 100
         self.player_dead = False
@@ -496,7 +496,7 @@ class Wall_NPC(pygame.sprite.Sprite):
     def __init__(self, world_pos, surface, Group):
         super().__init__(Group)
         self.image = surface
-        self.rect = self.image.get_rect(topleft = (world_pos))
+        self.rect = self.image.get_rect(topleft = (world_pos.x, world_pos.y))#  + 208
         self.text_box = pygame.image.load("Game Attempts\\Images\\Courtyard\\Wall NPC\\Text Box Pixel.png").convert_alpha()
         self.box_rect = self.text_box.get_rect(bottomleft = ((self.rect.centerx + 30, self.rect.centery - 50)))
         self.world_rect = self.rect
@@ -532,8 +532,11 @@ class Wall_NPC(pygame.sprite.Sprite):
             levels.Choose_Enemies()
         if self.Box_Displayed == False:
             self.current_text_constant = wall_dialogues[self.dialogue_count]
-            if keys[pygame.K_e] and player.sprite.rect.colliderect(self.rect) and self.Remove_display == False:
-                self.display_box = True
+            if keys[pygame.K_e] and self.display_box != True:
+                offset = (round(camera_offset.x),round(camera_offset.y))
+                screen_rect = self.rect.move(offset)
+                if player.sprite.rect.colliderect(screen_rect):
+                    self.display_box = True
             if self.pause_timer < 20 and self.Remove_display == False:
                 self.Display_Box()
                 if self.text_paused == False:

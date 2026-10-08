@@ -64,13 +64,16 @@ while True:
     if keys[pygame.K_ESCAPE] and (type == "Corridor" or type == "Courtyard") and Courtyard.player.sprite.player_dead == False:
         if paused == False:
             paused = True
+            Global_Assets.pause_pressed = pygame.time.get_ticks()
 
     # paused section, higher priority than others      
     if paused == True:
         for event in pygame.event.get():
-            if Overlay_Screen.start_button.sprite.Mouse_Sprite_Collision == True  and event.type == pygame.MOUSEBUTTONDOWN:
+            if Overlay_Screen.start_button.sprite.Mouse_Sprite_Collision == True and event.type == pygame.MOUSEBUTTONDOWN:
+                Global_Assets.pause_stopped = pygame.time.get_ticks()
+                Global_Assets.paused_time += Global_Assets.pause_stopped - Global_Assets.pause_pressed
                 paused = False
-            elif Overlay_Screen.exit_button.sprite.Mouse_Sprite_Collision == True  and event.type == pygame.MOUSEBUTTONDOWN:
+            elif Overlay_Screen.exit_button.sprite.Mouse_Sprite_Collision == True and event.type == pygame.MOUSEBUTTONDOWN:
                 pygame.quit()
                 exit()
             if event.type == pygame.QUIT:

@@ -34,3 +34,7 @@ def Display_Dialogue(Box_class, X_Distance, Y_Distance, Line_Spacing, Font, Box_
 Royal_Font = pygame.font.Font("Game Attempts\\Font\\citadel_of_blackrose\\Citadel of Blackrose.ttf", 30)
 Royal_Font_Small = pygame.font.Font("Game Attempts\\Font\\citadel_of_blackrose\\Citadel of Blackrose.ttf", 20)
 Royal_Font_X_Small = pygame.font.Font("Game Attempts\\Font\\citadel_of_blackrose\\Citadel of Blackrose.ttf", 15)
+
+paused_time = 0
+pause_pressed = 0
+pause_stopped = 0

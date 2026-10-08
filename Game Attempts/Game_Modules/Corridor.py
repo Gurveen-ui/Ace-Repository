@@ -301,7 +301,7 @@ class Player(pygame.sprite.Sprite):
     # update method, calls all player methods, movement only when movement varaible not false
     def update(self):
         global current_time
-        current_time = pygame.time.get_ticks()
+        current_time = pygame.time.get_ticks() - Global_Assets.paused_time
         if Movement_Stopped == False:
             self.Movement()
             self.Update_Animation()

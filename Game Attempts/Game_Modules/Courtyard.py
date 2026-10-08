@@ -82,6 +82,13 @@ Extract_Tiles(None,"Spawnpoints", None, 80, "Object", enemy_spawns)
 
 # draws all map tiles while on display
 
+def draw_front_attacks(type = None):
+    for sprite in enemies.sprites():
+        if sprite.type == "Ninja_Slime":
+            sprite.Shuriken_blit(type)
+        elif sprite.type == "Wizard":
+            sprite.Fireball_blit(type)
+
 def draw_courtyard(surface, layer):
     offset = (round(camera_offset.x),round(camera_offset.y))
     for tile in layer:
@@ -124,13 +131,6 @@ def draw_wall_npc(surface, object):
 def draw_flashes(surface):
     if player.sprite.hit_flash == True:
                     pygame.draw.rect(surface, "red", player.sprite.rect)
-
-def draw_front_attacks(type = None):
-    for sprite in enemies.sprites():
-        if sprite.type == "Ninja_Slime":
-            sprite.Shuriken_blit(type)
-        elif sprite.type == "Wizard":
-            sprite.Fireball_blit(type)
 
 # a* algorithm functions
 
@@ -230,7 +230,7 @@ class Player(pygame.sprite.Sprite):
         self.image = pygame.image.load("Game Attempts\\Images\\Courtyard\\Player\\Knight Top Down.png").convert_alpha()
         # self.image = pygame.transform.rotozoom(self.image, 0, 0.5)
         self.Pre_rotation_image = self.image
-        self.rect = self.image.get_rect(bottomleft = (90, 380))
+        self.rect = self.image.get_rect(bottomleft = (90, 460))
         self.max_health = 100
         self.health = 100
         self.player_dead = False
@@ -403,7 +403,7 @@ class Player(pygame.sprite.Sprite):
         global current_time, right_bound, left_bound, top_bound, bottom_bound
         self.hit_flash = False
         if self.health <= 0: self.player_dead = True
-        current_time = pygame.time.get_ticks()
+        current_time = pygame.time.get_ticks() - Global_Assets.paused_time
         if camera_offset.x <= SCREEN_WIDTH - MAP_WIDTH:
             right_bound = 1200
         else: right_bound = 640

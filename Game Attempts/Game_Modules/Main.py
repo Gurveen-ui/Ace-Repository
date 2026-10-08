@@ -209,7 +209,6 @@ while True:
             # Screen.blit(Global_Assets.Royal_Font.render(str(Courtyard.get_player_grid_pos(Courtyard.player.sprite)), False, (255,0,255)),(1280 - 110 ,720 - 120))
             Courtyard.wall_npc.update()
             type = "Courtyard"
-
         # death display loop, displays only, doesnt call update functions
         else:
             Courtyard.draw_courtyard(Screen, Courtyard.sand_tiles)

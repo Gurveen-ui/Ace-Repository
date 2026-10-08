@@ -111,6 +111,7 @@ def draw_enemies(surface, enemy_group):
     for enemy in enemy_group:
         if enemy.rect.colliderect(surface.get_rect()):
             surface.blit(enemy.image, enemy.rect)
+            # pygame.draw.rect(Screen, "red", enemy.rect, 5)
 
 # draws wall npc if on screen
 def draw_wall_npc(surface, object):
@@ -226,7 +227,8 @@ class Player(pygame.sprite.Sprite):
     # initialising method
     def __init__(self):
         super().__init__()
-        self.image = pygame.image.load("Game Attempts\\Images\\Courtyard\\Player\\Knight Top Down Test.png").convert_alpha()
+        self.image = pygame.image.load("Game Attempts\\Images\\Courtyard\\Player\\Knight Top Down.png").convert_alpha()
+        # self.image = pygame.transform.rotozoom(self.image, 0, 0.5)
         self.Pre_rotation_image = self.image
         self.rect = self.image.get_rect(bottomleft = (90, 220))
         self.max_health = 100
@@ -385,6 +387,11 @@ class Player(pygame.sprite.Sprite):
                         if self.swirl_rect.colliderect(enemy.rect) and enemy.last_got_hit + 500 <= current_time:
                             enemy.health -= self.swirl_attributes["damage"]
                             enemy.last_got_hit = current_time
+                            if enemy.knockback != 0:
+                                pixel_distance = find_pixel_distance(self.grid_pos, enemy.grid_pos)
+                                if pixel_distance.x != 0 or pixel_distance.y != 0:
+                                    enemy.velocity = (pixel_distance).normalize() * enemy.knockback
+                                else: enemy.velocity = vector(1,0) * enemy.knockback
                 if self.swirl_attributes["last_used"] + 1500 < current_time:
                     self.swirl_attributes["active"] = False
             else: 
@@ -558,7 +565,8 @@ class Courtyard_Enemies(pygame.sprite.Sprite):
     # initialising class
     def __init__(self, world_pos):
         super().__init__()
-        self.image = pygame.image.load("Game Attempts\\Images\\Courtyard\\Enemies\\Goof_Slime.png").convert_alpha()
+        self.image = pygame.image.load("Game Attempts\\Images\\Courtyard\\Enemies\\Goof Slime.png").convert_alpha()
+        # self.image = pygame.transform.rotozoom(self.image, 0, 0.5)
         self.rect = self.image.get_rect(center = world_pos)
         self.world_rect = self.rect.copy()
         self.position = vector(self.rect.center)
@@ -570,6 +578,7 @@ class Courtyard_Enemies(pygame.sprite.Sprite):
         self.ACCELERATION = 1.5
         self.FRICTION = -0.15
         self.NODE_ARRIVAL_RANGE = 8
+        self.knockback = 0
         self.last_target_check = 0
         self.path = [self.grid_pos]
         self.current_target = self.grid_pos
@@ -671,7 +680,7 @@ class Courtyard_Enemies(pygame.sprite.Sprite):
     def death(self):
         if self.health <= 0:
             levels.enemy_count -= 1
-            player.sprite.health += 4
+            player.sprite.health += 3
             if player.sprite.health > player.sprite.max_health: player.sprite.health = player.sprite.max_health
             self.kill()
 
@@ -695,13 +704,15 @@ class Goofy_Slimes(Courtyard_Enemies):
         super().__init__(world_pos)
         self.type = "Goofy_Slime"
         self.damage = 4
+        self.knockback = 16
 
 class Dash_Slimes(Courtyard_Enemies):
 
     def __init__(self, world_pos):
         super().__init__(world_pos)
         self.type = "Dash_Slimes"
-        self.image = pygame.image.load("Game Attempts\\Images\\Courtyard\\Enemies\\Angry_Slime.png").convert_alpha()
+        self.image = pygame.image.load("Game Attempts\\Images\\Courtyard\\Enemies\\Angry Slime.png").convert_alpha()
+        # self.image = pygame.transform.rotozoom(self.image, 0, 0.5)
         self.rect = self.image.get_rect(center = world_pos)
         self.world_rect = self.rect.copy()
         self.position = vector(self.rect.center)
@@ -711,6 +722,7 @@ class Dash_Slimes(Courtyard_Enemies):
         # self.ACCELERATION = 0.4
         # self.FRICTION = -0.05
         self.NODE_ARRIVAL_RANGE = 15
+        self.knockback = 10
         self.damage = 3
         self.dash = False
         self.dash_damage = 8
@@ -757,10 +769,12 @@ class Ninja_Slimes(Courtyard_Enemies):
     def __init__(self,world_pos):
         super().__init__(world_pos)
         self.type = "Ninja_Slime"
-        self.image = pygame.image.load("Game Attempts\\Images\\Courtyard\\Enemies\\Ninja_Slime.png").convert_alpha()
+        self.image = pygame.image.load("Game Attempts\\Images\\Courtyard\\Enemies\\Ninja Slime.png").convert_alpha()
+        # self.image = pygame.transform.rotozoom(self.image, 0, 0.5)
         self.max_health = 90
         self.health = 90
         self.NODE_ARRIVAL_RANGE = 15
+        self.knockback = 35
         self.damage = 4
         self.throw = False
         self.projectile_damage = 8
@@ -768,7 +782,7 @@ class Ninja_Slimes(Courtyard_Enemies):
         self.projectiles = []
 
     def Use_shuriken(self):
-        if self.throw_time + 800 <= current_time:
+        if self.throw_time + 1000 <= current_time:
             pixel_distance = find_pixel_distance(self.grid_pos, player.sprite.grid_pos)
             velocity = vector(5, 5)
             if pixel_distance.x != 0 or pixel_distance.y != 0: velocity = (pixel_distance).normalize() * 10
@@ -836,6 +850,7 @@ class Wizard(Courtyard_Enemies):
         super().__init__(world_pos)
         self.type = "Wizard"
         self.image = pygame.image.load("Game Attempts\\Images\\Courtyard\\Enemies\\Wizard.png").convert_alpha()
+        # self.image = pygame.transform.rotozoom(self.image, 0, 0.8)
         self.rect = self.image.get_rect(center = world_pos)
         self.world_rect = self.rect.copy()
         self.position = vector(self.rect.center)
@@ -845,21 +860,21 @@ class Wizard(Courtyard_Enemies):
         self.ACCELERATION = 0.6
         self.FRICTION = -0.25
         self.NODE_ARRIVAL_RANGE = 15
-        self.damage = 2
+        self.damage = 4
         self.throw = False
         self.projectile_damage = 10
         self.throw_time = 0
         self.projectiles = []
 
-        self.swirl_image = pygame.image.load("Game Attempts\\Images\\Courtyard\\Player\\Swirl Pixel.png").convert_alpha()
+        self.swirl_image = pygame.image.load("Game Attempts\\Images\\Courtyard\\Enemies\\Aoe Attacks\\Magic Swirl.png").convert_alpha()
         self.swirl_rect = self.swirl_image.get_rect(center = self.rect.center)
-        self.swirl_attributes = {"active": False, "last_used": -10000, "damage": 8, "pos": (0,0)}
+        self.swirl_attributes = {"active": False, "last_used": -10000, "damage": 12, "pos": (0,0)}
 
     def Use_fireball(self):
-        if self.throw_time + 2500 <= current_time:
+        if self.throw_time + 1700 <= current_time:
             pixel_distance = find_pixel_distance(self.grid_pos, player.sprite.grid_pos)
             velocity = vector(5, 5)
-            if pixel_distance.x != 0 or pixel_distance.y != 0: velocity = (pixel_distance).normalize() * 15
+            if pixel_distance.x != 0 or pixel_distance.y != 0: velocity = (pixel_distance).normalize() * 18
             surface = pygame.image.load("Game Attempts\\Images\\Courtyard\\Enemies\\Projectiles\\Fire Ball.png").convert_alpha()
             self.projectiles.append({"surface": surface, 
                                      "rect": surface.get_rect(center = self.rect.center - camera_offset), 
@@ -868,7 +883,7 @@ class Wizard(Courtyard_Enemies):
             self.throw_time = current_time
 
     def Use_swirl(self):
-        if self.swirl_attributes["last_used"]  + 4500 <= current_time:
+        if self.swirl_attributes["last_used"]  + 4000 <= current_time:
             if self.swirl_attributes["active"] == False:
                 self.swirl_attributes["active"] = True
                 self.swirl_attributes["last_used"] = current_time
@@ -877,7 +892,7 @@ class Wizard(Courtyard_Enemies):
     def Swirl_blit(self, type):
         if self.swirl_attributes["active"] == True:
             if type == "functional":
-                if self.swirl_attributes["last_used"] + 150 > current_time:
+                if self.swirl_attributes["last_used"] + 350 > current_time:
                     self.swirl_rect.center = self.swirl_attributes["pos"] + camera_offset
                     Screen.blit(self.swirl_image, self.swirl_rect)
                     if self.swirl_rect.colliderect(player.sprite.rect) and player.sprite.got_hit == False:
@@ -913,10 +928,10 @@ class Wizard(Courtyard_Enemies):
 
     def Find_path(self):
         global current_time
-        if h_value(player.sprite.grid_pos, self.grid_pos) <= 6 and h_value(player.sprite.grid_pos, self.grid_pos) >= 4:
+        if h_value(player.sprite.grid_pos, self.grid_pos) <= 12 and h_value(player.sprite.grid_pos, self.grid_pos) >= 8:
             self.path = [self.grid_pos]
             self.Use_fireball()
-        elif h_value(player.sprite.grid_pos, self.grid_pos) < 4:
+        elif h_value(player.sprite.grid_pos, self.grid_pos) < 6:
             self.path = [self.grid_pos] 
             pixel_distance = find_pixel_distance(self.grid_pos, player.sprite.grid_pos)
             if pixel_distance.x != 0 or pixel_distance.y != 0: self.velocity = (pixel_distance).normalize() * -2.5
@@ -929,7 +944,7 @@ class Wizard(Courtyard_Enemies):
                     self.last_target_check = current_time
             self.Use_fireball()
             self.Use_swirl()
-        elif h_value(player.sprite.grid_pos, self.grid_pos) < 15 and h_value(player.sprite.grid_pos, self.grid_pos) > 5 and self.last_target_check + 500 < current_time:
+        elif h_value(player.sprite.grid_pos, self.grid_pos) < 18 and h_value(player.sprite.grid_pos, self.grid_pos) > 5 and self.last_target_check + 500 < current_time:
             if not player.sprite.grid_pos == self.grid_pos:
                 self.path = A_Star((self.grid_pos), (player.sprite.grid_pos))
                 self.last_target_check = current_time

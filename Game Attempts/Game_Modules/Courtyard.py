@@ -227,7 +227,7 @@ class Player(pygame.sprite.Sprite):
     # initialising method
     def __init__(self):
         super().__init__()
-        self.image = pygame.image.load("Game Attempts\\Images\\Courtyard\\Player\\Knight Top Down.png").convert_alpha()
+        self.image = pygame.image.load("Game Attempts\\Images\\Courtyard\\Player\\Small Top Down Knight.png").convert_alpha()
         # self.image = pygame.transform.rotozoom(self.image, 0, 0.5)
         self.Pre_rotation_image = self.image
         self.rect = self.image.get_rect(bottomleft = (90, 220))

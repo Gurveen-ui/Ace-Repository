@@ -33,11 +33,11 @@
             }
         },
         "Courtyard Map Small.tmx": {
-            "scale": 0.33,
+            "scale": 1,
             "selectedLayer": 2,
             "viewCenter": {
-                "x": 863.6363636363637,
-                "y": 1083.3333333333333
+                "x": 1496.5,
+                "y": 588.5
             }
         },
         "Courtyard Map.tmx": {

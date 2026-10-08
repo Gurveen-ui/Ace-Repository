@@ -10,10 +10,6 @@ pygame.display.set_caption("Courtyard")
 vector = pygame.math.Vector2
 
 # create all constants
-TOP_BOUND = 80
-BOTTOM_BOUND = 640
-RIGHT_BOUND = 1200
-LEFT_BOUND = 80
 PLAYER_SIZE = (67,67)
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
@@ -29,6 +25,10 @@ WALL_NPC_DIALOGUE_6 = ["Here they come!!"]
 # create all variables
 wall_dialogues = [WALL_NPC_DIALOGUE_1, WALL_NPC_DIALOGUE_2, WALL_NPC_DIALOGUE_3, WALL_NPC_DIALOGUE_4, WALL_NPC_DIALOGUE_5, WALL_NPC_DIALOGUE_6]
 tmx_data = load_pygame("Game Attempts\\Tiled\\tmx\\Courtyard Map Small.tmx")
+top_bound = 80
+bottom_bound = 640
+right_bound = 1200
+left_bound = 80
 current_time = 0
 camera_offset = vector(0,0)
 section = "Courtyard"
@@ -230,7 +230,7 @@ class Player(pygame.sprite.Sprite):
         self.image = pygame.image.load("Game Attempts\\Images\\Courtyard\\Player\\Knight Top Down.png").convert_alpha()
         # self.image = pygame.transform.rotozoom(self.image, 0, 0.5)
         self.Pre_rotation_image = self.image
-        self.rect = self.image.get_rect(bottomleft = (90, 220))
+        self.rect = self.image.get_rect(bottomleft = (90, 380))
         self.max_health = 100
         self.health = 100
         self.player_dead = False
@@ -299,22 +299,22 @@ class Player(pygame.sprite.Sprite):
     # check boundaries method, changes camera offset if player moves past bounds
     def Check_Boundaries(self):
         global camera_offset
-        if self.rect.right > RIGHT_BOUND:
-            depth = self.rect.right - RIGHT_BOUND
+        if self.rect.centerx > right_bound:
+            depth = self.rect.centerx - right_bound
             camera_offset.x -= depth
-            self.rect.right = RIGHT_BOUND
-        elif self.rect.left < LEFT_BOUND:
-            depth = LEFT_BOUND - self.rect.left
+            self.rect.centerx = right_bound
+        elif self.rect.centerx < left_bound:
+            depth = left_bound - self.rect.centerx
             camera_offset.x += depth
-            self.rect.left = LEFT_BOUND
-        if self.rect.top < TOP_BOUND:
-            depth = TOP_BOUND - self.rect.top
+            self.rect.centerx = left_bound
+        if self.rect.centery < top_bound:
+            depth = top_bound - self.rect.centery
             camera_offset.y += depth
-            self.rect.top = TOP_BOUND
-        elif self.rect.bottom > BOTTOM_BOUND:
-            depth = self.rect.bottom - BOTTOM_BOUND
+            self.rect.centery = top_bound
+        elif self.rect.centery > bottom_bound:
+            depth = self.rect.centery - bottom_bound
             camera_offset.y -= depth
-            self.rect.bottom = BOTTOM_BOUND
+            self.rect.centery = bottom_bound
 
         camera_offset.x = max(SCREEN_WIDTH - MAP_WIDTH, min(0, camera_offset.x))
         camera_offset.y = max(0, min(2880, camera_offset.y))
@@ -400,10 +400,22 @@ class Player(pygame.sprite.Sprite):
 
     # update method, updates nessesary variables and calls player methods
     def update(self):
-        global current_time
+        global current_time, right_bound, left_bound, top_bound, bottom_bound
         self.hit_flash = False
         if self.health <= 0: self.player_dead = True
         current_time = pygame.time.get_ticks()
+        if camera_offset.x <= SCREEN_WIDTH - MAP_WIDTH:
+            right_bound = 1200
+        else: right_bound = 640
+        if camera_offset.x >= 0:
+            left_bound = 80
+        else: left_bound = 640
+        if camera_offset.y <= 0:
+            bottom_bound = 640
+        else: bottom_bound = 400
+        if camera_offset.y >= 2880:
+            top_bound = 80
+        else: top_bound = 400
         self.Movement()
         self.Apply_Movement()
         self.Check_Boundaries()

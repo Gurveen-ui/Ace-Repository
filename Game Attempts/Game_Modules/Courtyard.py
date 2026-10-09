@@ -271,7 +271,7 @@ class Player(pygame.sprite.Sprite):
         self.hit_flash = False
         self.got_hit = False
         self.got_hit_time = 0
-        self.heal_amount = 1
+        self.heal_amount = 2
         self.heal_time = 0
 
         self.swirl_image = pygame.image.load("Game Attempts\\Images\\Courtyard\\Player\\Swirl Pixel.png").convert_alpha()
@@ -429,7 +429,7 @@ class Player(pygame.sprite.Sprite):
 
     def heal(self):
         if self.got_hit_time + 5000 < current_time:
-            if self.heal_time + 300 < current_time:
+            if self.heal_time + 200 < current_time:
                 self.heal_time = current_time
                 self.health += self.heal_amount
                 if self.health <= self.max_health:
@@ -616,13 +616,24 @@ class Gui(pygame.sprite.Sprite):
 gui = pygame.sprite.GroupSingle()
 gui.add(Gui())
 
+goof_slime = pygame.image.load("Game Attempts\\Images\\Courtyard\\Enemies\\Goof Slime.png").convert_alpha()
+dash_slime = pygame.image.load("Game Attempts\\Images\\Courtyard\\Enemies\\Angry Slime.png").convert_alpha()
+ninja_slime = pygame.image.load("Game Attempts\\Images\\Courtyard\\Enemies\\Ninja Slime.png").convert_alpha()
+wizard = pygame.image.load("Game Attempts\\Images\\Courtyard\\Enemies\\Wizard.png").convert_alpha()
+witch = pygame.image.load("Game Attempts\\Images\\Courtyard\\Enemies\\Healing Witch Slime.png").convert_alpha()
+
+ninja_projectile = pygame.image.load("Game Attempts\\Images\\Courtyard\\Enemies\\Projectiles\\Ink Blob.png").convert_alpha()
+wizard_swirl = pygame.image.load("Game Attempts\\Images\\Courtyard\\Enemies\\Aoe Attacks\\Magic Swirl.png").convert_alpha()
+wizard_projectile = pygame.image.load("Game Attempts\\Images\\Courtyard\\Enemies\\Projectiles\\Fire Ball.png").convert_alpha()
+witch_projectile = pygame.image.load("Game Attempts\\Images\\Courtyard\\Enemies\\Projectiles\\Yin And Yang.png").convert_alpha()
+
 # enemies class
 class Courtyard_Enemies(pygame.sprite.Sprite):
 
     # initialising class
     def __init__(self, world_pos):
         super().__init__()
-        self.image = pygame.image.load("Game Attempts\\Images\\Courtyard\\Enemies\\Goof Slime.png").convert_alpha()
+        self.image = goof_slime
         # self.image = pygame.transform.rotozoom(self.image, 0, 0.5)
         self.rect = self.image.get_rect(center = world_pos)
         self.world_rect = self.rect.copy()
@@ -712,7 +723,7 @@ class Courtyard_Enemies(pygame.sprite.Sprite):
             if vector.length(self.vector_distance) < 2 and self.last_target_check + 10000 < current_time :
                 target_x = self.grid_pos.x + random.randint(-10, 10)
                 target_y = self.grid_pos.y + random.randint(-10, 10)
-                new_path = A_Star((self.grid_pos), vector(target_x, target_y))
+                new_path = [vector(target_x, target_y)]
                 if new_path:
                     self.path = new_path
                     self.last_target_check = current_time
@@ -769,14 +780,14 @@ class Goofy_Slimes(Courtyard_Enemies):
         super().__init__(world_pos)
         self.type = "Goofy_Slime"
         self.damage = 4
-        self.knockback = 16
+        self.knockback = 20
 
 class Dash_Slimes(Courtyard_Enemies):
 
     def __init__(self, world_pos):
         super().__init__(world_pos)
         self.type = "Dash_Slimes"
-        self.image = pygame.image.load("Game Attempts\\Images\\Courtyard\\Enemies\\Angry Slime.png").convert_alpha()
+        self.image = dash_slime
         # self.image = pygame.transform.rotozoom(self.image, 0, 0.5)
         self.rect = self.image.get_rect(center = world_pos)
         self.world_rect = self.rect.copy()
@@ -787,7 +798,7 @@ class Dash_Slimes(Courtyard_Enemies):
         # self.ACCELERATION = 0.4
         # self.FRICTION = -0.05
         self.NODE_ARRIVAL_RANGE = 15
-        self.knockback = 10
+        self.knockback = 15
         self.damage = 3
         self.dash = False
         self.dash_damage = 8
@@ -828,7 +839,7 @@ class Dash_Slimes(Courtyard_Enemies):
             if vector.length(self.vector_distance) < 2 and self.last_target_check + 10000 < current_time :
                 target_x = self.grid_pos.x + random.randint(-10, 10)
                 target_y = self.grid_pos.y + random.randint(-10, 10)
-                new_path = A_Star((self.grid_pos), vector(target_x, target_y))
+                new_path = [vector(target_x, target_y)]
                 if new_path:
                     self.path = new_path
                     self.last_target_check = current_time
@@ -837,12 +848,12 @@ class Ninja_Slimes(Courtyard_Enemies):
     def __init__(self,world_pos):
         super().__init__(world_pos)
         self.type = "Ninja_Slime"
-        self.image = pygame.image.load("Game Attempts\\Images\\Courtyard\\Enemies\\Ninja Slime.png").convert_alpha()
+        self.image = ninja_slime
         # self.image = pygame.transform.rotozoom(self.image, 0, 0.5)
         self.max_health = 90
         self.health = 90
         self.NODE_ARRIVAL_RANGE = 15
-        self.knockback = 35
+        self.knockback = 50
         self.damage = 4
         self.throw = False
         self.projectile_damage = 8
@@ -854,7 +865,7 @@ class Ninja_Slimes(Courtyard_Enemies):
             pixel_distance = find_pixel_distance(self.grid_pos, player.sprite.grid_pos)
             velocity = vector(5, 5)
             if pixel_distance.x != 0 or pixel_distance.y != 0: velocity = (pixel_distance).normalize() * 10
-            surface = pygame.image.load("Game Attempts\\Images\\Courtyard\\Enemies\\Projectiles\\Ink Blob.png").convert_alpha()
+            surface = ninja_projectile
             self.projectiles.append({"surface": surface, 
                                      "rect": surface.get_rect(center = self.rect.center - camera_offset), 
                                      "velocity": velocity,
@@ -866,13 +877,15 @@ class Ninja_Slimes(Courtyard_Enemies):
         if type == None:
             if self.projectiles:
                 for projectile in self.projectiles:
-                    Screen.blit(projectile["surface"], projectile["rect"])
+                    if projectile["rect"].colliderect(Screen.get_rect()):
+                        Screen.blit(projectile["surface"], projectile["rect"])
         elif type == "functional":
             if self.projectiles:
                 for projectile in self.projectiles:
                     projectile["pos"] += projectile["velocity"]
                     projectile["rect"].center = projectile["pos"] + camera_offset
-                    Screen.blit(projectile["surface"], projectile["rect"].center)
+                    if projectile["rect"].colliderect(Screen.get_rect()):
+                        Screen.blit(projectile["surface"], projectile["rect"].center)
                     if projectile["rect"].colliderect(player.sprite.rect) and self.last_hit + 500 <= current_time and player.sprite.got_hit == False:
                         player.sprite.health -= self.projectile_damage
                         player.sprite.hit_flash = True
@@ -885,7 +898,6 @@ class Ninja_Slimes(Courtyard_Enemies):
                         Floating_health_numbers(self.projectile_damage, "red", vector(x/10, -5), vector((player.sprite.rect.centerx + x, player.sprite.rect.centery + y)))
                     if projectile["thrown"] + 2000 < current_time:
                         self.projectiles.remove(projectile)
-
 
     def Find_path(self):
         global current_time
@@ -912,7 +924,7 @@ class Ninja_Slimes(Courtyard_Enemies):
             if vector.length(self.vector_distance) < 2 and self.last_target_check + 10000 < current_time :
                 target_x = self.grid_pos.x + random.randint(-10, 10)
                 target_y = self.grid_pos.y + random.randint(-10, 10)
-                new_path = A_Star((self.grid_pos), vector(target_x, target_y))
+                new_path = [vector(target_x, target_y)]
                 if new_path:
                     self.path = new_path
                     self.last_target_check = current_time
@@ -921,7 +933,7 @@ class Wizard(Courtyard_Enemies):
     def __init__(self,world_pos):
         super().__init__(world_pos)
         self.type = "Wizard"
-        self.image = pygame.image.load("Game Attempts\\Images\\Courtyard\\Enemies\\Wizard.png").convert_alpha()
+        self.image = wizard
         # self.image = pygame.transform.rotozoom(self.image, 0, 0.8)
         self.rect = self.image.get_rect(center = world_pos)
         self.world_rect = self.rect.copy()
@@ -932,13 +944,14 @@ class Wizard(Courtyard_Enemies):
         self.ACCELERATION = 0.6
         self.FRICTION = -0.25
         self.NODE_ARRIVAL_RANGE = 15
+        self.knockback = 20
         self.damage = 4
         self.throw = False
         self.projectile_damage = 10
         self.throw_time = 0
         self.projectiles = []
 
-        self.swirl_image = pygame.image.load("Game Attempts\\Images\\Courtyard\\Enemies\\Aoe Attacks\\Magic Swirl.png").convert_alpha()
+        self.swirl_image = wizard_swirl
         self.swirl_rect = self.swirl_image.get_rect(center = self.rect.center)
         self.swirl_attributes = {"active": False, "last_used": -10000, "damage": 12, "pos": (0,0)}
 
@@ -947,7 +960,7 @@ class Wizard(Courtyard_Enemies):
             pixel_distance = find_pixel_distance(self.grid_pos, player.sprite.grid_pos)
             velocity = vector(5, 5)
             if pixel_distance.x != 0 or pixel_distance.y != 0: velocity = (pixel_distance).normalize() * 18
-            surface = pygame.image.load("Game Attempts\\Images\\Courtyard\\Enemies\\Projectiles\\Fire Ball.png").convert_alpha()
+            surface = wizard_projectile
             self.projectiles.append({"surface": surface, 
                                      "rect": surface.get_rect(center = self.rect.center - camera_offset), 
                                      "velocity": velocity,
@@ -967,7 +980,8 @@ class Wizard(Courtyard_Enemies):
             if type == "functional":
                 if self.swirl_attributes["last_used"] + 350 > current_time:
                     self.swirl_rect.center = self.swirl_attributes["pos"] + camera_offset
-                    Screen.blit(self.swirl_image, self.swirl_rect)
+                    if self.swirl_rect.colliderect(Screen.get_rect()):
+                        Screen.blit(self.swirl_image, self.swirl_rect)
                     if self.swirl_rect.colliderect(player.sprite.rect) and player.sprite.got_hit == False:
                         player.sprite.health -= self.swirl_attributes["damage"]
                         player.sprite.got_hit = True
@@ -979,19 +993,22 @@ class Wizard(Courtyard_Enemies):
                     self.swirl_attributes["active"] = False
             else: 
                 if self.swirl_attributes["last_used"] + 150 > current_time:
-                    Screen.blit(self.swirl_image, self.swirl_rect)
+                    if self.swirl_rect.colliderect(Screen.get_rect()):
+                        Screen.blit(self.swirl_image, self.swirl_rect)
 
     def Fireball_blit(self, type):
         if type == None:
             if self.projectiles:
                 for projectile in self.projectiles:
-                    Screen.blit(projectile["surface"], projectile["rect"])
+                    if projectile["rect"].colliderect(Screen.get_rect()):
+                        Screen.blit(projectile["surface"], projectile["rect"])
         elif type == "functional":
             if self.projectiles:
                 for projectile in self.projectiles:
                     projectile["pos"] += projectile["velocity"]
                     projectile["rect"].center = projectile["pos"] + camera_offset
-                    Screen.blit(projectile["surface"], projectile["rect"].center)
+                    if projectile["rect"].colliderect(Screen.get_rect()):
+                        Screen.blit(projectile["surface"], projectile["rect"].center)
                     if projectile["rect"].colliderect(player.sprite.rect) and self.last_hit + 500 <= current_time and player.sprite.got_hit == False:
                         player.sprite.health -= self.projectile_damage
                         player.sprite.hit_flash = True
@@ -1031,7 +1048,7 @@ class Wizard(Courtyard_Enemies):
             if vector.length(self.vector_distance) < 2 and self.last_target_check + 10000 < current_time :
                 target_x = self.grid_pos.x + random.randint(-10, 10)
                 target_y = self.grid_pos.y + random.randint(-10, 10)
-                new_path = A_Star((self.grid_pos), vector(target_x, target_y))
+                new_path = [vector(target_x, target_y)]
                 if new_path:
                     self.path = new_path
                     self.last_target_check = current_time
@@ -1040,7 +1057,7 @@ class Witch(Courtyard_Enemies):
     def __init__(self,world_pos):
         super().__init__(world_pos)
         self.type = "Witch"
-        self.image = pygame.image.load("Game Attempts\\Images\\Courtyard\\Enemies\\Healing Witch Slime.png").convert_alpha()
+        self.image = witch
         self.rect = self.image.get_rect(center = world_pos)
         self.world_rect = self.rect.copy()
         self.position = vector(self.rect.center)
@@ -1051,21 +1068,21 @@ class Witch(Courtyard_Enemies):
         self.FRICTION = -0.25
         self.NODE_ARRIVAL_RANGE = 15
         self.damage = 4
-        self.knockback = 25
+        self.knockback = 35
         self.throw = False
         self.projectile_heal = 1
         self.throw_time = 0
         self.projectiles = []
 
     def Use_Heal(self):
-        if self.throw_time + 1000 <= current_time:
+        if self.throw_time + 2000 <= current_time:
             enemy_list = enemies.copy()
             enemy_list.remove(self)
             enemy = min(enemy_list, key=lambda enemy: h_value(enemy.grid_pos, player.sprite.grid_pos))
             pixel_distance = find_pixel_distance(self.grid_pos, enemy.grid_pos)
             velocity = vector(5,5)
             if pixel_distance.x != 0 or pixel_distance.y != 0: velocity = (pixel_distance).normalize() * 18
-            surface = pygame.image.load("Game Attempts\\Images\\Courtyard\\Enemies\\Projectiles\\Yin And Yang.png").convert_alpha()
+            surface = witch_projectile
             self.projectiles.append({"surface": surface, 
                                      "rect": surface.get_rect(center = self.rect.center - camera_offset), 
                                      "velocity": velocity,
@@ -1077,13 +1094,15 @@ class Witch(Courtyard_Enemies):
         if type == None:
             if self.projectiles:
                 for projectile in self.projectiles:
-                    Screen.blit(projectile["surface"], projectile["rect"])
+                    if projectile["rect"].colliderect(Screen.get_rect()):
+                        Screen.blit(projectile["surface"], projectile["rect"])
         elif type == "functional":
             if self.projectiles:
                 for projectile in self.projectiles:
                     projectile["pos"] += projectile["velocity"]
                     projectile["rect"].center = projectile["pos"] + camera_offset
-                    Screen.blit(projectile["surface"], projectile["rect"].center)
+                    if projectile["rect"].colliderect(Screen.get_rect()):
+                        Screen.blit(projectile["surface"], projectile["rect"].center)
                     for enemy in enemies:
                         if enemy.type != "Witch":
                             if projectile["rect"].colliderect(enemy.rect) and self.last_hit + 500 <= current_time and player.sprite.got_hit == False:
@@ -1121,7 +1140,7 @@ class Witch(Courtyard_Enemies):
             if vector.length(self.vector_distance) < 2 and self.last_target_check + 10000 < current_time :
                 target_x = self.grid_pos.x + random.randint(-10, 10)
                 target_y = self.grid_pos.y + random.randint(-10, 10)
-                new_path = A_Star((self.grid_pos), vector(target_x, target_y))
+                new_path = [vector(target_x, target_y)]
                 if new_path:
                     self.path = new_path
                     self.last_target_check = current_time

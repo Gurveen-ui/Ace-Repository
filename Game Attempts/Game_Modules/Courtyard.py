@@ -1132,3 +1132,4 @@ difficulties = {1: [Goofy_Slimes, Dash_Slimes],
 
 # difficulties = {1: [Wizard], 
 #                 2: [Wizard]}
+

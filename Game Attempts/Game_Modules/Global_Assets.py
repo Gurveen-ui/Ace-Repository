@@ -13,7 +13,8 @@ def dialogue_producer(Box_class, Text_constant, Letter_Speed):
                 Box_class.text_paused = True
         if Box_class.text_counter % 10 == 0:
             if Box_class.line_counter <= len(Box_class.dialogue) - 1:
-                Box_class.dialogue[Box_class.line_counter] += Text_constant[Box_class.line_counter][int(Box_class.text_counter // 10)]
+                if Box_class.line_counter <= len(Text_constant) + 1:
+                    Box_class.dialogue[Box_class.line_counter] += Text_constant[Box_class.line_counter][int(Box_class.text_counter // 10)]
         Box_class.text_counter += Letter_Speed
 
 # display dialogue method, displays a dialogue list with gaps between lines

@@ -207,6 +207,7 @@ while True:
             Courtyard.draw_front_attacks("functional")
             Courtyard.draw_courtyard(Screen, Courtyard.wall_tiles)
             Courtyard.draw_wall_npc(Screen, Courtyard.wall_npc.sprite)
+            Courtyard.draw_health_markers(Screen, "functional")
             Courtyard.draw_gui(Screen)
             # Screen.blit(Global_Assets.Royal_Font.render(str(Courtyard.current_time // 1000), False, (0,0,0)),(1280 - 110 ,720 - 170))
             # Screen.blit(Global_Assets.Royal_Font.render(str(Courtyard.get_player_grid_pos(Courtyard.player.sprite)), False, (255,0,255)),(1280 - 110 ,720 - 120))

@@ -78,6 +78,18 @@ def Extract_Tiles(Class, Layer_Name, Group, Side_length, Type = None, List = Non
 
 Extract_Tiles(None,"Spawnpoints", None, 80, "Object", enemy_spawns)
 
+Health_markers = []
+
+def Floating_health_numbers(Number, Colour, Velocity, Pos):
+    marker = {"Text": Number,
+              "Colour": Colour,
+              "Velocity": Velocity, 
+              "Center": Pos,
+              "Started": current_time,
+              "Pos": Pos - camera_offset}
+    Health_markers.append(marker)
+    
+
 # draw functions
 
 # draws all map tiles while on display
@@ -88,6 +100,8 @@ def draw_front_attacks(type = None):
             sprite.Shuriken_blit(type)
         elif sprite.type == "Wizard":
             sprite.Fireball_blit(type)
+        elif sprite.type == "Witch":
+            sprite.Heal_blit(type)
 
 def draw_courtyard(surface, layer):
     offset = (round(camera_offset.x),round(camera_offset.y))
@@ -95,6 +109,16 @@ def draw_courtyard(surface, layer):
         screen_rect = tile.world_rect.move(offset)
         if screen_rect.colliderect(surface.get_rect()):
             surface.blit(tile.image, screen_rect)
+
+def draw_health_markers(Surface, type):
+    for marker in Health_markers:
+        if type == "functional":
+            marker["Pos"] += marker["Velocity"]
+            marker["Center"] = marker["Pos"] + camera_offset
+            marker["Velocity"] += vector(0, 0.2)
+            if marker["Started"] + 700 < current_time:
+                Health_markers.remove(marker)
+        Screen.blit(Global_Assets.Royal_Font.render(str(marker["Text"]), False, marker["Colour"]),tuple(marker["Center"]))
 
 # calls player attack methods, which draw or update depending on what is wanted
 def background_attacks(type):
@@ -105,10 +129,10 @@ def background_attacks(type):
 
 # draws gui
 def draw_gui(Surface):
-    pygame.draw.rect(Surface, (45,45,45), gui.sprite.total_health_rect, 0, 10)
-    pygame.draw.rect(Surface, "black", gui.sprite.total_health_rect, 5, 10)
-    pygame.draw.rect(Surface, "red", gui.sprite.health_rect, 0, 10)
-    pygame.draw.rect(Surface, "black", gui.sprite.health_rect, 5, 10)
+    pygame.draw.rect(Surface, (45,45,45), gui.sprite.total_health_rect, 0)
+    pygame.draw.rect(Surface, "black", gui.sprite.total_health_rect, 5)
+    pygame.draw.rect(Surface, "red", gui.sprite.health_rect, 0)
+    pygame.draw.rect(Surface, "black", gui.sprite.health_rect, 5)
     Screen.blit(Global_Assets.Royal_Font.render("Current Wave: " + str(levels.wave), False, (0,0,0)),(640 - 40, 20))
     if levels.wave_completed == True: Screen.blit(Global_Assets.Royal_Font.render("Next Wave In: " + str(int((levels.completed_time + 8000 - current_time) / 1000)), False, (0,0,0)),(640 - 40, 50))
     if levels.wave > 0 and levels.wave_completed == False : Screen.blit(Global_Assets.Royal_Font.render(("Enemies Remaining: " + str(levels.enemy_count)), False, (0,0,0)),(640 - 40, 50))
@@ -247,6 +271,8 @@ class Player(pygame.sprite.Sprite):
         self.hit_flash = False
         self.got_hit = False
         self.got_hit_time = 0
+        self.heal_amount = 1
+        self.heal_time = 0
 
         self.swirl_image = pygame.image.load("Game Attempts\\Images\\Courtyard\\Player\\Swirl Pixel.png").convert_alpha()
         self.swirl_rect = self.swirl_image.get_rect(center = self.rect.center)
@@ -387,6 +413,9 @@ class Player(pygame.sprite.Sprite):
                         if self.swirl_rect.colliderect(enemy.rect) and enemy.last_got_hit + 500 <= current_time:
                             enemy.health -= self.swirl_attributes["damage"]
                             enemy.last_got_hit = current_time
+                            x = random.randint(-30, 30)
+                            y = random.randint(-30, 30)
+                            Floating_health_numbers(self.swirl_attributes["damage"], "black", vector(x/10, -5), vector((enemy.rect.centerx + x, enemy.rect.centery + y)))
                             if enemy.knockback != 0:
                                 pixel_distance = find_pixel_distance(self.grid_pos, enemy.grid_pos)
                                 if pixel_distance.x != 0 or pixel_distance.y != 0:
@@ -397,6 +426,18 @@ class Player(pygame.sprite.Sprite):
             else: 
                 if self.swirl_attributes["last_used"] + 200 > current_time:
                     Screen.blit(self.swirl_image, self.swirl_rect)
+
+    def heal(self):
+        if self.got_hit_time + 5000 < current_time:
+            if self.heal_time + 300 < current_time:
+                self.heal_time = current_time
+                self.health += self.heal_amount
+                if self.health <= self.max_health:
+                    x = random.randint(-30, 30)
+                    y = random.randint(-30, 30)
+                    Floating_health_numbers(self.heal_amount, "green", vector(x/10, -5), vector((self.rect.centerx + x, self.rect.centery + y)))
+        if self.health > self.max_health:
+            self.health = self.max_health
 
     # update method, updates nessesary variables and calls player methods
     def update(self):
@@ -421,6 +462,7 @@ class Player(pygame.sprite.Sprite):
         self.Check_Boundaries()
         self.Rotate()
         self.apply_damage()
+        self.heal()
 
 player = pygame.sprite.GroupSingle()
 player.add(Player())
@@ -434,16 +476,16 @@ class Levels():
         self.total_enemies = 0
         self.completed_time = 0
         self.enemy_count = 0
-        self.waves = {1: [0.8, 0.2, 0, 0],
-                      2: [0.6, 0.4, 0, 0],
-                      3: [0.4, 0.6, 0, 0], 
-                      4: [0, 1, 0, 0], 
-                      5: [0, 1, 0, 0]}
+        self.waves = {1: [0.7, 0.2, 0.1, 0],
+                      2: [0.5, 0.3, 0.2, 0],
+                      3: [0.3, 0.3, 0.3, 0], 
+                      4: [0.3, 0.4, 0.3, 0], 
+                      5: [0.2, 0.5, 0.3, 0]}
 
     def Choose_Enemies(self):
         self.wave_completed = False
         self.wave += 1 
-        self.total_enemies = 10 + (self.wave * 5)
+        self.total_enemies = 20 + (self.wave * 10)
         enemy_list = self.waves[self.wave]
         difficulty_counter = 0
         for i in enemy_list:
@@ -690,14 +732,22 @@ class Courtyard_Enemies(pygame.sprite.Sprite):
             player.sprite.got_hit = True
             player.sprite.got_hit_time = current_time
             self.last_hit = current_time
+            x = random.randint(-30, 30)
+            y = random.randint(-30, 30)
+            Floating_health_numbers(self.damage, "red", vector(x/10, -5), vector((player.sprite.rect.centerx + x, player.sprite.rect.centery + y)))
 
     # deletes enemy object after depleting health
     def death(self):
         if self.health <= 0:
             levels.enemy_count -= 1
-            player.sprite.health += 3
+            player.sprite.health += 2
             if player.sprite.health > player.sprite.max_health: player.sprite.health = player.sprite.max_health
             self.kill()
+            x = random.randint(-30, 30)
+            y = random.randint(-30, 30)
+            Floating_health_numbers(2, "green", vector(x/10, -5), vector((player.sprite.rect.centerx + x, player.sprite.rect.centery + y)))
+        elif self.health > self.max_health:
+            self.health = self.max_health
 
     # update method, updates nessesary variables and calls enemy methods
     def update(self):
@@ -758,6 +808,9 @@ class Dash_Slimes(Courtyard_Enemies):
                 player.sprite.got_hit_time = current_time
                 self.last_hit = current_time
                 self.dash = False
+                x = random.randint(-30, 30)
+                y = random.randint(-30, 30)
+                Floating_health_numbers(self.dash_damage, "red", vector(x/10, -5), vector((player.sprite.rect.centerx + x, player.sprite.rect.centery + y)))
             if self.dash_time + 1000 < current_time:
                 self.dash = False
             
@@ -805,7 +858,8 @@ class Ninja_Slimes(Courtyard_Enemies):
             self.projectiles.append({"surface": surface, 
                                      "rect": surface.get_rect(center = self.rect.center - camera_offset), 
                                      "velocity": velocity,
-                                     "pos": self.rect.center - camera_offset})
+                                     "pos": self.rect.center - camera_offset, 
+                                     "thrown": current_time})
             self.throw_time = current_time
 
     def Shuriken_blit(self, type):
@@ -826,7 +880,10 @@ class Ninja_Slimes(Courtyard_Enemies):
                         player.sprite.got_hit_time = current_time
                         self.last_hit = current_time
                         self.projectiles.remove(projectile)
-                    elif projectile["rect"].colliderect(Screen.get_rect()) != True:
+                        x = random.randint(-30, 30)
+                        y = random.randint(-30, 30)
+                        Floating_health_numbers(self.projectile_damage, "red", vector(x/10, -5), vector((player.sprite.rect.centerx + x, player.sprite.rect.centery + y)))
+                    if projectile["thrown"] + 2000 < current_time:
                         self.projectiles.remove(projectile)
 
 
@@ -894,7 +951,8 @@ class Wizard(Courtyard_Enemies):
             self.projectiles.append({"surface": surface, 
                                      "rect": surface.get_rect(center = self.rect.center - camera_offset), 
                                      "velocity": velocity,
-                                     "pos": self.rect.center - camera_offset})
+                                     "pos": self.rect.center - camera_offset, 
+                                     "thrown": current_time})
             self.throw_time = current_time
 
     def Use_swirl(self):
@@ -914,6 +972,9 @@ class Wizard(Courtyard_Enemies):
                         player.sprite.health -= self.swirl_attributes["damage"]
                         player.sprite.got_hit = True
                         player.sprite.got_hit_time = current_time
+                        x = random.randint(-30, 30)
+                        y = random.randint(-30, 30)
+                        Floating_health_numbers(self.swirl_attributes["damage"], "red", vector(x/10, -5), vector((player.sprite.rect.centerx + x, player.sprite.rect.centery + y)))
                 else:
                     self.swirl_attributes["active"] = False
             else: 
@@ -938,7 +999,10 @@ class Wizard(Courtyard_Enemies):
                         player.sprite.got_hit_time = current_time
                         self.last_hit = current_time
                         self.projectiles.remove(projectile)
-                    elif projectile["rect"].colliderect(Screen.get_rect()) != True:
+                        x = random.randint(-30, 30)
+                        y = random.randint(-30, 30)
+                        Floating_health_numbers(self.projectile_damage, "red", vector(x/10, -5), vector((player.sprite.rect.centerx + x, player.sprite.rect.centery + y)))
+                    if projectile["thrown"] + 2000 < current_time:
                         self.projectiles.remove(projectile)
 
     def Find_path(self):
@@ -972,9 +1036,99 @@ class Wizard(Courtyard_Enemies):
                     self.path = new_path
                     self.last_target_check = current_time
 
+class Witch(Courtyard_Enemies):
+    def __init__(self,world_pos):
+        super().__init__(world_pos)
+        self.type = "Witch"
+        self.image = pygame.image.load("Game Attempts\\Images\\Courtyard\\Enemies\\Healing Witch Slime.png").convert_alpha()
+        self.rect = self.image.get_rect(center = world_pos)
+        self.world_rect = self.rect.copy()
+        self.position = vector(self.rect.center)
+        self.grid_pos = get_grid_pos(self.world_rect)
+        self.max_health = 80
+        self.health = 80
+        self.ACCELERATION = 0.6
+        self.FRICTION = -0.25
+        self.NODE_ARRIVAL_RANGE = 15
+        self.damage = 4
+        self.knockback = 25
+        self.throw = False
+        self.projectile_heal = 1
+        self.throw_time = 0
+        self.projectiles = []
+
+    def Use_Heal(self):
+        if self.throw_time + 1000 <= current_time:
+            enemy_list = enemies.copy()
+            enemy_list.remove(self)
+            enemy = min(enemy_list, key=lambda enemy: h_value(enemy.grid_pos, player.sprite.grid_pos))
+            pixel_distance = find_pixel_distance(self.grid_pos, enemy.grid_pos)
+            velocity = vector(5,5)
+            if pixel_distance.x != 0 or pixel_distance.y != 0: velocity = (pixel_distance).normalize() * 18
+            surface = pygame.image.load("Game Attempts\\Images\\Courtyard\\Enemies\\Projectiles\\Yin And Yang.png").convert_alpha()
+            self.projectiles.append({"surface": surface, 
+                                     "rect": surface.get_rect(center = self.rect.center - camera_offset), 
+                                     "velocity": velocity,
+                                     "pos": self.rect.center - camera_offset, 
+                                     "thrown": current_time})
+            self.throw_time = current_time
+
+    def Heal_blit(self, type):
+        if type == None:
+            if self.projectiles:
+                for projectile in self.projectiles:
+                    Screen.blit(projectile["surface"], projectile["rect"])
+        elif type == "functional":
+            if self.projectiles:
+                for projectile in self.projectiles:
+                    projectile["pos"] += projectile["velocity"]
+                    projectile["rect"].center = projectile["pos"] + camera_offset
+                    Screen.blit(projectile["surface"], projectile["rect"].center)
+                    for enemy in enemies:
+                        if enemy.type != "Witch":
+                            if projectile["rect"].colliderect(enemy.rect) and self.last_hit + 500 <= current_time and player.sprite.got_hit == False:
+                                enemy.health += self.projectile_heal
+                                x = random.randint(-30, 30)
+                                y = random.randint(-30, 30)
+                                Floating_health_numbers(self.projectile_heal, "green", vector(x/10, -5), vector((enemy.rect.centerx + x, enemy.rect.centery + y)))
+                                # if projectile in self.projectiles:
+                                #     self.projectiles.remove(projectile)
+                    if projectile["thrown"] + 2000 < current_time:
+                        self.projectiles.remove(projectile)
+
+    def Find_path(self):
+        global current_time
+        if h_value(player.sprite.grid_pos, self.grid_pos) <= 13 and h_value(player.sprite.grid_pos, self.grid_pos) >= 9:
+            self.path = [self.grid_pos]
+            self.Use_Heal()
+        elif h_value(player.sprite.grid_pos, self.grid_pos) < 7:
+            self.path = [self.grid_pos] 
+            pixel_distance = find_pixel_distance(self.grid_pos, player.sprite.grid_pos)
+            if pixel_distance.x != 0 or pixel_distance.y != 0: self.velocity = (pixel_distance).normalize() * -2.5
+            else:
+                target_x = self.grid_pos.x + random.randint(-10, 10)
+                target_y = self.grid_pos.y + random.randint(-10, 10)
+                new_path = A_Star((self.grid_pos), vector(target_x, target_y))
+                if new_path:
+                    self.path = new_path
+                    self.last_target_check = current_time
+            self.Use_Heal()
+        elif h_value(player.sprite.grid_pos, self.grid_pos) < 18 and h_value(player.sprite.grid_pos, self.grid_pos) > 5 and self.last_target_check + 500 < current_time:
+            if not player.sprite.grid_pos == self.grid_pos:
+                self.path = A_Star((self.grid_pos), (player.sprite.grid_pos))
+                self.last_target_check = current_time
+        else:
+            if vector.length(self.vector_distance) < 2 and self.last_target_check + 10000 < current_time :
+                target_x = self.grid_pos.x + random.randint(-10, 10)
+                target_y = self.grid_pos.y + random.randint(-10, 10)
+                new_path = A_Star((self.grid_pos), vector(target_x, target_y))
+                if new_path:
+                    self.path = new_path
+                    self.last_target_check = current_time
 
 difficulties = {1: [Goofy_Slimes, Dash_Slimes], 
-                2: [Ninja_Slimes, Wizard]}
+                2: [Ninja_Slimes, Wizard],
+                3: [Witch]}
 
 # difficulties = {1: [Wizard], 
 #                 2: [Wizard]}

@@ -96,6 +96,7 @@ def Floating_numbers(Number, Colour, Velocity, Pos):
 # draws all map tiles while on display
 
 def draw_front_attacks(type = None):
+    player.sprite.Wind_Ball(type)
     for sprite in enemies.sprites():
         if sprite.type == "Ninja_Slime":
             sprite.Shuriken_blit(type)
@@ -293,6 +294,12 @@ class Player(pygame.sprite.Sprite):
         self.swirl_rect = self.swirl_image.get_rect(center = self.rect.center)
         self.swirl_attributes = {"active": False, "last_used": -10000, "damage": 25, "pos": (0,0)}
 
+        self.wind_projectiles = []
+        self.wind_available = True
+        self.wind_thrown = -10000
+        self.wind_damage = 45
+        self.wind_projectile = pygame.image.load("Game Attempts\\Images\\Courtyard\\Enemies\\Projectiles\\Wind Ball.png").convert_alpha()
+
     # movement method, checks player inputs and affects acceleration
     def Movement(self):
         self.acceleration = vector(0,0)
@@ -441,6 +448,32 @@ class Player(pygame.sprite.Sprite):
             else: 
                 if self.swirl_attributes["last_used"] + 200 > current_time:
                     Screen.blit(self.swirl_image, self.swirl_rect)
+
+    def Wind_Ball(self, type):
+        if type == None:
+            if self.wind_projectiles:
+                for projectile in self.wind_projectiles:
+                    if projectile["rect"].colliderect(Screen.get_rect()):
+                        Screen.blit(projectile["surface"], projectile["rect"])
+        elif type == "functional":
+            if self.wind_projectiles:
+                for projectile in self.wind_projectiles:
+                    projectile["pos"] += projectile["velocity"]
+                    projectile["velocity"] += vector(0, 0.6)
+                    projectile["rect"].center = projectile["pos"] + camera_offset
+                    if projectile["rect"].colliderect(Screen.get_rect()):
+                        Screen.blit(projectile["surface"], projectile["rect"].center)
+                    for enemy in enemies:
+                        if projectile["rect"].colliderect(enemy.rect) and enemy.last_got_hit + 500 <= current_time:
+                            enemy.health -= self.wind_damage
+                            enemy.last_got_hit = current_time
+                            x = random.randint(-30, 30)
+                            y = random.randint(-30, 30)
+                            Floating_numbers(self.wind_damage, "black", vector(x/10, -5), vector((enemy.rect.centerx + x, enemy.rect.centery + y)))
+                    if self.wind_thrown + 1000 < current_time and self.wind_available == False:
+                        self.wind_available = True 
+                    if projectile["thrown"] + 3000 < current_time:
+                        self.wind_projectiles.remove(projectile)
 
     def heal(self):
         if self.got_hit_time + 5000 < current_time:

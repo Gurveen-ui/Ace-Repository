@@ -185,6 +185,16 @@ while True:
                             Courtyard.player.sprite.swirl_attributes["active"] = True
                             Courtyard.player.sprite.swirl_attributes["last_used"] = Courtyard.current_time
                             Courtyard.player.sprite.swirl_attributes["pos"] = Courtyard.player.sprite.rect.center - Courtyard.camera_offset
+                    if event.key == pygame.K_r:
+                        if Courtyard.player.sprite.wind_available == True:
+                            Courtyard.player.sprite.wind_thrown = Courtyard.current_time
+                            Courtyard.player.sprite.wind_available = False
+                            surface = Courtyard.player.sprite.wind_projectile
+                            Courtyard.player.sprite.wind_projectiles.append({"surface": surface, 
+                                     "rect": surface.get_rect(center = Courtyard.player.sprite.rect.center - Courtyard.camera_offset), 
+                                     "velocity": Courtyard.vector(Courtyard.player.sprite.velocity.x * 1.2, -17),
+                                     "pos": Courtyard.player.sprite.rect.center - Courtyard.camera_offset, 
+                                     "thrown": Courtyard.current_time})
             if event.type == pygame.QUIT:
                 pygame.quit()
                 exit()

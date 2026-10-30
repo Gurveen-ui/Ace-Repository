@@ -185,7 +185,7 @@ while True:
                             Courtyard.player.sprite.swirl_attributes["active"] = True
                             Courtyard.player.sprite.swirl_attributes["last_used"] = Courtyard.current_time
                             Courtyard.player.sprite.swirl_attributes["pos"] = Courtyard.player.sprite.rect.center - Courtyard.camera_offset
-                    if event.key == pygame.K_r:
+                    if event.key == pygame.K_q:
                         if Courtyard.player.sprite.wind_available == True:
                             Courtyard.player.sprite.wind_thrown = Courtyard.current_time
                             Courtyard.player.sprite.wind_available = False
@@ -204,7 +204,7 @@ while True:
                             x = random.randint(-30, 30)
                             y = random.randint(-30, 30)
                             Courtyard.Floating_numbers(Courtyard.player.sprite.heal_attributes["heal"], "green", Courtyard.vector(x/10, -5), Courtyard.vector((Courtyard.player.sprite.rect.centerx + x, Courtyard.player.sprite.rect.centery + y)))
-                    if event.key == pygame.K_f:
+                    if event.key == pygame.K_e:
                         if Courtyard.player.sprite.bean_available == True and Courtyard.enemies:
                             Courtyard.player.sprite.bean_thrown = Courtyard.current_time
                             Courtyard.player.sprite.bean_available = False

@@ -553,11 +553,11 @@ class Levels():
         self.total_enemies = 0
         self.completed_time = 0
         self.enemy_count = 0
-        self.waves = {1: [0.7, 0.2, 0.1, 0],
-                      2: [0.5, 0.3, 0.2, 0],
-                      3: [0.3, 0.3, 0.3, 0], 
-                      4: [0.3, 0.4, 0.3, 0], 
-                      5: [0.2, 0.5, 0.3, 0]}
+        self.waves = {1: [0.9, 0.1, 0, 0],
+                      2: [0.7, 0.3, 0, 0],
+                      3: [0.7, 0.2, 0.1, 0], 
+                      4: [0.5, 0.3, 0.2, 0], 
+                      5: [0.4, 0.3, 0.3, 0]}
 
     def Choose_Enemies(self):
         self.wave_completed = False

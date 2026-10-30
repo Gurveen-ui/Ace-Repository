@@ -79,6 +79,7 @@ def Extract_Tiles(Class, Layer_Name, Group, Side_length, Type = None, List = Non
 Extract_Tiles(None,"Spawnpoints", None, 80, "Object", enemy_spawns)
 
 Health_markers = []
+Coin_list = pygame.sprite.Group()
 
 def Floating_numbers(Number, Colour, Velocity, Pos):
     marker = {"Text": Number,
@@ -88,7 +89,7 @@ def Floating_numbers(Number, Colour, Velocity, Pos):
               "Started": current_time,
               "Pos": Pos - camera_offset}
     Health_markers.append(marker)
-    
+
 
 # draw functions
 
@@ -120,6 +121,16 @@ def draw_health_markers(Surface, type):
                 Health_markers.remove(marker)
         Screen.blit(Global_Assets.Royal_Font.render(str(marker["Text"]), False, marker["Colour"]),tuple(marker["Center"]))
 
+def draw_coins(surface, type):
+    for coin in Coin_list:
+            if type == "functional":
+                if coin.Started + 800 > current_time:
+                    coin.Pos += coin.Velocity
+                    coin.Velocity += vector(0, 0.3)
+            coin.rect.center = coin.Pos + camera_offset
+            Screen.blit(coin.image, coin.rect)
+    
+
 # calls background attack methods, which draw or update depending on what is wanted
 def background_attacks(type):
     player.sprite.swirl(type)
@@ -134,6 +145,7 @@ def draw_gui(Surface):
     pygame.draw.rect(Surface, "red", gui.sprite.health_rect, 0)
     pygame.draw.rect(Surface, "black", gui.sprite.health_rect, 5)
     Screen.blit(Global_Assets.Royal_Font.render("Current Wave: " + str(levels.wave), False, (0,0,0)),(640 - 40, 20))
+    Screen.blit(Global_Assets.Royal_Font.render("Coins: " + str(player.sprite.coins), False, (0,0,0)),(100, 70))
     if levels.wave_completed == True: Screen.blit(Global_Assets.Royal_Font.render("Next Wave In: " + str(int((levels.completed_time + 8000 - current_time) / 1000)), False, (0,0,0)),(640 - 40, 50))
     if levels.wave > 0 and levels.wave_completed == False : Screen.blit(Global_Assets.Royal_Font.render(("Enemies Remaining: " + str(levels.enemy_count)), False, (0,0,0)),(640 - 40, 50))
 
@@ -256,6 +268,7 @@ class Player(pygame.sprite.Sprite):
         self.Pre_rotation_image = self.image
         self.rect = self.image.get_rect(bottomleft = (90, 220))
         self.max_health = 100
+        self.coins = 0 
         self.health = 100
         self.player_dead = False
         self.position = vector(self.rect.center)
@@ -439,6 +452,12 @@ class Player(pygame.sprite.Sprite):
         if self.health > self.max_health:
             self.health = self.max_health
 
+    def coin_collect(self):
+        for coin in Coin_list:
+            if self.rect.colliderect(coin.rect):
+                self.coins += 1
+                coin.kill()
+
     # update method, updates nessesary variables and calls player methods
     def update(self):
         global current_time, right_bound, left_bound, top_bound, bottom_bound
@@ -463,6 +482,7 @@ class Player(pygame.sprite.Sprite):
         self.Rotate()
         self.apply_damage()
         self.heal()
+        self.coin_collect()
 
 player = pygame.sprite.GroupSingle()
 player.add(Player())
@@ -630,6 +650,8 @@ wizard_swirl = pygame.image.load("Game Attempts\\Images\\Courtyard\\Enemies\\Aoe
 wizard_projectile = pygame.image.load("Game Attempts\\Images\\Courtyard\\Enemies\\Projectiles\\Fire Ball.png").convert_alpha()
 witch_projectile = pygame.image.load("Game Attempts\\Images\\Courtyard\\Enemies\\Projectiles\\Yin And Yang.png").convert_alpha()
 
+coin = pygame.image.load("Game Attempts\\Images\\Courtyard\\Coin.png").convert_alpha()
+
 # enemies class
 class Courtyard_Enemies(pygame.sprite.Sprite):
 
@@ -644,6 +666,7 @@ class Courtyard_Enemies(pygame.sprite.Sprite):
         self.grid_pos = get_grid_pos(self.world_rect)
         self.max_health = 100
         self.health = 100
+        self.coins = 0
         self.velocity = vector(0,0)
         self.acceleration = vector(0,0)
         self.ACCELERATION = 1.5
@@ -756,6 +779,10 @@ class Courtyard_Enemies(pygame.sprite.Sprite):
             levels.enemy_count -= 1
             player.sprite.health += 2
             if player.sprite.health > player.sprite.max_health: player.sprite.health = player.sprite.max_health
+            for i in range(self.coins):
+                x = random.randint(50, 70)
+                y = random.randint(50, 70)
+                Coin_list.add(Coin(vector(x/10, -(y/10)), self.rect.center))
             self.kill()
             x = random.randint(-30, 30)
             y = random.randint(-30, 30)
@@ -784,6 +811,7 @@ class Goofy_Slimes(Courtyard_Enemies):
         self.type = "Goofy_Slime"
         self.damage = 4
         self.knockback = 20
+        self.coins = 3
 
 class Dash_Slimes(Courtyard_Enemies):
 
@@ -798,6 +826,7 @@ class Dash_Slimes(Courtyard_Enemies):
         self.grid_pos = get_grid_pos(self.world_rect)
         self.max_health = 120
         self.health = 120
+        self.coins = 5
         self.NODE_ARRIVAL_RANGE = 15
         self.knockback = 15
         self.damage = 3
@@ -853,6 +882,7 @@ class Ninja_Slimes(Courtyard_Enemies):
         # self.image = pygame.transform.rotozoom(self.image, 0, 0.5)
         self.max_health = 90
         self.health = 90
+        self.coins = 7
         self.NODE_ARRIVAL_RANGE = 15
         self.knockback = 50
         self.damage = 4
@@ -941,6 +971,7 @@ class Wizard(Courtyard_Enemies):
         self.grid_pos = get_grid_pos(self.world_rect)
         self.max_health = 90
         self.health = 90
+        self.coins = 10
         self.ACCELERATION = 0.6
         self.FRICTION = -0.25
         self.NODE_ARRIVAL_RANGE = 15
@@ -1064,6 +1095,7 @@ class Witch(Courtyard_Enemies):
         self.grid_pos = get_grid_pos(self.world_rect)
         self.max_health = 80
         self.health = 80
+        self.coins = 15
         self.ACCELERATION = 0.6
         self.FRICTION = -0.25
         self.NODE_ARRIVAL_RANGE = 15
@@ -1144,6 +1176,16 @@ class Witch(Courtyard_Enemies):
                 if new_path:
                     self.path = new_path
                     self.last_target_check = current_time
+
+class Coin(pygame.sprite.Sprite):
+    def __init__(self, Velocity, Pos):
+        super().__init__()
+        self.image = coin
+        self.rect = self.image.get_rect(center = (Pos - camera_offset))
+        self.Started = current_time
+        self.Velocity = Velocity
+        self.Pos = Pos - camera_offset
+
 
 difficulties = {1: [Goofy_Slimes, Dash_Slimes], 
                 2: [Ninja_Slimes, Wizard],

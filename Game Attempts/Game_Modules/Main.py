@@ -1,5 +1,5 @@
 # import all nessesary things
-import pygame
+import pygame, random
 from sys import exit
 
 pygame.init()
@@ -195,6 +195,15 @@ while True:
                                      "velocity": Courtyard.vector(Courtyard.player.sprite.velocity.x * 1.2, -17),
                                      "pos": Courtyard.player.sprite.rect.center - Courtyard.camera_offset, 
                                      "thrown": Courtyard.current_time})
+                    if event.key == pygame.K_c:
+                        if Courtyard.player.sprite.heal_attributes["active"] == False:
+                            Courtyard.player.sprite.heal_attributes["active"] = True
+                            Courtyard.player.sprite.heal_attributes["last_used"] = Courtyard.current_time
+                            Courtyard.player.sprite.heal_attributes["pos"] = Courtyard.player.sprite.rect.center - Courtyard.camera_offset
+                            Courtyard.player.sprite.health += Courtyard.player.sprite.heal_attributes["heal"]
+                            x = random.randint(-30, 30)
+                            y = random.randint(-30, 30)
+                            Courtyard.Floating_numbers(Courtyard.player.sprite.heal_attributes["heal"], "green", Courtyard.vector(x/10, -5), Courtyard.vector((Courtyard.player.sprite.rect.centerx + x, Courtyard.player.sprite.rect.centery + y)))
             if event.type == pygame.QUIT:
                 pygame.quit()
                 exit()

@@ -135,6 +135,7 @@ def draw_coins(surface, type):
 # calls background attack methods, which draw or update depending on what is wanted
 def background_attacks(type):
     player.sprite.swirl(type)
+    player.sprite.heal(type)
     for sprite in enemies.sprites():
         if sprite.type == "Wizard":
             sprite.Swirl_blit(type)
@@ -299,6 +300,10 @@ class Player(pygame.sprite.Sprite):
         self.wind_thrown = -10000
         self.wind_damage = 45
         self.wind_projectile = pygame.image.load("Game Attempts\\Images\\Courtyard\\Enemies\\Projectiles\\Wind Ball.png").convert_alpha()
+
+        self.heal_image = pygame.image.load("Game Attempts\\Images\\Courtyard\\Player\\Heal.png").convert_alpha()
+        self.heal_rect = self.heal_image.get_rect(center = self.rect.center)
+        self.heal_attributes = {"active": False, "last_used": -10000, "heal": 15, "pos": (0,0)}
 
     # movement method, checks player inputs and affects acceleration
     def Movement(self):
@@ -470,12 +475,29 @@ class Player(pygame.sprite.Sprite):
                             x = random.randint(-30, 30)
                             y = random.randint(-30, 30)
                             Floating_numbers(self.wind_damage, "black", vector(x/10, -5), vector((enemy.rect.centerx + x, enemy.rect.centery + y)))
+                            if enemy.knockback != 0:
+                                pixel_distance = find_pixel_distance(self.grid_pos, enemy.grid_pos)
+                                if pixel_distance.x != 0 or pixel_distance.y != 0:
+                                    enemy.velocity = (pixel_distance).normalize() * enemy.knockback
+                                else: enemy.velocity = vector(1,0) * enemy.knockback
                     if self.wind_thrown + 1000 < current_time and self.wind_available == False:
                         self.wind_available = True 
                     if projectile["thrown"] + 3000 < current_time:
                         self.wind_projectiles.remove(projectile)
 
-    def heal(self):
+    def heal(self, type):
+        if self.heal_attributes["active"] == True:
+            if type == "functional":
+                if self.heal_attributes["last_used"] + 200 > current_time:
+                    self.heal_rect.center = self.heal_attributes["pos"] + camera_offset
+                    Screen.blit(self.heal_image, self.heal_rect)
+                if self.heal_attributes["last_used"] + 2500 < current_time:
+                    self.heal_attributes["active"] = False
+            else: 
+                if self.heal_attributes["last_used"] + 200 > current_time:
+                    Screen.blit(self.heal_image, self.heal_rect)       
+
+    def passive_heal(self):
         if self.got_hit_time + 5000 < current_time:
             if self.heal_time + 200 < current_time:
                 self.heal_time = current_time
@@ -516,7 +538,7 @@ class Player(pygame.sprite.Sprite):
         self.Check_Boundaries()
         self.Rotate()
         self.apply_damage()
-        self.heal()
+        self.passive_heal()
         self.coin_collect()
 
 player = pygame.sprite.GroupSingle()

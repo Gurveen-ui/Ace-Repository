@@ -97,6 +97,7 @@ def Floating_numbers(Number, Colour, Velocity, Pos):
 
 def draw_front_attacks(type = None):
     player.sprite.Wind_Ball(type)
+    player.sprite.bean(type)
     for sprite in enemies.sprites():
         if sprite.type == "Ninja_Slime":
             sprite.Shuriken_blit(type)
@@ -305,6 +306,12 @@ class Player(pygame.sprite.Sprite):
         self.heal_rect = self.heal_image.get_rect(center = self.rect.center)
         self.heal_attributes = {"active": False, "last_used": -10000, "heal": 15, "pos": (0,0)}
 
+        self.bean_projectiles = []
+        self.bean_available = True
+        self.bean_thrown = -10000
+        self.bean_damage = 60
+        self.bean_image = pygame.image.load("Game Attempts\\Images\\Courtyard\\Enemies\\Projectiles\\Evil Bean.png").convert_alpha()
+
     # movement method, checks player inputs and affects acceleration
     def Movement(self):
         self.acceleration = vector(0,0)
@@ -496,6 +503,38 @@ class Player(pygame.sprite.Sprite):
             else: 
                 if self.heal_attributes["last_used"] + 200 > current_time:
                     Screen.blit(self.heal_image, self.heal_rect)       
+
+    def bean(self, type):
+        if type == None:
+            if self.wind_projectiles:
+                for projectile in self.wind_projectiles:
+                    if projectile["rect"].colliderect(Screen.get_rect()):
+                        Screen.blit(projectile["surface"], projectile["rect"])
+        elif type == "functional":
+            if self.bean_thrown + 1000 < current_time and self.bean_available == False:
+                self.bean_available = True 
+            if self.bean_projectiles:
+                for projectile in self.bean_projectiles:
+                    projectile["pos"] += projectile["velocity"]
+                    projectile["rect"].center = projectile["pos"] + camera_offset
+                    if projectile["rect"].colliderect(Screen.get_rect()):
+                        Screen.blit(projectile["surface"], projectile["rect"].center)
+                    for enemy in enemies:
+                        if projectile["rect"].colliderect(enemy.rect) and enemy.last_got_hit + 500 <= current_time:
+                            enemy.health -= self.bean_damage
+                            enemy.last_got_hit = current_time
+                            x = random.randint(-30, 30)
+                            y = random.randint(-30, 30)
+                            Floating_numbers(self.bean_damage, "black", vector(x/10, -5), vector((enemy.rect.centerx + x, enemy.rect.centery + y)))
+                            if enemy.knockback != 0:
+                                pixel_distance = find_pixel_distance(self.grid_pos, enemy.grid_pos)
+                                if pixel_distance.x != 0 or pixel_distance.y != 0:
+                                    enemy.velocity = (pixel_distance).normalize() * enemy.knockback
+                                else: enemy.velocity = vector(1,0) * enemy.knockback
+                            self.bean_projectiles.remove(projectile)
+                            break
+                    if projectile["thrown"] + 3000 < current_time and projectile in self.bean_projectiles:
+                        self.bean_projectiles.remove(projectile)
 
     def passive_heal(self):
         if self.got_hit_time + 5000 < current_time:

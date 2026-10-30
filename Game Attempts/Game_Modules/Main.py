@@ -204,6 +204,21 @@ while True:
                             x = random.randint(-30, 30)
                             y = random.randint(-30, 30)
                             Courtyard.Floating_numbers(Courtyard.player.sprite.heal_attributes["heal"], "green", Courtyard.vector(x/10, -5), Courtyard.vector((Courtyard.player.sprite.rect.centerx + x, Courtyard.player.sprite.rect.centery + y)))
+                    if event.key == pygame.K_f:
+                        if Courtyard.player.sprite.bean_available == True and Courtyard.enemies:
+                            Courtyard.player.sprite.bean_thrown = Courtyard.current_time
+                            Courtyard.player.sprite.bean_available = False
+                            surface = Courtyard.player.sprite.bean_image
+                            enemy_list = Courtyard.enemies.copy()
+                            enemy = min(enemy_list, key=lambda enemy: Courtyard.h_value(enemy.grid_pos, Courtyard.player.sprite.grid_pos))
+                            pixel_distance = Courtyard.find_pixel_distance(Courtyard.player.sprite.grid_pos, enemy.grid_pos)
+                            velocity = Courtyard.vector(5,5)
+                            if pixel_distance.x != 0 or pixel_distance.y != 0: velocity = (pixel_distance).normalize() * 10
+                            Courtyard.player.sprite.bean_projectiles.append({"surface": surface, 
+                                     "rect": surface.get_rect(center = Courtyard.player.sprite.rect.center - Courtyard.camera_offset), 
+                                     "velocity": Courtyard.vector(velocity),
+                                     "pos": Courtyard.player.sprite.rect.center - Courtyard.camera_offset, 
+                                     "thrown": Courtyard.current_time})
             if event.type == pygame.QUIT:
                 pygame.quit()
                 exit()

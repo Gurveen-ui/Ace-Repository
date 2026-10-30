@@ -145,6 +145,7 @@ def draw_gui(Surface):
     pygame.draw.rect(Surface, "red", gui.sprite.health_rect, 0)
     pygame.draw.rect(Surface, "black", gui.sprite.health_rect, 5)
     Screen.blit(gui.sprite.heart_image, gui.sprite.heart_rect)
+    Screen.blit(gui.sprite.skill_bar_image, gui.sprite.skill_bar_rect)
     Screen.blit(Global_Assets.Royal_Font.render("Current Wave: " + str(levels.wave), False, (0,0,0)),(640 - 40, 20))
     Screen.blit(Global_Assets.Royal_Font.render("Coins: " + str(player.sprite.coins), False, (0,0,0)),(100, 70))
     if levels.wave_completed == True: Screen.blit(Global_Assets.Royal_Font.render("Next Wave In: " + str(int((levels.completed_time + 8000 - current_time) / 1000)), False, (0,0,0)),(640 - 40, 50))
@@ -623,6 +624,7 @@ class Wall_NPC(pygame.sprite.Sprite):
 wall_npc = pygame.sprite.GroupSingle()
 Extract_Tiles(Wall_NPC, "Wall_NPC", wall_npc, 80, "Object")
 
+skill_bar = pygame.image.load("Game Attempts\\Images\\Courtyard\\Gui\\Skill Bar.png").convert_alpha()
 heart_100 = pygame.image.load("Game Attempts\\Images\\Courtyard\\Gui\\Heart 100.png").convert_alpha()
 heart_60 = pygame.image.load("Game Attempts\\Images\\Courtyard\\Gui\\Heart 60.png").convert_alpha()
 heart_20 = pygame.image.load("Game Attempts\\Images\\Courtyard\\Gui\\Heart 20.png").convert_alpha()
@@ -637,6 +639,8 @@ class Gui(pygame.sprite.Sprite):
         self.health_rect = pygame.rect.Rect(100,10,player.sprite.health *3,40)
         self.heart_image = heart_100
         self.heart_rect = self.heart_image.get_rect(topleft = (15, 10))
+        self.skill_bar_image = skill_bar
+        self.skill_bar_rect = self.skill_bar_image.get_rect(topleft = (1188, 370))
 
     # update method for gui
     def update(self):

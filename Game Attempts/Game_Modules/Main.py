@@ -248,6 +248,6 @@ while True:
                 exit()
         Screen.fill((0,0,0))
         
-    Screen.blit(Global_Assets.Royal_Font.render(str(round(clock.get_fps())), False, (255,0,0)), (1280 - 90,720 - 50))
+    Screen.blit(Global_Assets.Royal_Font.render(str(round(clock.get_fps())), False, (255,0,0)), (1280 - 140,720 - 50))
     pygame.display.update()
     clock.tick(60)

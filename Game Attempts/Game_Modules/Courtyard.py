@@ -45,7 +45,7 @@ for x in range(45):
 
 # initialise function for death game reset
 def initialise():
-    global camera_offset, player, levels, wall_npc, gui, enemies
+    global camera_offset, player, levels, wall_npc, gui, enemies, Coin_list
     camera_offset = vector(0,0)
     player = pygame.sprite.GroupSingle()
     player.add(Player())
@@ -55,6 +55,7 @@ def initialise():
     gui = pygame.sprite.GroupSingle()
     gui.add(Gui())
     enemies = pygame.sprite.Group()
+    Coin_list = pygame.sprite.Group()
 
 # extract tiles function for tiled extraction
 def Extract_Tiles(Class, Layer_Name, Group, Side_length, Type = None, List = None):
@@ -312,7 +313,7 @@ class Player(pygame.sprite.Sprite):
 
         self.heal_image = pygame.image.load("Game Attempts\\Images\\Courtyard\\Player\\Heal.png").convert_alpha()
         self.heal_rect = self.heal_image.get_rect(center = self.rect.center)
-        self.heal_attributes = {"active": False, "last_used": -10000, "heal": 15, "pos": (0,0), "cooldown": 4000}
+        self.heal_attributes = {"active": False, "last_used": -10000, "heal": 15, "pos": (0,0), "cooldown": 8000}
 
         self.bean_projectiles = []
         self.bean_available = True

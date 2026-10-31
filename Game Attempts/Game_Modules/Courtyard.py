@@ -126,7 +126,7 @@ def draw_health_markers(Surface, type):
                 Health_markers.remove(marker)
         Screen.blit(Global_Assets.Royal_Font.render(str(marker["Text"]), False, marker["Colour"]),tuple(marker["Center"]))
 
-def draw_coins(surface, type):
+def draw_coins(surface, type = None):
     for coin in Coin_list:
             if type == "functional":
                 if coin.Started + 800 > current_time:

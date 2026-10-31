@@ -9,6 +9,9 @@ Screen = pygame.display.set_mode((1280,720))
 pygame.display.set_caption("Courtyard")
 vector = pygame.math.Vector2
 
+#left = 1198
+#top = 402
+
 # create all constants
 PLAYER_SIZE = (67,67)
 SCREEN_WIDTH = 1280
@@ -149,6 +152,10 @@ def draw_gui(Surface):
     pygame.draw.rect(Surface, "black", gui.sprite.health_rect, 5)
     Screen.blit(gui.sprite.heart_image, gui.sprite.heart_rect)
     Screen.blit(gui.sprite.skill_bar_image, gui.sprite.skill_bar_rect)
+    pygame.draw.rect(Surface, (150, 150, 150), gui.sprite.swirl_cooldown, 0)
+    pygame.draw.rect(Surface, (150, 150, 150), gui.sprite.wind_cooldown, 0)
+    pygame.draw.rect(Surface, (150, 150, 150), gui.sprite.heal_cooldown, 0)
+    pygame.draw.rect(Surface, (150, 150, 150), gui.sprite.bean_cooldown, 0)
     Screen.blit(Global_Assets.Royal_Font.render("Current Wave: " + str(levels.wave), False, (0,0,0)),(640 - 40, 20))
     Screen.blit(Global_Assets.Royal_Font.render("Coins: " + str(player.sprite.coins), False, (0,0,0)),(100, 70))
     if levels.wave_completed == True: Screen.blit(Global_Assets.Royal_Font.render("Next Wave In: " + str(int((levels.completed_time + 8000 - current_time) / 1000)), False, (0,0,0)),(640 - 40, 50))
@@ -294,22 +301,24 @@ class Player(pygame.sprite.Sprite):
 
         self.swirl_image = pygame.image.load("Game Attempts\\Images\\Courtyard\\Player\\Swirl Pixel.png").convert_alpha()
         self.swirl_rect = self.swirl_image.get_rect(center = self.rect.center)
-        self.swirl_attributes = {"active": False, "last_used": -10000, "damage": 25, "pos": (0,0)}
+        self.swirl_attributes = {"active": False, "last_used": -10000, "damage": 25, "pos": (0,0), "cooldown": 1500}
 
         self.wind_projectiles = []
         self.wind_available = True
         self.wind_thrown = -10000
         self.wind_damage = 45
+        self.wind_cooldown = 1000
         self.wind_projectile = pygame.image.load("Game Attempts\\Images\\Courtyard\\Enemies\\Projectiles\\Wind Ball.png").convert_alpha()
 
         self.heal_image = pygame.image.load("Game Attempts\\Images\\Courtyard\\Player\\Heal.png").convert_alpha()
         self.heal_rect = self.heal_image.get_rect(center = self.rect.center)
-        self.heal_attributes = {"active": False, "last_used": -10000, "heal": 15, "pos": (0,0)}
+        self.heal_attributes = {"active": False, "last_used": -10000, "heal": 15, "pos": (0,0), "cooldown": 4000}
 
         self.bean_projectiles = []
         self.bean_available = True
         self.bean_thrown = -10000
         self.bean_damage = 60
+        self.bean_cooldown = 1500
         self.bean_image = pygame.image.load("Game Attempts\\Images\\Courtyard\\Enemies\\Projectiles\\Evil Bean.png").convert_alpha()
 
     # movement method, checks player inputs and affects acceleration
@@ -455,7 +464,7 @@ class Player(pygame.sprite.Sprite):
                                 if pixel_distance.x != 0 or pixel_distance.y != 0:
                                     enemy.velocity = (pixel_distance).normalize() * enemy.knockback
                                 else: enemy.velocity = vector(1,0) * enemy.knockback
-                if self.swirl_attributes["last_used"] + 1500 < current_time:
+                if self.swirl_attributes["last_used"] + self.swirl_attributes["cooldown"] < current_time:
                     self.swirl_attributes["active"] = False
             else: 
                 if self.swirl_attributes["last_used"] + 200 > current_time:
@@ -487,7 +496,7 @@ class Player(pygame.sprite.Sprite):
                                 if pixel_distance.x != 0 or pixel_distance.y != 0:
                                     enemy.velocity = (pixel_distance).normalize() * enemy.knockback
                                 else: enemy.velocity = vector(1,0) * enemy.knockback
-                    if self.wind_thrown + 1000 < current_time and self.wind_available == False:
+                    if self.wind_thrown + self.wind_cooldown < current_time and self.wind_available == False:
                         self.wind_available = True 
                     if projectile["thrown"] + 3000 < current_time:
                         self.wind_projectiles.remove(projectile)
@@ -498,7 +507,7 @@ class Player(pygame.sprite.Sprite):
                 if self.heal_attributes["last_used"] + 200 > current_time:
                     self.heal_rect.center = self.heal_attributes["pos"] + camera_offset
                     Screen.blit(self.heal_image, self.heal_rect)
-                if self.heal_attributes["last_used"] + 2500 < current_time:
+                if self.heal_attributes["last_used"] + self.heal_attributes["cooldown"] < current_time:
                     self.heal_attributes["active"] = False
             else: 
                 if self.heal_attributes["last_used"] + 200 > current_time:
@@ -511,7 +520,7 @@ class Player(pygame.sprite.Sprite):
                     if projectile["rect"].colliderect(Screen.get_rect()):
                         Screen.blit(projectile["surface"], projectile["rect"])
         elif type == "functional":
-            if self.bean_thrown + 1000 < current_time and self.bean_available == False:
+            if self.bean_thrown + self.bean_cooldown < current_time and self.bean_available == False:
                 self.bean_available = True 
             if self.bean_projectiles:
                 for projectile in self.bean_projectiles:
@@ -735,11 +744,23 @@ class Gui(pygame.sprite.Sprite):
         self.heart_rect = self.heart_image.get_rect(topleft = (15, 10))
         self.skill_bar_image = skill_bar
         self.skill_bar_rect = self.skill_bar_image.get_rect(topleft = (1188, 370))
+        self.swirl_cooldown = pygame.rect.Rect(1198,402,62,0)
+        self.wind_cooldown = pygame.rect.Rect(1198,472,62,0)
+        self.heal_cooldown = pygame.rect.Rect(1198,541,62,0)
+        self.bean_cooldown = pygame.rect.Rect(1198,610,62,0)
 
     # update method for gui
     def update(self):
         self.total_health_rect = pygame.rect.Rect(100,10,player.sprite.max_health *3,40)
         self.health_rect = pygame.rect.Rect(100,10,player.sprite.health *3,40)
+        if player.sprite.swirl_attributes["active"] == True:
+            self.swirl_cooldown = pygame.rect.Rect(1198,402,62,(1 - (current_time - player.sprite.swirl_attributes["last_used"]) / player.sprite.swirl_attributes["cooldown"]) * 64)
+        if player.sprite.wind_available == False:
+            self.wind_cooldown = pygame.rect.Rect(1198,472,62,(1 - (current_time - player.sprite.wind_thrown) / player.sprite.wind_cooldown) * 64)
+        if player.sprite.heal_attributes["active"] == True:
+            self.heal_cooldown = pygame.rect.Rect(1198,541,62,(1 - (current_time - player.sprite.heal_attributes["last_used"]) / player.sprite.heal_attributes["cooldown"]) * 64)
+        if player.sprite.bean_available == False:
+            self.bean_cooldown = pygame.rect.Rect(1198,610,62,(1 - (current_time - player.sprite.bean_thrown) / player.sprite.bean_cooldown) * 64)
         if (player.sprite.health / player.sprite.max_health)* 100 > 60:
             self.heart_image = heart_100
         elif (player.sprite.health / player.sprite.max_health)* 100 < 20:

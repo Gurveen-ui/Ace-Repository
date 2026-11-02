@@ -49,7 +49,7 @@ def pause_display():
 
 # reset all things after death
 def reset_all():
-    global paused, type
+    global paused
     paused = False
     Global_Assets.section = "Start_Menu"
     Corridor.initialise()
@@ -276,7 +276,7 @@ while True:
     elif Global_Assets.section == "End_Menu":
         for event in pygame.event.get():
             if End_Screen.start_button.sprite.Mouse_Sprite_Collision == True  and event.type == pygame.MOUSEBUTTONDOWN:
-                Global_Assets.section = "Corridor"
+                reset_all()
             elif End_Screen.exit_button.sprite.Mouse_Sprite_Collision == True  and event.type == pygame.MOUSEBUTTONDOWN:
                 pygame.quit()
                 exit()
@@ -286,6 +286,10 @@ while True:
         Screen.fill((0,0,0))
         Screen.blit(End_Screen.Background, (0,0))
         Screen.blit(End_Screen.Knight, End_Screen.Knight_Rect)
+        End_Screen.start_button.draw(Screen)
+        End_Screen.exit_button.draw(Screen)
+        End_Screen.start_button.update()
+        End_Screen.exit_button.update()
 
         
     Screen.blit(Global_Assets.Royal_Font.render(str(round(clock.get_fps())), False, (255,0,0)), (1280 - 140,720 - 50))

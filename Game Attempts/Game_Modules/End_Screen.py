@@ -5,7 +5,7 @@ pygame.display.set_caption("end screen")
 
 Background = pygame.image.load("Game Attempts\\Images\\Start_Menu\\Background\\Background Pixel.png").convert_alpha()
 Knight = pygame.image.load("Game Attempts\\Images\\Start_Menu\\Knight Display\\Knight Pixel.png").convert_alpha()
-Knight_Rect = Knight.get_rect(center = (935, 465))
+Knight_Rect = Knight.get_rect(bottomright = (1260, 700))
 
 # button hover function, checks if mouse is hovering above a button and also changes the image size
 def Button_Hover(Button):
@@ -28,11 +28,11 @@ class Start_Button(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         self.image = pygame.image.load("Game Attempts\\Images\\Start_Menu\\Start Button\\Start Pixel.png").convert_alpha()
-        self.rect = self.image.get_rect(center = (520,400))
+        self.rect = self.image.get_rect(center = (992,245))
         self.Still_Image = pygame.image.load("Game Attempts\\Images\\Start_Menu\\Start Button\\Start Pixel.png").convert_alpha()
         self.Mouse_Sprite_Collision = False
         self.Hover_Image = pygame.image.load("Game Attempts\\Images\\Start_Menu\\Start Button\\Start Pixel Hover.png").convert_alpha()
-        self.center = (520,400)
+        self.center = (992,250)
 
     # update method, calls button hover function
     def update(self):
@@ -48,11 +48,11 @@ class Exit_Button(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         self.image = pygame.image.load("Game Attempts\\Images\\Start_Menu\\Exit Button\\Exit Pixel.png").convert_alpha()
-        self.rect = self.image.get_rect(center = (545,520)) #445,
+        self.rect = self.image.get_rect(center = (1017,350)) #445,
         self.Still_Image = pygame.image.load("Game Attempts\\Images\\Start_Menu\\Exit Button\\Exit Pixel.png").convert_alpha()
         self.Mouse_Sprite_Collision = False
         self.Hover_Image = pygame.image.load("Game Attempts\\Images\\Start_Menu\\Exit Button\\Exit Pixel Hover.png").convert_alpha()
-        self.center = (545,520)
+        self.center = (1017,350)
     
     # update method, calls button hover function
     def update(self):

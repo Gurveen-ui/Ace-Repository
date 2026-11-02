@@ -285,6 +285,7 @@ while True:
                 exit()
         Screen.fill((0,0,0))
         Screen.blit(End_Screen.Background, (0,0))
+        Screen.blit(End_Screen.Board, (5,130))
         Screen.blit(End_Screen.Knight, End_Screen.Knight_Rect)
         End_Screen.start_button.draw(Screen)
         End_Screen.exit_button.draw(Screen)

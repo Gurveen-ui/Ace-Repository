@@ -4,6 +4,7 @@ Screen = pygame.display.set_mode((1280,720))
 pygame.display.set_caption("end screen")
 
 Background = pygame.image.load("Game Attempts\\Images\\Start_Menu\\Background\\Background Pixel.png").convert_alpha()
+Board = pygame.image.load("Game Attempts\\Images\\End_Menu\\Board.png").convert_alpha()
 Knight = pygame.image.load("Game Attempts\\Images\\Start_Menu\\Knight Display\\Knight Pixel.png").convert_alpha()
 Knight_Rect = Knight.get_rect(bottomright = (1260, 700))
 

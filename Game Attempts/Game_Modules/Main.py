@@ -49,8 +49,9 @@ def pause_display():
 
 # reset all things after death
 def reset_all():
-    global paused
+    global paused 
     paused = False
+    Global_Assets.paused_time = pygame.time.get_ticks()
     Global_Assets.section = "Start_Menu"
     Corridor.initialise()
     Courtyard.initialise()
@@ -197,6 +198,7 @@ while True:
                             Courtyard.player.sprite.heal_attributes["last_used"] = Courtyard.current_time
                             Courtyard.player.sprite.heal_attributes["pos"] = Courtyard.player.sprite.rect.center - Courtyard.camera_offset
                             Courtyard.player.sprite.health += Courtyard.player.sprite.heal_attributes["heal"]
+                            Courtyard.player.sprite.health_gained += Courtyard.player.sprite.heal_attributes["heal"]
                             x = random.randint(-30, 30)
                             y = random.randint(-30, 30)
                             Courtyard.Floating_numbers(Courtyard.player.sprite.heal_attributes["heal"], "green", Courtyard.vector(x/10, -5), Courtyard.vector((Courtyard.player.sprite.rect.centerx + x, Courtyard.player.sprite.rect.centery + y)))
@@ -217,6 +219,8 @@ while True:
                                      "thrown": Courtyard.current_time})
                     if event.key == pygame.K_k:
                         Global_Assets.section = "End_Menu"
+                        if Courtyard.game_start_time == 0:
+                            Courtyard.game_start_time = Courtyard.current_time
             if event.type == pygame.QUIT:
                 pygame.quit()
                 exit()
@@ -291,6 +295,9 @@ while True:
         Screen.blit(Global_Assets.Royal_Font.render("Current Score: " + str(Courtyard.player.sprite.coins), False, (0,0,0)),(70, 355))
         Screen.blit(Global_Assets.Royal_Font.render("Past Highscore: " + str(Courtyard.player.sprite.coins), False, (0,0,0)),(380, 355))
         Screen.blit(Global_Assets.Royal_Font.render("Enemies slain: " + str(Courtyard.player.sprite.enemies_killed), False, (0,0,0)),(70, 395))
+        Screen.blit(Global_Assets.Royal_Font.render("Hp Remaining: " + str(Courtyard.player.sprite.health), False, (0,0,0)),(70, 435))
+        Screen.blit(Global_Assets.Royal_Font.render("Hp Recovered: " + str(Courtyard.player.sprite.health_gained), False, (0,0,0)),(70, 475))
+        Screen.blit(Global_Assets.Royal_Font.render("Time Taken: " + str(int((Courtyard.current_time - Courtyard.game_start_time)/1000)), False, (0,0,0)),(70, 515))
         Screen.blit(End_Screen.Knight, End_Screen.Knight_Rect) 
         End_Screen.start_button.draw(Screen)
         End_Screen.exit_button.draw(Screen)

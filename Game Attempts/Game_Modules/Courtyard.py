@@ -283,6 +283,7 @@ class Player(pygame.sprite.Sprite):
         self.coins = 0 
         self.enemies_killed = 0
         self.health = 100
+        self.health_gained = 0
         self.player_dead = False
         self.position = vector(self.rect.center)
         self.velocity = vector(0,0)
@@ -551,12 +552,15 @@ class Player(pygame.sprite.Sprite):
             if self.heal_time + 200 < current_time:
                 self.heal_time = current_time
                 self.health += self.heal_amount
+                self.health_gained += self.heal_amount
                 if self.health <= self.max_health:
                     x = random.randint(-30, 30)
                     y = random.randint(-30, 30)
                     Floating_numbers(self.heal_amount, "green", vector(x/10, -5), vector((self.rect.centerx + x, self.rect.centery + y)))
         if self.health > self.max_health:
+            self.health_gained -= self.health - self.max_health
             self.health = self.max_health
+
 
     def coin_collect(self):
         for coin in Coin_list:
@@ -693,7 +697,7 @@ class Wall_NPC(pygame.sprite.Sprite):
         
     # update method, calls all functions related to dialogue depending on conditions
     def update(self):
-        global Movement_Stopped
+        global Movement_Stopped, game_start_time
         self.box_rect.bottomleft = ((self.rect.centerx + 30 + camera_offset.x, self.rect.centery - 50 + camera_offset.y))
         keys = pygame.key.get_pressed()
         if self.dialogue_count >= len(wall_dialogues) and self.Box_Displayed == False:
@@ -701,6 +705,7 @@ class Wall_NPC(pygame.sprite.Sprite):
             self.display_box = False
             self.Box_Displayed = True
             levels.Choose_Enemies()
+            game_start_time = current_time
         if self.Box_Displayed == False:
             self.current_text_constant = wall_dialogues[self.dialogue_count]
             if keys[pygame.K_e] and self.display_box != True:
@@ -784,6 +789,7 @@ wizard_projectile = pygame.image.load("Game Attempts\\Images\\Courtyard\\Enemies
 witch_projectile = pygame.image.load("Game Attempts\\Images\\Courtyard\\Enemies\\Projectiles\\Yin And Yang.png").convert_alpha()
 
 coin = pygame.image.load("Game Attempts\\Images\\Courtyard\\Coin.png").convert_alpha()
+game_start_time = 0
 
 # enemies class
 class Courtyard_Enemies(pygame.sprite.Sprite):

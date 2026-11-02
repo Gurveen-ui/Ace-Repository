@@ -27,7 +27,6 @@ left_forcefield = 0 # border player can never go past
 right_forcefield = 5120 # border player can never go past, 4 floors length
 current_time = 0 # time
 Movement_Stopped = False # if movement is stopped due to speech
-section = "Corridor" # current section
 start_time = 0 # time this section starts at
 
 # creates all animation variables
@@ -285,7 +284,7 @@ class Player(pygame.sprite.Sprite):
         keys = pygame.key.get_pressed()
         for gate in Gates:
             if self.rect.colliderect(gate.rect) and keys[pygame.K_e]:
-                section = "Courtyard" 
+                Global_Assets.section = "Courtyard" 
 
     # moves all sprite groups when called
     def Foreground_Movement(self, speed):

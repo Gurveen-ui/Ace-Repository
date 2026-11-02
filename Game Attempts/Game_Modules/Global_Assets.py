@@ -39,3 +39,5 @@ Royal_Font_X_Small = pygame.font.Font("Game Attempts\\Font\\citadel_of_blackrose
 paused_time = 0
 pause_pressed = 0
 pause_stopped = 0
+
+section = "Start_Menu"

@@ -5,7 +5,6 @@ Screen = pygame.display.set_mode((1280,720))
 pygame.display.set_caption("Start Menu")
 
 # creates all variables
-section = "Start_Menu"
 Background = pygame.image.load("Game Attempts\\Images\\Start_Menu\\Background\\Background Pixel.png").convert_alpha()
 AkaKnight = pygame.image.load("Game Attempts\\Images\\Start_Menu\\\\Title\\AkaKnight Pixel.png").convert_alpha()
 Title_Rect = AkaKnight.get_rect(center = (640, 165))

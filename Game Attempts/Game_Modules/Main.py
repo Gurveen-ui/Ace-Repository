@@ -10,10 +10,10 @@ import Overlay_Screen
 import Start_Menu
 import Corridor
 import Courtyard
+import End_Screen
 
 
 # create needed variables
-type = "Start_Menu"
 paused = False
 overlay_screen = pygame.surface.Surface((1280,720))
 overlay_screen.fill((0,0,0))
@@ -21,7 +21,7 @@ overlay_screen.set_alpha(180)
 clock = pygame.time.Clock()
 # pause display background function
 def pause_display():
-    if type == "Corridor":
+    if Global_Assets.section == "Corridor":
         Screen.fill((0,0,0))
         Corridor.corridor_background.draw(Screen)
         Corridor.corridor_floor.draw(Screen)
@@ -32,7 +32,7 @@ def pause_display():
         Corridor.player.draw(Screen)
         Screen.blit(overlay_screen, (0,0))
         Screen.blit(Global_Assets.Royal_Font.render(str(round(clock.get_fps())), False, (255,0,0)), (1280 - 90,720 - 50))
-    elif type == "Courtyard":
+    elif Global_Assets.section == "Courtyard":
         Courtyard.Screen.fill((0,0,0))
         Courtyard.draw_courtyard(Screen, Courtyard.sand_tiles)
         Courtyard.background_attacks("paused")
@@ -51,10 +51,7 @@ def pause_display():
 def reset_all():
     global paused, type
     paused = False
-    Start_Menu.section = "Start_Menu"
-    Corridor.section = "Corridor"
-    Courtyard.section = "Courtyard"
-    type = "Start_Menu"
+    Global_Assets.section = "Start_Menu"
     Corridor.initialise()
     Courtyard.initialise()
 
@@ -62,7 +59,7 @@ def reset_all():
 while True:
     # checks for pause button (esc)
     keys = pygame.key.get_pressed()  
-    if keys[pygame.K_ESCAPE] and (type == "Corridor" or type == "Courtyard") and Courtyard.player.sprite.player_dead == False:
+    if keys[pygame.K_ESCAPE] and (Global_Assets.section == "Corridor" or Global_Assets.section == "Courtyard") and Courtyard.player.sprite.player_dead == False:
         if paused == False:
             paused = True
             Global_Assets.pause_pressed = pygame.time.get_ticks()
@@ -91,10 +88,10 @@ while True:
         continue
 
     # start menu section, 1st priority
-    if Start_Menu.section == "Start_Menu":
+    if Global_Assets.section == "Start_Menu":
         for event in pygame.event.get():
             if Start_Menu.start_button.sprite.Mouse_Sprite_Collision == True  and event.type == pygame.MOUSEBUTTONDOWN:
-                Start_Menu.section = "Corridor"
+                Global_Assets.section = "Corridor"
                 Corridor.start_time = pygame.time.get_ticks()
             elif Start_Menu.exit_button.sprite.Mouse_Sprite_Collision == True  and event.type == pygame.MOUSEBUTTONDOWN:
                 pygame.quit()
@@ -111,14 +108,13 @@ while True:
         Start_Menu.exit_button.draw(Screen)
         Start_Menu.start_button.update()
         Start_Menu.exit_button.update()
-        type = "Start_Menu"
 
     # corridor section, 2nd priority
-    elif Corridor.section == "Corridor":
+    elif Global_Assets.section == "Corridor":
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN and Corridor.Movement_Stopped == False:
                 if event.key == pygame.K_j:
-                    Corridor.section = "Courtyard"
+                    Global_Assets.section = "Courtyard"
                 if event.key == pygame.K_SPACE and Corridor.player.sprite.jump_count == 0:
                     Corridor.player.sprite.gravity = -20
                     Corridor.player.sprite.jump_count += 1
@@ -146,10 +142,9 @@ while True:
         Corridor.thought_bubble.update()
         #pygame.draw.rect(Corridor.Screen, "red", (70, 100, 400, 150))
         #pygame.draw.line(Corridor.Screen, "red", (640, 0), (640, 720), 5) # center line
-        type = "Corridor"
 
     # courtyard section, 3rd priorityd
-    elif Courtyard.section == "Courtyard":
+    elif Global_Assets.section == "Courtyard":
 
         # event loop
         for event in pygame.event.get():
@@ -220,6 +215,8 @@ while True:
                                      "velocity": Courtyard.vector(velocity),
                                      "pos": Courtyard.player.sprite.rect.center - Courtyard.camera_offset, 
                                      "thrown": Courtyard.current_time})
+                    if event.key == pygame.K_k:
+                        Global_Assets.section = "End_Menu"
             if event.type == pygame.QUIT:
                 pygame.quit()
                 exit()
@@ -248,7 +245,7 @@ while True:
             # Screen.blit(Global_Assets.Royal_Font.render(str(Courtyard.current_time // 1000), False, (0,0,0)),(1280 - 110 ,720 - 170))
             # Screen.blit(Global_Assets.Royal_Font.render(str(Courtyard.get_player_grid_pos(Courtyard.player.sprite)), False, (255,0,255)),(1280 - 110 ,720 - 120))
             Courtyard.wall_npc.update()
-            type = "Courtyard"
+
         # death display loop, displays only, doesnt call update functions
         else:
             Courtyard.draw_courtyard(Screen, Courtyard.sand_tiles)
@@ -276,16 +273,21 @@ while True:
         # pygame.draw.rect(Screen, "red", Courtyard.wall_npc.sprite.rect)
     
     # end menu section, currently an else statement as end module is yet to be made
-    else:
-        # event loop
+    elif Global_Assets.section == "End_Menu":
         for event in pygame.event.get():
+            if End_Screen.start_button.sprite.Mouse_Sprite_Collision == True  and event.type == pygame.MOUSEBUTTONDOWN:
+                Global_Assets.section = "Corridor"
+            elif End_Screen.exit_button.sprite.Mouse_Sprite_Collision == True  and event.type == pygame.MOUSEBUTTONDOWN:
+                pygame.quit()
+                exit()
             if event.type == pygame.QUIT:
                 pygame.quit()
                 exit()
         Screen.fill((0,0,0))
+        Screen.blit(End_Screen.Background, (0,0))
+        Screen.blit(End_Screen.Knight, End_Screen.Knight_Rect)
+
         
     Screen.blit(Global_Assets.Royal_Font.render(str(round(clock.get_fps())), False, (255,0,0)), (1280 - 140,720 - 50))
     pygame.display.update()
     clock.tick(60)
-
-

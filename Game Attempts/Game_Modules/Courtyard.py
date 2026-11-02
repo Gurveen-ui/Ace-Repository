@@ -34,7 +34,6 @@ right_bound = 1200
 left_bound = 80
 current_time = 0
 camera_offset = vector(0,0)
-section = "Courtyard"
 Movement_Stopped = False
 enemy_spawns = []
 grid = dict()
@@ -636,7 +635,7 @@ class Levels():
                     player.sprite.health = player.sprite.max_health
         if self.wave_completed == True:
             if self.wave == 5:
-                section = "End_Menu"
+                Global_Assets.section = "End_Menu"
             elif self.completed_time + 8000 < current_time:
                 self.Choose_Enemies()
         

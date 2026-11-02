@@ -281,6 +281,7 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(bottomleft = (90, 220))
         self.max_health = 100
         self.coins = 0 
+        self.enemies_killed = 0
         self.health = 100
         self.player_dead = False
         self.position = vector(self.rect.center)
@@ -919,6 +920,7 @@ class Courtyard_Enemies(pygame.sprite.Sprite):
             x = random.randint(-30, 30)
             y = random.randint(-30, 30)
             Floating_numbers(2, "green", vector(x/10, -5), vector((player.sprite.rect.centerx + x, player.sprite.rect.centery + y)))
+            player.sprite.enemies_killed += 1
         elif self.health > self.max_health:
             self.health = self.max_health
 

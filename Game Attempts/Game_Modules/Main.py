@@ -290,6 +290,7 @@ while True:
         Screen.blit(Global_Assets.Royal_Font.render("it was successful..", False, (150,150,150)),( 250, 320))
         Screen.blit(Global_Assets.Royal_Font.render("Current Score: " + str(Courtyard.player.sprite.coins), False, (0,0,0)),(70, 355))
         Screen.blit(Global_Assets.Royal_Font.render("Past Highscore: " + str(Courtyard.player.sprite.coins), False, (0,0,0)),(380, 355))
+        Screen.blit(Global_Assets.Royal_Font.render("Enemies slain: " + str(Courtyard.player.sprite.enemies_killed), False, (0,0,0)),(70, 395))
         Screen.blit(End_Screen.Knight, End_Screen.Knight_Rect) 
         End_Screen.start_button.draw(Screen)
         End_Screen.exit_button.draw(Screen)
